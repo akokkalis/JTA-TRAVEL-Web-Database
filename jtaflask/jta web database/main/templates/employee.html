@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+	
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+Employee page
+
+<br>
+<a class="btn btn-primary" href="{{url_for('add_user')}}" role="button">Add A User</a>
+
+
+<br>
+<br>
+<br>
+
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-file-person-fill"></i>List of Employees</h3>
+	<div class="table-responsive">
+		<caption>List of Employees</caption>
+		<table class="table table-hover table-info table-bordered text-center " >
+			<thead>
+				<!--Table Columns Here-->
+			<tr>
+				<th scope="col">No</th>
+				<th scope="col">Name</th>
+				<th scope="col">Surname</th>
+				<th scope="col">Email</th>
+				<th scope="col">Password</th>
+				<th scope="col">Role</th>
+				<th scope="col">Balance</th>
+				<th scope="col">Active</th>
+				<th scope="col">More Details</th>
+				<th scope="col">Edit</th>
+				<th scope="col">Delete</th>
+			</tr>
+			</thead>
+			<tbody>
+				{% for item in emp %}
+				{% include 'includes/employee_modals.html' %}
+				
+					<tr>
+						<th scope="row">{{loop.index}}</th>
+						<td>{{item.name}}</td>
+						<td>{{item.surname}}</td>
+						<td><a href="mailto:{{item.email}}">{{item.email}}</a></td>
+						<td>{{item.password_hash}}</td>
+						<td>{{item.role}}</td>
+						<td>{{item.balance}}</td> 
+						<td>{{item.active}}</td>                          
+						<td>
+							<button                                        
+								class="btn btn-sm btn-info btn-block" >    
+								<i class="bi bi-file-person-fill"></i> More Details</button>
+						</td>
+						<td>
+							<button                                        
+								class="btn btn-sm btn-info btn-block" >    
+								<i class="bi bi-pencil"></i>
+								Edit</button>
+						</td>
+						<td>
+							<button                                        
+								class="btn btn-sm btn-danger btn-block" data-toggle ="modal" data-target="#Modal-Delete-Emp-{{item.id}}">    
+								<i class="bi bi-person-x"></i>
+								Delete</button>
+						</td>
+					</tr>
+				
+				{%endfor%}
+
+
+			</tbody>
+		</table>
+	</div>
+    
+</div>  
+
+
+{% endblock %}

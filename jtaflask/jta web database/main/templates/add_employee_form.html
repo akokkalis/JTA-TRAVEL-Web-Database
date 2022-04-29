@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<br>
+
+    <div class="container" >
+        <div class="card p-3 bg-info">
+            <h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Add a User</h1>
+            <form method = "POST" class="row g-3"> 
+                {{form.hidden_tag()}}              
+                
+                    <div class="col-md-6">
+                        <label for="firstname" class="form-label">{{ form.name.label()}}</label>
+                        {{form.name(class="form-control", placeholder="First Name")}}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="surname" class="form-label">{{ form.surname.label()}}</label>
+                        {{ form.surname(class="form-control", placeholder="Surname") }}                    
+                    </div>
+                       
+      
+            
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">{{ form.email.label()}}</label>
+                        {{form.email(class="form-control", placeholder="Email")}}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="role" class="form-label">{{ form.role.label()}}</label>
+                        {{ form.phone(class="form-control", placeholder="User Role") }}                    
+                    </div>
+                    <div class="col-md-6">
+                        <label for="password" class="form-label">{{ form.password.label()}}</label>
+                        {{form.password(class="form-control", placeholder="password")}}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="username" class="form-label">{{ form.username.label()}}</label>
+                        {{ form.username(class="form-control", placeholder="username") }}                    
+                    </div>
+                                      
+
+          
+                <div class="col-md-6">
+                    <label for="job_title" class="form-label">{{ form.job_title.label()}}</label>
+                    <select id="job_title" class="form-select">
+                        <option>Rep</option>
+                        <option>Rep Supervisor</option>
+                        <option selected>Escort</option>
+                        <option>Airport</option>
+                        <option>Bibliosha</option>
+                        <option>Office</option>
+                    </select>
+ 
+                </div>
+                
+                
+                <div class="col-6">
+                    <label for="area" class="form-label">{{ form.area_of_working.label()}}</label>
+                    <select id="area" class="form-select">
+                        <option selected>Larnaca</option>
+                        <option>Limassol</option>
+                        <option>Paphos</option>                        
+                        <option>Ayia Napa</option>
+                        <option>Protaras</option>
+                    </select>
+ 
+                </div>
+
+                <div class="col-8">
+                    {% for subfield in form.test %}
+                        <tr>
+                            <td>{{ subfield }}</td>
+                            <td>{{ subfield.label }}</td>
+                        </tr>
+                    {% endfor %}        
+
+
+                </div>
+
+                <div class="col-md-6">
+                    <label for="job_title" class="form-label">{{ form.test1.label()}}</label>                    
+                        {{form.test1}}                     
+                    
+                </div>
+            <br>    
+            
+            <button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-person"></i></button>
+
+                
+            </form>    
+        </div>
+        <a class="btn btn-lg btn-block btn-primary" href="{{url_for('employees')}}" role="button">Back</a>
+    </div>     
+
+                
+
+            
+                
+
+           
+        
+
+
+
+
+
+
+
+
+{% endblock %}

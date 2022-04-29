@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<div class="card p-3 bg-light">
+    <table class="table table-hover table-info table-bordered">
+        <thead>
+            <!--Table Columns Here-->
+        <tr>
+            <th scope="col">Room No</th>
+            <th scope="col">Room Type</th>
+            <th scope="col">Square Fit</th>
+            <th scope="col">Price</th>
+            <th scope="col">More Details</th>
+            <th scope="col">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for item in room_list %}
+            
+                <tr>
+                    <th scope="row">1</th>
+                    <td>{{item.room}}</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>                            
+                    <td>
+                        <button                                        
+                            class="btn btn-sm btn-secondary" >    
+                            <i class="bi bi-file-person-fill"></i> More Details</button>
+                    </td>
+                    <td>
+                        <button                                        
+                            class="btn btn-sm btn-danger" >    
+                            <i class="bi bi-person-x"></i>
+                             Delete</button>
+                    </td>
+                </tr>
+            
+            {%endfor%}
+
+
+        </tbody>
+    </table>
+
+    
+</div>  
+{% endblock %}

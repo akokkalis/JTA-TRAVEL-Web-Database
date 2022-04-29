@@ -1,0 +1,65 @@
+<!-- Modal Edit Liquidation  -->
+<div class="modal fade" id="Modal-Edit-Liq-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Edit Liquidation of <strong>{{item.fname}} {{item.surname}} </strong> For Date Liquidated <strong>{{item.date_liquidated}}</strong></h5>
+		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+		</div>
+		<div class="modal-body">
+
+			<form method ="POST">
+				{{edit_form.hidden_tag()}}
+
+				<div class="mb-3">
+				  <label for="Total Sales" class="form-label">Total Sales</label>
+				  {{edit_form.total_sales(class="form-control", value=item.total_sales)}}				  
+				</div>
+				<div class="mb-3">
+					<label for="Bank Amount" class="form-label">Bank Amount</label>
+					{{edit_form.bank_deposit(class="form-control", value=item.bank_deposit)}}				  
+				</div>
+				<div class="mb-3">
+					<label for="Visa Amount" class="form-label">Visa Amount</label>
+					{{edit_form.visa_amount(class="form-control", value=item.visa_transaction)}}				  
+				</div>
+				<div class="mb-3">
+					<label for="canceled_tickets" class="form-label" >Canceled Tickets</label>					
+					{{edit_form.canceled_tickets(class="form-control")}}	  
+				</div>
+				<div class="mb-3">
+					<label for="Pre Cancels" class="form-label">Pre Cancels</label>
+					{{edit_form.precancels(class="form-control", value=item.pre_cancels)}}				  
+				</div>
+				<div class="mb-3">
+					<label for="Remarks" class="form-label">Remarks</label>
+					{{edit_form.remarks(class="form-control", value=item.remarks)}}				  
+				</div>
+
+				<div class="mb-3">
+					<label for="bank_dep_image" class="form-label">Bank Deposit File</label>
+					{{edit_form.bank_dep_image(class="form-control")}}				  
+				</div>
+				<div class="mb-3">
+					<label for="jcc_daily_image" class="form-label">JCC Deposit File</label>
+					{{edit_form.jcc_daily_image(class="form-control")}}				  
+				</div>
+				<div class="mb-3">
+					<label for="cancelled_tickets_image" class="form-label">Cancelled Tickets File</label>
+					{{edit_form.cancelled_tickets_image(class="form-control")}}				  
+				</div>
+				<br>
+				<input class = "btn btn-outline-info btn-block" type="submit" name="submit_button" value="Save">
+				<!-- {{edit_form.submit(class = "btn btn-outline-info btn-block", value="edit_submit_button" )}} -->
+			</form>
+		</div>	
+
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+	  </div>
+	</div>
+
+
+  </div>  

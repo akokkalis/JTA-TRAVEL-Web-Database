@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<br>
+
+    <div class="container" >
+        <div class="card p-3 bg-info">
+            <h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Add an Asset</h1>
+            <form method = "POST" class="row g-3"> 
+                {{form.hidden_tag()}}   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server-->           
+                
+                    <div class="col-md-6">
+                        <label for="asset_name" class="form-label">{{ form.name.label()}}</label>
+                        {{form.name(class="form-control", placeholder="Asset Name")}}
+                    </div>
+
+
+            <button type="submit" class="btn btn-lg btn-block btn-primary"> Save <i class="bi bi-person"></i></button>
+
+                
+            </form>    
+        </div>
+        <a class="btn btn-lg btn-block btn-primary" href="{{url_for('assets_page')}}" role="button">Back</a>
+    </div>     
+
+        
+
+{% endblock %}

@@ -1,0 +1,35 @@
+
+  <!-- Modal Edit Asset  -->
+  <div class="modal fade" id="Modal-Edit-Asset-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Edit An Asset</h5>
+		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+		</div>
+		<div class="modal-body">
+		  <form method="POST">
+			  {{edit_asset_form.hidden_tag()}}
+			  Edit The Asset <em><strong>{{item.name}}</strong></em>?
+			  <input id="asset_edit" name="asset_edit" type="hidden" value="{{item.id}}">	  
+			  <br>
+			  <br>
+
+			  <div class="col-md-6">
+				<label for="owner" class="form-label">{{ edit_asset_form.owner.label()}}</label>
+				{{edit_asset_form.owner(class="form-control", placeholder="Owner")}}
+			  </div>
+			  <br>
+			  {{edit_asset_form.submit(class = "btn btn-outline-info btn-block" )}}
+
+
+		  </form>		
+
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+	  </div>
+	</div>
+  </div>  
