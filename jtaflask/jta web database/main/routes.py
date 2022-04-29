@@ -322,14 +322,30 @@ def daily_liquidation():
 											Users.name.label('fname'),
 											Users.surname.label('surname')).outerjoin(Users, Users.id == DailyLiquidation.owner).order_by(DailyLiquidation.id.desc())
 											
-		# edit liquidation										   
-		if request.method=="POST":
-			if request.form['submit_button'] == 'Save':
-				print(edit_form.total_sales.data)
+		# # edit liquidation										   
+		# if request.method=="POST":
+		# 	if request.form['submit_button'] == 'Save':
+		# 		liq = db.session.query(DailyLiquidation).filter(DailyLiquidation.id==item.id).one() 
+		# 		print(liq.id, liq.owner)
+
+		
 		#user_daily_liq = DailyLiquidation.query.all()
 		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq, edit_form=edit_form )
 
 	return render_template('daily_liquidation.html', title=page_title, edit_form=edit_form)
+
+@app.route('/edit_daily_liquidation/<int:id>', methods=['GET','POST'])
+def edit_daily_liquidation(id):
+	print(id)
+	edit_liq = db.session.query(DailyLiquidation).filter(DailyLiquidation.id==id).first()
+	form = Liq_Edit_Form(formdata=request.form, obj=edit_liq)
+
+	
+	print(edit_liq.total_sales)
+	print(edit_liq.bank_deposit)
+	print(edit_liq.owner)
+
+	return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
 
 
 @app.route('/add_daily_liquidation', methods=['GET','POST'])

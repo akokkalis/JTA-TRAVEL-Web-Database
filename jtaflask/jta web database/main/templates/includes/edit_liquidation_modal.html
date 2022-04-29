@@ -25,7 +25,7 @@
 				</div>
 				<div class="mb-3">
 					<label for="canceled_tickets" class="form-label" >Canceled Tickets</label>					
-					{{edit_form.canceled_tickets(class="form-control")}}	  
+					<textarea class="form-control" id="canceled_tickets" name="canceled_tickets">{{item.cancelled_tickets}}</textarea>
 				</div>
 				<div class="mb-3">
 					<label for="Pre Cancels" class="form-label">Pre Cancels</label>
@@ -33,7 +33,9 @@
 				</div>
 				<div class="mb-3">
 					<label for="Remarks" class="form-label">Remarks</label>
-					{{edit_form.remarks(class="form-control", value=item.remarks)}}				  
+					<br>
+					<textarea class="form-control" id="remarks" name="remarks">{{ item.remarks }}</textarea>
+					<!-- {{edit_form.remarks(class="form-control", value=item.remarks)}}				   -->
 				</div>
 
 				<div class="mb-3">
@@ -49,8 +51,9 @@
 					{{edit_form.cancelled_tickets_image(class="form-control")}}				  
 				</div>
 				<br>
-				<input class = "btn btn-outline-info btn-block" type="submit" name="submit_button" value="Save">
-				<!-- {{edit_form.submit(class = "btn btn-outline-info btn-block", value="edit_submit_button" )}} -->
+				<a class="btn btn-outline-info btn-block" 
+				href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button">Save</a>
+
 			</form>
 		</div>	
 

@@ -73,17 +73,16 @@
 							<td>{{item.date_time_actual}}</td> 
 							<td>{{item.date_liquidated}}</td>
 							<td>
-								<a title='Download Bank Deposit' class="btn btn-primary hover" href="{{url_for('down_file', file_name = item.bank_dep_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>
+								<a title='Download Bank Deposit' class="btn btn-sm btn-primary btn-block" href="{{url_for('down_file', file_name = item.bank_dep_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>
 							</td>
 							
 							<td>
-								<a title='Download JCC Deposit' class="btn btn-primary" href="{{url_for('down_file', file_name = item.jcc_daily_batch_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>
+								<a title='Download JCC Deposit' class="btn btn-sm btn-primary btn-block" href="{{url_for('down_file', file_name = item.jcc_daily_batch_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>
 								
 							</td>
 							<td>
-								<a title='Download Cancelled Tickets Deposit' class="btn btn-primary"			
-								href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>
-								
+								<a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block"			
+								href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>								
 							</td>
 							<td>&euro; {{item.daily_liquidation_balance}}</td>
 							<td>{{item.remarks}}</td>
@@ -112,10 +111,13 @@
 								{%endif%}
 							</td>
 							<td>
-								<button                              
+								<a class="btn btn-sm btn-primary btn-block" 
+								href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
+
+								<!-- <button                              
 									class="btn btn-sm btn-info btn-block" data-toggle ="modal" data-target="#Modal-Edit-Liq-{{ item.id }}">    
 									<i class="bi bi-pencil"></i>
-									Edit</button>
+									Edit</button> -->
 							</td>
 							<td>
 								<button                                        

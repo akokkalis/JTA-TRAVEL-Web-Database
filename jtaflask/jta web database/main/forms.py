@@ -90,12 +90,26 @@ class Liquidation_Form(FlaskForm):
 
     remarks = TextAreaField(label=f'Comments For Your {yesterday} Sales', widget=TextArea())
     submit = SubmitField(label = 'Save')
-'''
+
 class Liq_Edit_Form(FlaskForm):
-    yesterday = usefull_functions.yesterday_date()
     
-    total_sales = FloatField(label=f'Sales On Date {yesterday}', validators=[DataRequired()])
-    bank_deposit = FloatField(label=f'Bank Deposit Amount For Date {yesterday}', validators=[DataRequired()])
+    
+    total_sales = FloatField(label=f'Total Sales', validators=[DataRequired()])
+    
+    bank_deposit = FloatField(label=f'Bank Deposit Amount', validators=[DataRequired()])
+
+    visa_transaction = FloatField(label=f'Visa Total Amount', validators=[DataRequired()])
+
+    pre_cancels = FloatField(label=f'Previous Days Cancellations ', validators=[DataRequired()])
+
+    cancelled_tickets = TextAreaField(label = 'Canceled Tickets')
+    
+    bank_dep_image = FileField(label = f'Bank Deposit File',validators=[DataRequired()])
+    
+    jcc_daily_image = FileField(label = f'JCC Batch Report',validators=[DataRequired()])
+    
+    cancelled_tickets_image = FileField(label = f'Excursion Cancelled Tickets')
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
     submit = SubmitField(label = 'Save')
-'''    
-    
+
