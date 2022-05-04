@@ -44,7 +44,8 @@
 				<div class="col-md-6">
 					<label for="bank_dep_image" class="form-label">{{ form.bank_dep_image.label()}}</label>
 					<br>
-					<a href="{{url_for('down_file', file_name = form.bank_dep_image.data)}}" background="yellow" >{{form.bank_dep_image.data}}</a>					
+					<a href="{{url_for('down_file', file_name = form.bank_dep_image.data)}}" background="yellow" >{{form.bank_dep_image.data}}</a>
+					<a></a>					
 					{{form.bank_dep_image(class="form-control", placeholder="Upload Bank Deposit Receipt")}}
 				</div>
 			
