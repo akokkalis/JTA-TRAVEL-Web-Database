@@ -104,9 +104,9 @@ class Liq_Edit_Form(FlaskForm):
 
     cancelled_tickets = TextAreaField(label = 'Canceled Tickets')
     
-    bank_dep_image = FileField(label = f'Bank Deposit File',validators=[DataRequired()])
+    bank_dep_image = FileField(label = f'Bank Deposit File')
     
-    jcc_daily_image = FileField(label = f'JCC Batch Report',validators=[DataRequired()])
+    jcc_daily_image = FileField(label = f'JCC Batch Report')
     
     cancelled_tickets_image = FileField(label = f'Excursion Cancelled Tickets')
 

@@ -299,7 +299,7 @@ def daily_liquidation():
 	if current_user.role=='Representative':	
 		user_daily_liq = DailyLiquidation.query.filter(DailyLiquidation.owner ==current_user.id).all()		
 		#user_daily_liq = db.session.query(DailyLiquidation.id, DailyLiquidation.total_sales).filter(DailyLiquidation.owner ==current_user.id ).all()
-		print(user_daily_liq)
+		print(user_daily_liq[0].confirm)
 
 		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq , edit_form=edit_form)
 	
