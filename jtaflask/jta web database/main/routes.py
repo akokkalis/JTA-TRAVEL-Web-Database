@@ -344,6 +344,7 @@ def edit_daily_liquidation(id):
 	print(edit_liq.total_sales)
 	print(edit_liq.bank_deposit)
 	print(edit_liq.owner)
+	print(edit_liq.bank_dep_image)
 
 	return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
 
