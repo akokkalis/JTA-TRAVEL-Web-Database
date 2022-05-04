@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from click import edit
 from numpy import concatenate
 from flask import session
 from datetime import timedelta
@@ -341,10 +342,35 @@ def edit_daily_liquidation(id):
 	form = Liq_Edit_Form(formdata=request.form, obj=edit_liq)
 
 	
-	print(edit_liq.total_sales)
-	print(edit_liq.bank_deposit)
-	print(edit_liq.owner)
-	print(edit_liq.bank_dep_image)
+	# print(edit_liq.total_sales)
+	# print(edit_liq.bank_deposit)
+	# print(edit_liq.owner)
+	# print(edit_liq.bank_dep_image)
+	# if request.form['submit_button'] == 'Save':
+	#if request.method=='POST':
+	if current_user.role== 'Administrator':
+		if form.validate_on_submit():
+			print(f'id : {id}')
+			print('Liquidation Changed')
+			print(f'Total Sales : {form.total_sales.data}')
+			print(f'Bank deposit : {form.bank_deposit.data}')
+			print(f'Visa Total : {form.visa_transaction.data}')
+			print(f'Previ days cance amount : {form.pre_cancels.data}')
+			print(f'Cancelled Tickets : {form.cancelled_tickets.data}')
+			print(f'remarks : {form.remarks.data}')
+			#sql injection
+			edit_liq.total_sales = form.total_sales.data
+			edit_liq.bank_deposit = form.bank_deposit.data
+			edit_liq.visa_transaction = form.visa_transaction.data
+			edit_liq.pre_cancels = form.pre_cancels.data
+			edit_liq.cancelled_tickets = form.cancelled_tickets.data
+			edit_liq.remarks = form.remarks.data
+			db.session.add(edit_liq)
+			db.session.commit()
+			flash(f'Liquidation DB_ID_No:{id} Updated Succesfully', category='info')
+			return (redirect(url_for('daily_liquidation')))
+		if form.errors != {}:
+			print (form.errors)
 
 	return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
 

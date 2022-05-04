@@ -40,23 +40,34 @@
 					<label for="cancelled_tickets" class="form-label">{{ form.cancelled_tickets.label()}}</label>
 					{{form.cancelled_tickets(class="form-control", placeholder="Write Here The Cancelled Ticket Number")}}
 				</div>
-
+				
 				<div class="col-md-6">
 					<label for="bank_dep_image" class="form-label">{{ form.bank_dep_image.label()}}</label>
 					<br>
-					<a href="{{url_for('down_file', file_name = form.bank_dep_image.data)}}" background="yellow" >{{form.bank_dep_image.data}}</a>
-					<a></a>					
-					{{form.bank_dep_image(class="form-control", placeholder="Upload Bank Deposit Receipt")}}
+					<a href="{{url_for('down_file', file_name = form.bank_dep_image.data)}}">{{form.bank_dep_image.data}}</a>
+					<a></a>	
+					{%if current_user.role=='Representative'%}	
+						{{form.bank_dep_image(class="form-control disabled", placeholder="Upload Bank Deposit Receipt")}}
+					{%endif%}
 				</div>
+				
 			
 				<div class="col-md-6">
-					<label for="jcc_daily_image" class="form-label">{{ form.jcc_daily_image.label()}}</label>
-					{{form.jcc_daily_image(oninput = "filesize(this);", class="form-control", placeholder="Upload Jcc Batch Report")}}
+					<label for="jcc_daily_batch_image" class="form-label">{{ form.jcc_daily_batch_image.label()}}</label>
+					<br>
+					<a href="{{url_for('down_file', file_name = form.jcc_daily_batch_image.data)}}">{{form.jcc_daily_batch_image.data}}</a>					
+					{%if current_user.role=='Representative'%}				
+						{{form.jcc_daily_batch_image(oninput = "filesize(this);", class="form-control", placeholder="Upload Jcc Batch Report")}}
+					{%endif%}
 				</div>
 
 				<div class="col-md-6">
-					<label for="cancelled_tickets_image" class="form-label">{{ form.cancelled_tickets_image.label()}}</label>
-					{{form.cancelled_tickets_image(class="form-control", placeholder="Upload Jcc Batch Report")}}
+					<label for="cancelled_ticket_image" class="form-label">{{ form.canceled_ticket_image.label()}}</label>
+					<br>
+					<a href="{{url_for('down_file', file_name = form.canceled_ticket_image.data)}}">{{form.canceled_ticket_image.data}}</a>					
+					{%if current_user.role=='Representative'%}	
+						{{form.canceled_ticket_image(class="form-control", placeholder="Upload Jcc Batch Report")}}
+					{%endif%}
 				</div>
 
 				<div class="col-md-12">
@@ -64,7 +75,7 @@
 					{{form.remarks(class="form-control", placeholder="Write Here Your Remarks")}}
 				</div>
 				<br>
-				<button type="submit" class="btn btn-lg btn-block btn-primary"> Save <i class="bi bi-send"></i></button>
+				<button type="submit" class="btn btn-lg btn-block btn-primary" name="submit_button"> Save <i class="bi bi-send"></i></button>
 
                 
             </form>    

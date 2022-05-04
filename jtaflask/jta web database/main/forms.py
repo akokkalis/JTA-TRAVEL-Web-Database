@@ -100,15 +100,15 @@ class Liq_Edit_Form(FlaskForm):
 
     visa_transaction = FloatField(label=f'Visa Total Amount', validators=[DataRequired()])
 
-    pre_cancels = FloatField(label=f'Previous Days Cancellations ', validators=[DataRequired()])
+    pre_cancels = FloatField(label=f'Previous Days Cancellations ')
 
     cancelled_tickets = TextAreaField(label = 'Canceled Tickets')
     
     bank_dep_image = FileField(label = f'Bank Deposit File')
     
-    jcc_daily_image = FileField(label = f'JCC Batch Report')
+    jcc_daily_batch_image = FileField(label = f'JCC Batch Report')
     
-    cancelled_tickets_image = FileField(label = f'Excursion Cancelled Tickets')
+    canceled_ticket_image = FileField(label = f'Excursion Cancelled Tickets')
 
     remarks = TextAreaField(label=f'Remarks', widget=TextArea())
     submit = SubmitField(label = 'Save')
