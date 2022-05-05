@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from tkinter import TRUE
 from click import edit
 from numpy import concatenate
 from flask import session
@@ -12,7 +13,7 @@ from main import db
 from flask_login import login_user, logout_user, login_required, current_user
 from io import BytesIO
 #import also models
-from flask import render_template, redirect, url_for, flash, request, send_from_directory, abort, send_file
+from flask import render_template, redirect, url_for, flash, request, send_from_directory, abort, send_file, jsonify
 import os
 from werkzeug.utils import secure_filename
 import werkzeug
@@ -298,9 +299,11 @@ def daily_liquidation():
 	page_title= 'Daily Liquidation'
 	
 	if current_user.role=='Representative':	
-		user_daily_liq = DailyLiquidation.query.filter(DailyLiquidation.owner ==current_user.id).all()		
-		#user_daily_liq = db.session.query(DailyLiquidation.id, DailyLiquidation.total_sales).filter(DailyLiquidation.owner ==current_user.id ).all()
-		print(user_daily_liq[0].confirm)
+		#user_daily_liq = DailyLiquidation.query.filter(DailyLiquidation.owner == current_user.id).all()		
+		user_daily_liq = db.session.query(DailyLiquidation.id, DailyLiquidation.total_sales, DailyLiquidation.bank_deposit, DailyLiquidation.visa_transaction, DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, DailyLiquidation.date_time_actual,DailyLiquidation.date_liquidated, DailyLiquidation.bank_dep_image, DailyLiquidation.jcc_daily_batch_image,DailyLiquidation.canceled_ticket_image, DailyLiquidation.daily_liquidation_balance, DailyLiquidation.remarks,DailyLiquidation.confirm).filter(DailyLiquidation.owner ==current_user.id ).order_by(DailyLiquidation.id.desc())
+
+		
+		
 
 		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq , edit_form=edit_form)
 	
@@ -342,38 +345,124 @@ def edit_daily_liquidation(id):
 	form = Liq_Edit_Form(formdata=request.form, obj=edit_liq)
 
 	
-	# print(edit_liq.total_sales)
-	# print(edit_liq.bank_deposit)
-	# print(edit_liq.owner)
-	# print(edit_liq.bank_dep_image)
-	# if request.form['submit_button'] == 'Save':
-	#if request.method=='POST':
-	if current_user.role== 'Administrator':
+	'''
+	we should update daily liquidation according user login
+	if its admins they cant change file uploads
+	if its users like reps they can change that files
+	'''
+
+	if current_user.role== 'Administrator':		
 		if form.validate_on_submit():
-			print(f'id : {id}')
-			print('Liquidation Changed')
-			print(f'Total Sales : {form.total_sales.data}')
-			print(f'Bank deposit : {form.bank_deposit.data}')
-			print(f'Visa Total : {form.visa_transaction.data}')
-			print(f'Previ days cance amount : {form.pre_cancels.data}')
-			print(f'Cancelled Tickets : {form.cancelled_tickets.data}')
-			print(f'remarks : {form.remarks.data}')
-			#sql injection
-			edit_liq.total_sales = form.total_sales.data
-			edit_liq.bank_deposit = form.bank_deposit.data
-			edit_liq.visa_transaction = form.visa_transaction.data
-			edit_liq.pre_cancels = form.pre_cancels.data
-			edit_liq.cancelled_tickets = form.cancelled_tickets.data
-			edit_liq.remarks = form.remarks.data
-			db.session.add(edit_liq)
-			db.session.commit()
-			flash(f'Liquidation DB_ID_No:{id} Updated Succesfully', category='info')
-			return (redirect(url_for('daily_liquidation')))
+			if form.total_sales.data != (form.bank_deposit.data + form.visa_transaction.data + form.pre_cancels.data):
+				flash(f'You Cannot Send Not Balanced Liquidation', category='danger' )
+				flash(f'Current Balance is {form.total_sales.data - (form.bank_deposit.data + form.visa_transaction.data + form.pre_cancels.data)}', category='primary' )
+			else:
+				#sql injection
+				edit_liq.total_sales = form.total_sales.data
+				edit_liq.bank_deposit = form.bank_deposit.data
+				edit_liq.visa_transaction = form.visa_transaction.data
+				edit_liq.pre_cancels = form.pre_cancels.data
+				edit_liq.cancelled_tickets = form.cancelled_tickets.data
+				edit_liq.remarks = form.remarks.data
+				db.session.add(edit_liq)
+				db.session.commit()
+				flash(f'Liquidation DB_ID_No:{id} Updated Succesfully', category='info')
+				return (redirect(url_for('daily_liquidation')))
 		if form.errors != {}:
 			print (form.errors)
 
-	return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
+		return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
+	
+	if current_user.role== 'Representative':		
+		if form.validate_on_submit():
 
+			if form.total_sales.data != (form.bank_deposit.data + form.visa_transaction.data + form.pre_cancels.data):
+				flash(f'You Cannot Send Not Balanced Liquidation', category='danger' )
+				flash(f'Current Balance is {form.total_sales.data - (form.bank_deposit.data + form.visa_transaction.data + form.pre_cancels.data)}', category='primary' )
+			
+			else:
+				#print('my form files')
+				#print(request.files)
+				file_names_dict={}
+				
+				for key, value in request.files.items():
+					print('inside dictionary build')
+					#print('file value')
+					#print(value.content_type)
+					#print(type(value))
+					if not 'application/octet-stream' in value.content_type:
+						#file_s = request.files['jcc_daily_image']
+						file_s = request.files[key]
+						file_extension = file_ext(file_s.filename)
+						#print('this is my file')
+						#print(file_s)
+						if not file_s.filename:
+							flash(f'You cant Upload a file with out a name', category='danger' )
+							return redirect(request.url)
+						
+						if not usefull_functions.allowed_files_ext(file_s.filename):
+							flash(f'You cant Upload a file with extension {file_extension}', category='danger' )
+							return redirect(request.url)
+						
+						else:
+							#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+							filename = current_user.surname+ '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
+							
+							#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+							file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], filename))
+							file_names_dict[key] = f'{filename}'
+				
+				print(file_names_dict)
+				print(len(file_names_dict))
+
+				if len(file_names_dict) ==0:
+					#sql injection
+					edit_liq.total_sales = form.total_sales.data
+					edit_liq.bank_deposit = form.bank_deposit.data
+					edit_liq.visa_transaction = form.visa_transaction.data
+					edit_liq.pre_cancels = form.pre_cancels.data
+					edit_liq.cancelled_tickets = form.cancelled_tickets.data
+					edit_liq.remarks = form.remarks.data
+					db.session.add(edit_liq)
+					db.session.commit()
+					flash(f'Liquidation DB_ID_No:{id} Updated Succesfully', category='info')
+					return (redirect(url_for('daily_liquidation')))
+				else:
+					#delete previous uploaded files in file location
+					if form.bank_dep_image.data:
+						usefull_functions.file_deleter(form.bank_dep_image.data)
+					
+					if form.jcc_daily_batch_image.data:
+						usefull_functions.file_deleter(form.jcc_daily_batch_image.data)
+					
+					if form.canceled_ticket_image.data:
+						usefull_functions.file_deleter(form.canceled_ticket_image.data)
+					
+					edit_liq.total_sales = form.total_sales.data
+					edit_liq.bank_deposit = form.bank_deposit.data
+					edit_liq.visa_transaction = form.visa_transaction.data
+					edit_liq.pre_cancels = form.pre_cancels.data
+					edit_liq.cancelled_tickets = form.cancelled_tickets.data
+					edit_liq.remarks = form.remarks.data
+					
+					if 'bank_dep_image'in file_names_dict.keys():
+						edit_liq.bank_dep_image = file_names_dict['bank_dep_image']
+					
+					if 'jcc_daily_batch_image' in file_names_dict.keys():
+						edit_liq.jcc_daily_batch_image =file_names_dict['jcc_daily_batch_image']
+					
+					if 'canceled_ticket_image' in file_names_dict.keys():
+						edit_liq.canceled_ticket_image = file_names_dict['canceled_ticket_image']
+					
+					db.session.add(edit_liq)
+					db.session.commit()
+					flash(f'Liquidation DB_ID_No:{id} Updated Succesfully', category='info')
+					return (redirect(url_for('daily_liquidation')))
+
+		if form.errors != {}:
+			print (form.errors)
+
+		return render_template('edit_daily_liq.html', title = 'Edit Daily Liq.', form=form)
 
 @app.route('/add_daily_liquidation', methods=['GET','POST'])
 def add_daily_liquidation():

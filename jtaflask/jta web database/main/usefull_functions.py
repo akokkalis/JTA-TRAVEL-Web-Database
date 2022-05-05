@@ -1,4 +1,5 @@
 from main import app
+import os
 def current_date()-> str:
 	'''
 	Returns Current Date
@@ -36,3 +37,6 @@ def file_ext(filename):
 
 	ext = filename.rsplit('.', 1)[1]
 	return f'.{ext}'
+
+def file_deleter(filename):
+	os.remove(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'],filename))
