@@ -46,7 +46,7 @@
 					<th scope="col">Bank Image</th>
 					<th scope="col">Visa Image</th>
 					<th scope="col">Cancel Tickets Image</th>
-					<th scope="col">Liq Balance</th>
+					<!-- <th scope="col">Liq Balance</th> -->
 					<th scope="col">Remarks</th>
 					<th scope="col">Confirmed</th>
 					<th scope="col">Owner</th>
@@ -86,9 +86,13 @@
 								<a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block"			
 								href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>								
 							</td>
-							<td>&euro; {{item.daily_liquidation_balance}}</td>
+							<!-- <td>&euro; {{item.daily_liquidation_balance}}</td> -->
 							<td>{{item.remarks}}</td>
-							<td>{{item.confirm}}</td>
+							{%if item.confirm== True%}
+								<td>Yes</td>
+							{%else%}
+								<td>No</td>
+							{%endif%}
 							{% if current_user.role == 'Administrator' %}
 								<td>{{item.fname}} {{item.surname}}</td>
 							{%elif current_user.role == 'Representative'%}						  <td>{{current_user.name}} {{current_user.surname}}</td>

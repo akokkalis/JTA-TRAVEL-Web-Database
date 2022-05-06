@@ -1,0 +1,16 @@
+Flask Tutorial
+https://www.youtube.com/watch?v=Qr4QMBUPxWo&t=20510s
+
+
+File Upload Functions
+https://www.youtube.com/watch?v=QjpbWAirMWw&list=PLF2JzgCW6-YY_TZCmBrbOpgx5pSNBD0_L&index=17
+
+https://www.youtube.com/watch?v=6WruncSoCdI&list=PLF2JzgCW6-YY_TZCmBrbOpgx5pSNBD0_L&index=17
+
+PostGresql tutorial
+https://www.youtube.com/watch?v=qw--VYLpxG4&t=199s
+
+DATATABLES
+https://www.youtube.com/watch?v=yGTGU3IPoWE
+https://datatables.net/extensions/select/
+https://datatables.net/extensions/searchbuilder/

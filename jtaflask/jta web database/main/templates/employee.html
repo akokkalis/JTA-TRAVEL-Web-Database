@@ -35,6 +35,7 @@ Employee page
 				<th scope="col">Active</th>
 				<th scope="col">More Details</th>
 				<th scope="col">Edit</th>
+				<th scope="col">Disable</th>
 				<th scope="col">Delete</th>
 			</tr>
 			</thead>
@@ -54,13 +55,19 @@ Employee page
 						<td>
 							<button                                        
 								class="btn btn-sm btn-info btn-block" >    
-								<i class="bi bi-file-person-fill"></i> More Details</button>
+								<i class="bi bi-person-lines-fill"></i></i> More Details</button>
 						</td>
 						<td>
 							<button                                        
 								class="btn btn-sm btn-info btn-block" >    
 								<i class="bi bi-pencil"></i>
 								Edit</button>
+						</td>
+						<td>
+							<button                                        
+								class="btn btn-sm btn-danger btn-block" data-toggle ="modal" data-target="#Modal-Disable-Emp-{{item.id}}">    
+								<i class="bi bi-person-x"></i>
+								Disable</button>
 						</td>
 						<td>
 							<button                                        
