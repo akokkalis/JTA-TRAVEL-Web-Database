@@ -297,15 +297,17 @@ def card_returns():
 def daily_liquidation():
 	edit_form = Liquidation_Form()
 	page_title= 'Daily Liquidation'
+	already= db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actual== usefull_functions.current_date()).filter(DailyLiquidation.owner==current_user.id).count()
 	
 	if current_user.role=='Representative':	
 		#user_daily_liq = DailyLiquidation.query.filter(DailyLiquidation.owner == current_user.id).all()		
 		user_daily_liq = db.session.query(DailyLiquidation.id, DailyLiquidation.total_sales, DailyLiquidation.bank_deposit, DailyLiquidation.visa_transaction, DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, DailyLiquidation.date_time_actual,DailyLiquidation.date_liquidated, DailyLiquidation.bank_dep_image, DailyLiquidation.jcc_daily_batch_image,DailyLiquidation.canceled_ticket_image, DailyLiquidation.daily_liquidation_balance, DailyLiquidation.remarks,DailyLiquidation.confirm).filter(DailyLiquidation.owner ==current_user.id ).order_by(DailyLiquidation.id.desc())
-
+		if already:
+			flash(f'{current_user.name} {current_user.surname} you have Already submited a Daily Liquidation for Today {usefull_functions.current_date()}. For Any Help please Call Supervisor', category='info' )
 		
 		
 
-		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq , edit_form=edit_form)
+		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq , edit_form=edit_form, already=already)
 	
 	elif current_user.role=='Administrator' or'Office Staff':
 		user_daily_liq = db.session.query(DailyLiquidation.id,
@@ -467,12 +469,20 @@ def edit_daily_liquidation(id):
 @app.route('/add_daily_liquidation', methods=['GET','POST'])
 def add_daily_liquidation():
 	form = Liquidation_Form()
-	
+
+	#already= #db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actualame.contains(date_time_actual)).filter(Excursions.active=='True').order_by(Excursions.name)
+	# already= db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actual== usefull_functions.current_date()).filter(DailyLiquidation.owner==current_user.id).count()
+	# if already:
+	# 	flash(f'{current_user.name} {current_user.surname} you have Already submited a Daily Liquidation for Today {usefull_functions.current_date()}. You are not allowed to send twice. Any questions please call acc dep ', category='danger' )
+	# 	return(redirect(url_for('daily_liquidation')))
 	if request.method=="POST":		
 		'''
 		file size
 		len(form.bank_dep_image.data.read())
 		'''
+		#usefull_functions.current_date()
+
+		  
 		if form.total_sales.data != (form.bank_deposit.data + form.visa_amount.data + form.precancels.data):
 			flash(f'You Cannot Send Not Balanced Liquidation', category='danger' )
 	

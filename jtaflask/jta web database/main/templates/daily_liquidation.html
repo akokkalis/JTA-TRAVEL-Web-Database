@@ -23,7 +23,11 @@
 {% block content %}
 	Daily Liquidation Page
 	<br>
-	<a class="btn btn-primary" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
+	{% if already>0 %}
+		<a class="btn btn-primary disabled" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
+	{% else %}
+		<a class="btn btn-primary" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
+	{%endif%}
 
 
 	<div class="card p-3 bg-light">
