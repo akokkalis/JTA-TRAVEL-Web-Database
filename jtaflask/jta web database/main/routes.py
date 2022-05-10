@@ -470,11 +470,7 @@ def edit_daily_liquidation(id):
 def add_daily_liquidation():
 	form = Liquidation_Form()
 
-	#already= #db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actualame.contains(date_time_actual)).filter(Excursions.active=='True').order_by(Excursions.name)
-	# already= db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actual== usefull_functions.current_date()).filter(DailyLiquidation.owner==current_user.id).count()
-	# if already:
-	# 	flash(f'{current_user.name} {current_user.surname} you have Already submited a Daily Liquidation for Today {usefull_functions.current_date()}. You are not allowed to send twice. Any questions please call acc dep ', category='danger' )
-	# 	return(redirect(url_for('daily_liquidation')))
+
 	if request.method=="POST":		
 		'''
 		file size
@@ -523,21 +519,24 @@ def add_daily_liquidation():
 					file_s = request.files[key]
 					print('this is my file')
 					print(file_s)
-					if not file_s.filename:
-						flash(f'You cant Upload a file with out a name', category='danger' )
-						return redirect(request.url)
+					print ('iam here')
+					if form.cancelled_tickets_image.data:
+						if not file_s.filename:
+							flash(f'You cant Upload a file with out a name', category='danger' )
+							return render_template('add_daily_liqui.html', title = 'Daily Liq.', form=form)
+							# return redirect(request.url)
 					
-					if not usefull_functions.allowed_files_ext(file_s.filename):
-						flash(f'You cant Upload a file with that extension', category='danger' )
-						return redirect(request.url)
+						if not usefull_functions.allowed_files_ext(file_s.filename):
+							flash(f'You cant Upload a file with that extension', category='danger' )
+							return redirect(request.url)
 					
-					else:
-						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
-						filename = current_user.surname+ '_' + usefull_functions.file_rename_date() +'_' + key + file_ext(file_s.filename)
-						
-						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
-						file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], filename))
-						file_names_dict[key] = f'{filename}'
+						else:
+							#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+							filename = current_user.surname+ '_' + usefull_functions.file_rename_date() +'_' + key + file_ext(file_s.filename)
+							
+							#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+							file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], filename))
+							file_names_dict[key] = f'{filename}'
 			
 					print(file_names_dict)
 					print(len(file_names_dict))

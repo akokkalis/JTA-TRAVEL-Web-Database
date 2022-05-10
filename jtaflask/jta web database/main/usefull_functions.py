@@ -40,3 +40,6 @@ def file_ext(filename):
 
 def file_deleter(filename):
 	os.remove(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'],filename))
+
+
+print(current_date())

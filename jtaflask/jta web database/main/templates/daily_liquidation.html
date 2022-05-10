@@ -27,7 +27,7 @@
 	{%if current_user.role=='Representative'%}
 		{% if already>0 %}
 			<span data-toggle="tooltip" data-placement="top" title="{{current_user.name}} {{current_user.surname}} you have Already Submited A Liquidation For Today. For Any Help Call Your Supervisor">
-				<a  class="btn btn-primary disabled " href="{{url_for('add_daily_liquidation')}}"  role="button">Send Daily Liquidation</a>
+				<a  class="btn btn-primary disabled " href=""  role="button">Send Daily Liquidation</a>
 			</span>
 		{% else %}
 			<a class="btn btn-primary" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
@@ -94,8 +94,14 @@
 								
 							</td>
 							<td>
-								<a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block"			
-								href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>								
+								{%if item.canceled_ticket_image != None%}
+									<a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block"	
+									href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>	
+								{%else%}
+									<span data-toggle="tooltip" data-placement="top" title="No File Exist "><a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block disabled"	
+									href="" role="button"><i class="bi bi-cloud-download"></i></a></span>
+								{%endif%}
+
 							</td>
 							<!-- <td>&euro; {{item.daily_liquidation_balance}}</td> -->
 							<td>{{item.remarks}}</td>
@@ -136,7 +142,7 @@
 									href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
 								{%else%}
 									<a class="btn btn-sm btn-primary btn-block disabled" 
-									href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
+									href="" role="button"><i class="bi bi-pencil"></i>Edit</a>
 								{%endif%}
 							</td>
 							<td>
@@ -182,7 +188,7 @@
 		
 		);
 		
-		$('[data-toggle="tooltip"]').tooltip();
+		$('[data-toggle="tooltip"]').tooltip({placement: "right"});
 	
 
    	
