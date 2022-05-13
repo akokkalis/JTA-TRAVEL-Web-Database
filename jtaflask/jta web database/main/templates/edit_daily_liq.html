@@ -46,7 +46,7 @@
 					<br>
 					<a href="{{url_for('down_file', file_name = form.bank_dep_image.data)}}">{{form.bank_dep_image.data}}</a>
 					<a></a>	
-					{%if current_user.role=='Representative'%}	
+					{%if 'Representative' in current_user.role%}	
 						{{form.bank_dep_image(class="form-control disabled", placeholder="Upload Bank Deposit Receipt")}}
 					{%endif%}
 				</div>
@@ -56,7 +56,7 @@
 					<label for="jcc_daily_batch_image" class="form-label">{{ form.jcc_daily_batch_image.label()}}</label>
 					<br>
 					<a href="{{url_for('down_file', file_name = form.jcc_daily_batch_image.data)}}">{{form.jcc_daily_batch_image.data}}</a>					
-					{%if current_user.role=='Representative'%}				
+					{%if 'Representative' in current_user.role%}			
 						{{form.jcc_daily_batch_image(oninput = "filesize(this);", class="form-control", placeholder="Upload Jcc Batch Report")}}
 					{%endif%}
 				</div>
@@ -64,8 +64,13 @@
 				<div class="col-md-6">
 					<label for="cancelled_ticket_image" class="form-label">{{ form.canceled_ticket_image.label()}}</label>
 					<br>
-					<a href="{{url_for('down_file', file_name = form.canceled_ticket_image.data)}}">{{form.canceled_ticket_image.data}}</a>					
-					{%if current_user.role=='Representative'%}	
+					{%if form.canceled_ticket_image.data != None %}			
+						<a href="{{url_for('down_file', file_name = form.canceled_ticket_image.data)}}">{{form.canceled_ticket_image.data}}</a>	
+					{%else%}
+						<h6><strong>-No File Presented-</strong></h6>	
+					{%endif%}	
+
+					{%if 'Representative' in current_user.role %}	
 						{{form.canceled_ticket_image(class="form-control", placeholder="Upload Jcc Batch Report")}}
 					{%endif%}
 				</div>

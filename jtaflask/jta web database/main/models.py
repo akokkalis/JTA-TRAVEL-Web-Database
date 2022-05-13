@@ -1,4 +1,5 @@
 #from email.policy import default
+from enum import unique
 from main import db, login_manager, usefull_functions
 from main import bcrypt
 from flask_login import UserMixin
@@ -22,10 +23,18 @@ class Users(db.Model, UserMixin):
     #username = db.Column(db.String(length=30), nullable=False, unique=True)
     email = db.Column(db.String(length=80), nullable=False, unique=True)
     password_hash = db.Column(db.String(length=80), nullable=False)
-    role = db.Column(db.String(length=15), nullable=False)
+    position = db.Column(db.String(length=20), nullable=False)
+    role = db.Column(db.String(length=100), nullable=False)
     active = db.Column(db.Boolean, nullable = False, default=True)
-    balance = db.Column(db.Float(), nullable=False, default=0.0)    
+    balance = db.Column(db.Float(), nullable=False, default=0.0)
+    annual_leave_total = db.Column(db.Float(), nullable=False, default=21)
+    mobile_phone = db.Column(db.String(length=15), nullable=False, unique=True)
+    date_of_birth = db.Column(db.Date())
+    area_of_business = db.Column(db.String(length=15), nullable=False)
+    dai_liq = db.relationship('DailyLiquidation', backref='owned_user', lazy=True)
     asset = db.relationship('Assets', backref='owned_user', lazy=True)
+    leave = db.relationship('Leaves', backref='owned_user', lazy=True)
+    
 
     @property
     def password(self):
@@ -38,9 +47,26 @@ class Users(db.Model, UserMixin):
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
+class Leaves(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    from_ = db.Column(db.Date(), nullable=False)
+    to_ = db.Column(db.Date(), nullable=False)
+    half = db.Column(db.Boolean, nullable = False, default=False)
+    reason =  db.Column(db.String(length=20), nullable=False)
+    docs = db.Column(db.String(length=100), nullable=True)
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    confirm = db.Column(db.Boolean, nullable = False, default=False)
+    creator = db.Column(db.String(length=20), nullable=False, unique=False)
+    owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    decline_leave = db.relationship('DeclineLeaves', backref='owned_user', lazy=True)
+
+class DeclineLeaves(db.Model):
+    id= db.Column(db.Integer(), primary_key=True)
+    leave_id = db.Column(db.Integer(), db.ForeignKey('leaves.id'))
+    remarks = db.Column(db.String(length=300), nullable=False, unique=False)
+
 
 class Assets(db.Model):
-   
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50))
     owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
@@ -54,19 +80,14 @@ class DailyLiquidation(db.Model):
     pre_cancels = db.Column(db.Float(), nullable=False, default=0.0)
     cancelled_tickets = db.Column(db.String(length=300), nullable=False, unique=False)
     total_calculated_amount = db.Column(db.Float(), nullable=False)
-    
     date_time_actual = db.Column(db.Date(), default= usefull_functions.current_date())
     date_liquidated = db.Column(db.Date(), default= usefull_functions.yesterday_date())
-    
-   
     bank_dep_image = db.Column(db.String(length=300), nullable=False)
     jcc_daily_batch_image = db.Column(db.String(length=300), nullable=False)
     canceled_ticket_image = db.Column(db.String(length=300), nullable=True)
-    
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     confirm = db.Column(db.Boolean, nullable = False, default=False)
     daily_liquidation_balance = db.Column(db.Float(), nullable=False)
-    
     owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
 

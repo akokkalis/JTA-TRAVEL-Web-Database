@@ -1,6 +1,8 @@
+from email import message
+from turtle import position
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField
-from wtforms.validators import Length, Email, DataRequired, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField, SelectMultipleField, DateField
+from wtforms.validators import Length, Email, DataRequired, ValidationError, NumberRange, Regexp
 from main.models import *
 from main.usefull_functions import yesterday_date
 from wtforms.widgets import TextArea
@@ -31,13 +33,30 @@ class UsersForm(FlaskForm):
         user1 = Users.query.filter_by(email = email_to_check.data).first()
         if user1:
             raise ValidationError('Email Already Exists in Database. Please Enter a Different Email')
+    def validate_mobile_phone(self, mobile_phone_to_check):
+        user1 = Users.query.filter_by(mobile_phone = mobile_phone_to_check.data).first()
+        if user1:
+            raise ValidationError('Mobile Phone Already Exists in Database. Please Enter a Different Mobile Phone')
     
 
     name = StringField(label='First Name:', validators=[Length(min=2, max=15),DataRequired()])
     surname = StringField(label='Last Name:', validators=[Length(min=2, max=15),DataRequired()])
     email = EmailField(label='Email:', validators=[Email(),DataRequired()])
+    mobile_phone = StringField(label = 'Mobile Number', validators=[Regexp('^\d{8}$',message = 'Telephone must contains only digits, No letters and has to be minimum 8 length'),Length(min=8), DataRequired()])
+    date_of_birth = DateField(label='Date of Birth:')
+    area_of_business = SelectField (label = 'Working Area', choices=['LARNACA', 'AYIA NAPA', 'PROTARAS', 'PAPHOS', 'LIMASOL', 'OFFICE'])
     password = PasswordField( label='password',validators=[Length(min=5),DataRequired()] )
-    role= SelectField(label = 'Role', choices=['Administrator', 'Office Rec Staff', 'Representative', 'HR'])
+    admin = BooleanField('Administrator:')
+    rep = BooleanField('Representative:')
+    rep_superv = BooleanField('Rep Supervisor:')
+    escort = BooleanField('Escort:')
+    bibliosha = BooleanField('Bibliosha:')
+    off_rec = BooleanField('Office-Rec:')
+    off_hr = BooleanField('Office-HR:')
+    off_exc = BooleanField('Office-Exc:')
+    leaves = BooleanField('Leaves:')
+    position = SelectField(label='Position:', choices=['Administrator', 'Representative', 'Rep Supervisor','Escort', 'Bibliosha','Airport', 'Office-Staff' ])
+    #role= SelectMultipleField(label = 'Role', choices=['Administrator', 'Office Rec Staff', 'Representative', 'HR'])
     active = BooleanField(label = 'Active: ')#, choices=[True, False])
 
 class LoginForm(FlaskForm):

@@ -70,7 +70,7 @@
                             </li>
 
                         </ul>
-                    {% elif current_user.role == 'Representative' %}
+                    {% elif 'Representative' in  current_user.role%}
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="{{url_for('daily_liquidation')}}"><i class="bi bi-currency-euro"></i> Daily Liquidations <span class="sr-only">(current)</span></a>

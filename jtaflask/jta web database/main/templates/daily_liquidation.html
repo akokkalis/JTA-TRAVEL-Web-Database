@@ -24,7 +24,7 @@
 {% block content %}
 	Daily Liquidation Page
 	<br>
-	{%if current_user.role=='Representative'%}
+	{%if 'Representative' in current_user.role %}
 		{% if already>0 %}
 			<span data-toggle="tooltip" data-placement="top" title="{{current_user.name}} {{current_user.surname}} you have Already Submited A Liquidation For Today. For Any Help Call Your Supervisor">
 				<a  class="btn btn-primary disabled " href=""  role="button">Send Daily Liquidation</a>
@@ -61,9 +61,9 @@
 					<th scope="col">Remarks</th>
 					<th scope="col">Confirmed</th>
 					<th scope="col">Owner</th>
-					{% if current_user.role == 'Administrator' %}
+					{% if 'Administrator' in current_user.role %}
 						<th scope="col">More Details</th>
-					{% elif current_user.role == 'Representative' %}
+					{% elif 'Representative' in current_user.role %}
 						<th scope="col" data-visible="false">More Details</th>
 					{%endif%}						
 					<th scope="col">Edit</th>
@@ -94,7 +94,7 @@
 								
 							</td>
 							<td>
-								{%if item.canceled_ticket_image != None%}
+								{%if item.canceled_ticket_image != None %}
 									<a title='Download Cancelled Tickets Deposit' class="btn btn-sm btn-primary btn-block"	
 									href="{{url_for('down_file', file_name = item.canceled_ticket_image)}}" role="button"><i class="bi bi-cloud-download"></i></a>	
 								{%else%}
@@ -110,34 +110,32 @@
 							{%else%}
 								<td>No</td>
 							{%endif%}
-							{% if current_user.role == 'Administrator' %}
+							{% if 'Administrator' in current_user.role%}
 								<td>{{item.fname}} {{item.surname}}</td>
-							{%elif current_user.role == 'Representative'%}						  <td>{{current_user.name}} {{current_user.surname}}</td>
+							{%elif 'Representative' in current_user.role %}		<td>{{current_user.name}} {{current_user.surname}}</td>
 							 {%endif%}                          
 							
 							 <td>
-								{% if current_user.role == 'Administrator' %}
+								{% if 'Administrator' in current_user.role  %}
 									{%if item.confirm ==True %}
 										<button 
 											class="btn btn-sm btn-info btn-block disabled" >    
 											<i class="bi bi-check-circle-fill"></i> Confirmed
 										</button>
-									{%elif item.confirm == False %}
-									
-									<a class="btn btn-sm btn-primary btn-block" href="{{url_for('confirm_daily_liquidation',id=item.id)}}" role="button"> <i class="bi bi-check-circle"></i> Confirm</a>
+									{%elif item.confirm == False %}						
+										<a class="btn  btn-primary btn-block" href="{{url_for('confirm_daily_liquidation',id=item.id)}}" role="button"> <i class="bi bi-check-circle"></i> Confirm</a>
 									
 									{%endif%}	
-								{%elif current_user.role == 'Representative'%}	
-								<button                              
-									class="btn btn-sm btn-info btn-block" disabled>    
+								{%elif 'Representative' in current_user.role%}	
+								<button class="btn btn-sm btn-info btn-block" disabled>    
 									<i class="bi bi-check-circle-fill"></i>Confirm</button>
 								{%endif%}
 							</td>
 							<td>
-								{%if current_user.role=='Administrator'%}
+								{%if 'Administrator' in current_user.role%}
 									<a class="btn btn-sm btn-primary btn-block" 
 									href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
-								{%elif current_user.role=='Representative' and item.confirm== False %}
+								{%elif 'Representative' in current_user.role and item.confirm == False %}
 									<a class="btn btn-sm btn-primary btn-block" 
 									href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
 								{%else%}

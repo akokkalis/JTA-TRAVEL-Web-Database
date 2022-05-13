@@ -239,21 +239,7 @@ def about():
 		return render_template('about.html', room_list=room_list)
 
 
-@app.route('/employees', methods=['GET','POST'])
-def employees():
-	deleteform = DeleteForm()
-	if request.method=="POST":
-		#print(request.form.get('delete_emp'))
-		#print(type(request.form.get('delete_emp')))
-		delete_employee = Users.query.filter_by(id=int(request.form.get('delete_emp'))).delete()
-		#print(delete_employee)
-		db.session.commit()
-		flash('Employee Deleted Succesfully', category='primary' )
 
-	
-	emp = Users.query.all()
-
-	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform)
 
 
 @app.route('/cars')
@@ -299,7 +285,7 @@ def daily_liquidation():
 	page_title= 'Daily Liquidation'
 	already= db.session.query(DailyLiquidation).filter(DailyLiquidation.date_time_actual== usefull_functions.current_date()).filter(DailyLiquidation.owner==current_user.id).count()
 	
-	if current_user.role=='Representative':	
+	if 'Representative' in current_user.role:	
 		#user_daily_liq = DailyLiquidation.query.filter(DailyLiquidation.owner == current_user.id).all()		
 		user_daily_liq = db.session.query(DailyLiquidation.id, DailyLiquidation.total_sales, DailyLiquidation.bank_deposit, DailyLiquidation.visa_transaction, DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, DailyLiquidation.date_time_actual,DailyLiquidation.date_liquidated, DailyLiquidation.bank_dep_image, DailyLiquidation.jcc_daily_batch_image,DailyLiquidation.canceled_ticket_image, DailyLiquidation.daily_liquidation_balance, DailyLiquidation.remarks,DailyLiquidation.confirm).filter(DailyLiquidation.owner ==current_user.id ).order_by(DailyLiquidation.id.desc())
 		# if already:
@@ -309,7 +295,7 @@ def daily_liquidation():
 
 		return render_template('daily_liquidation.html', title = page_title, ownwed_daily_liqu = user_daily_liq , edit_form=edit_form, already=already)
 	
-	elif current_user.role=='Administrator' or'Office Staff':
+	elif 'Administrator' or'Office Staff' in current_user.role:
 		user_daily_liq = db.session.query(DailyLiquidation.id,
 											DailyLiquidation.total_sales,
 											DailyLiquidation.bank_deposit,
@@ -353,7 +339,7 @@ def edit_daily_liquidation(id):
 	if its users like reps they can change that files
 	'''
 
-	if current_user.role== 'Administrator':		
+	if 'Administrator' in current_user.role:		
 		if form.validate_on_submit():
 			if form.total_sales.data != (form.bank_deposit.data + form.visa_transaction.data + form.pre_cancels.data):
 				flash(f'You Cannot Send Not Balanced Liquidation', category='danger' )
@@ -591,19 +577,72 @@ def confirm_daily_liquidation(id):
 	flash(f'Liquidation Confirmed Succesfully', category='primary' )	
 	return redirect(url_for('daily_liquidation'))
 
+
+@app.route('/employees', methods=['GET','POST'])
+def employees():
+	deleteform = DeleteForm()
+	if request.method=="POST":
+		#print(request.form.get('delete_emp'))
+		#print(type(request.form.get('delete_emp')))
+		delete_employee = Users.query.filter_by(id=int(request.form.get('delete_emp'))).delete()
+		#print(delete_employee)
+		db.session.commit()
+		flash('Employee Deleted Succesfully', category='primary' )
+
+	
+	emp = Users.query.all()
+
+	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform)
+
+
+
+
 @app.route('/add_user', methods=['GET','POST'])
 #@login_required
 def add_user():		
 	form = UsersForm()
 	if form.validate_on_submit():
-		user_create=Users(name= form.name.data,
-						  surname= form.surname.data,						  
-						  #username = form.username.data,
-						  email= form.email.data,
+
+		print(f'NAme : {form.name.data}')
+		print(f'surnAme : {form.surname.data}')
+		print(f'email : {form.email.data}')
+		print(f'Password : {form.password.data}')
+		print(f'Active: {form.active.data}')
+		print(f'Area of Business : {form.area_of_business.data}')
+		print(f'Mobile : {form.mobile_phone.data}')
+		print(f'Date of birth: {form.date_of_birth.data}')
+		user_role = ''
+		if form.admin.data:
+			user_role = user_role + 'Administrator'
+		if form.rep.data:
+			user_role = user_role + ', Representative'
+		if form.rep_superv.data:
+			user_role = user_role + ', Rep Supervisor'
+		if form.escort.data:
+			user_role = user_role + ', Escort'
+		if form.bibliosha.data:
+			user_role = user_role + ', Bibliosha'
+		if form.off_rec.data:
+			user_role = user_role + ', Office-Rec'	
+		if form.off_hr.data:
+			user_role = user_role + ', Office-HR'
+		if form.escort.data:
+			user_role = user_role + ', Office-Exc'
+		if form.leaves.data:
+			user_role = user_role + ', Leaves'	
+		
+		user_create=Users(name = form.name.data,
+						  surname = form.surname.data,	
+						  email = form.email.data,
 						  password= form.password.data,
 						  active = form.active.data,
-						  role = form.role.data
+						  area_of_business = form.area_of_business.data,
+						  mobile_phone = form.mobile_phone.data,
+						  date_of_birth = form.date_of_birth.data,
+						  position = form.position.data,
+						  role = user_role
 
+						  
 							)
 		db.session.add(user_create)
 		db.session.commit()
