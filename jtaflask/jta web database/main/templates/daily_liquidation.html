@@ -139,8 +139,9 @@
 									<a class="btn btn-sm btn-primary btn-block" 
 									href="{{url_for('edit_daily_liquidation',id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
 								{%else%}
-									<a class="btn btn-sm btn-primary btn-block disabled" 
-									href="" role="button"><i class="bi bi-pencil"></i>Edit</a>
+									<span data-toggle="tooltip" data-placement="top" title="{{current_user.name}} {{current_user.surname}} Your Liquidation is already confirmed from Accounting Officer. You Cant Edit. For Any Help Please Call Your Supervisor">
+										<a class="btn btn-sm btn-primary btn-block disabled"							href="" role="button"><i class="bi bi-pencil"></i>Edit</a>
+									<span>
 								{%endif%}
 							</td>
 							<td>

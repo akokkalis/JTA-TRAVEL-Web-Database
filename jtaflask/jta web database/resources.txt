@@ -14,3 +14,8 @@ DATATABLES
 https://www.youtube.com/watch?v=yGTGU3IPoWE
 https://datatables.net/extensions/select/
 https://datatables.net/extensions/searchbuilder/
+
+
+Correct Display Dates
+Display dd/mm/yyyy in query
+https://stackoverflow.com/questions/62729604/use-to-char-in-flask-sqlalchemy-query
