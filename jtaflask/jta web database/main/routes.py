@@ -313,8 +313,10 @@ def daily_liquidation():
 											DailyLiquidation.pre_cancels,
 											DailyLiquidation.cancelled_tickets,
 											DailyLiquidation.total_calculated_amount,
-											DailyLiquidation.date_time_actual,
-											DailyLiquidation.date_liquidated,
+											column_property(func.to_char(DailyLiquidation.date_time_actual, 'DD/MM/YYYY').label('date_time_actual')),
+											#DailyLiquidation.date_time_actual,
+											column_property(func.to_char(DailyLiquidation.date_liquidated,'DD/MM/YYYY').label('date_liquidated')),
+											#DailyLiquidation.date_liquidated,
 											DailyLiquidation.bank_dep_image,
 											DailyLiquidation.jcc_daily_batch_image,
 											DailyLiquidation.canceled_ticket_image,
@@ -600,7 +602,7 @@ def employees():
 		flash('Employee Deleted Succesfully', category='primary' )
 
 	
-	emp = Users.query.all()
+	emp =  db.session.query(Users.name,Users.surname,Users.email, Users.							mobile_phone, Users.area_of_business, Users.							position, Users.active, Users.role, 									column_property(func.to_char(Users.										date_of_birth, 'DD/MM/YYYY').label										('date_of_birth')), Users.annual_leave_total  )
 
 	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform)
 
@@ -650,7 +652,7 @@ def add_user():
 						  mobile_phone = form.mobile_phone.data,
 						  date_of_birth = form.date_of_birth.data,
 						  position = form.position.data,
-						  role = user_role
+						  role = user_role.strip(',').strip(' ')
 
 						  
 							)

@@ -1,3 +1,9 @@
+'''
+connect to a postgresql
+description
+https://www.youtube.com/watch?v=OOSl2jeAA5U
+'''
+
 db_host = 'ec2-54-235-139-166.compute-1.amazonaws.com'
 db_name = 'd7jhk67r50asm2'
 db_user = 'wwnmnjlbecvvmw'
@@ -14,3 +20,5 @@ conn.commit()
 
 cur.close()
 conn.close()
+
+

@@ -1,5 +1,6 @@
 #from email.policy import default
 from enum import unique
+from tkinter import CASCADE
 from main import db, login_manager, usefull_functions
 from main import bcrypt
 from flask_login import UserMixin
@@ -88,7 +89,7 @@ class DailyLiquidation(db.Model):
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     confirm = db.Column(db.Boolean, nullable = False, default=False)
     daily_liquidation_balance = db.Column(db.Float(), nullable=False)
-    owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
 
 
 
