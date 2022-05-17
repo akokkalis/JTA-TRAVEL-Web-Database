@@ -82,10 +82,15 @@
 								<i class="bi bi-person-lines-fill"></i></i> More Details</button>
 						</td>
 						<td>
+							
+							<a class="btn btn-sm btn-info btn-block" 
+							href="{{url_for('edit_user', id=item.id)}}" role="button"><i class="bi bi-pencil"></i>Edit</a>
+<!-- 
 							<button                                        
-								class="btn btn-sm btn-info btn-block" >    
+								class="btn btn-sm btn-info btn-block" href="{{url_for('add_user')}}" >    
 								<i class="bi bi-pencil"></i>
-								Edit</button>
+								Edit
+							</button> -->
 						</td>
 						<td>
 							<button                                        
@@ -102,10 +107,14 @@
 							</td>
 						{%elif item.active == True %}
 						<td>
-							<button                                        
-								class="btn btn-sm btn-success btn-block disabled">    
-								<i class="bi bi-person-check"></i>
-								Enable</button>
+							<span data-toggle="tooltip" data-placement="top" title="{{item.name}} {{item.surname}} is Already Activated">
+								<button                                        
+									class="btn btn-sm btn-success btn-block disabled">    
+									<i class="bi bi-person-check"></i>
+									Enable
+								</button>
+							</span>
+
 						</td>
 						{% endif %}
 						<td>

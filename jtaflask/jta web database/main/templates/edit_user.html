@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+
+	<div class="container" >
+		<br>
+		<div class="card p-3 bg-info">
+			<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person-lines-fill"></i> Edit User</h1>
+			
+			<form method = "POST" enctype="multipart/form-data"  class="row g-3">
+				{{form.hidden_tag()}}
+				<div class="col-md-6">
+					<label for="name" class="form-label">{{ form.name.label()}}</label>
+					{{form.name(class="form-control", placeholder="First Name")}}
+				</div>
+				<div class="col-md-6">
+					<label for="surname" class="form-label">{{ form.surname.label()}}</label>
+					{{form.surname(class="form-control", placeholder="Last Name")}}
+				</div>
+				
+				<div class="col-md-6">
+					<br>
+					<label for="email" class="form-label">{{ form.email.label()}}</label>
+					{{form.email(class="form-control", placeholder="Email")}}
+				</div>
+
+				<div class="col-md-6">
+					<br>
+					<label for="mobile_phone" class="form-label">{{ form.mobile_phone.label()}}</label>
+					{{form.mobile_phone(class="form-control", placeholder="Mobile Phone")}}
+				</div>
+
+				<div class="col-md-6">
+					<br>
+					<label for="date_of_birth" class="form-label">{{ form.date_of_birth.label()}}</label>
+					{{form.date_of_birth(class="form-control", placeholder="Date of Birth")}}
+				</div>
+				<div class="col-md-6">
+					<br>
+					<label for="date_of_birth" class="form-label">password here</label>
+				</div>
+
+				<div class="col-md-3">
+					<br>
+					<label for="date_of_birth" class="form-label">{{ form.position.label()}}</label>
+					{{form.position(class="form-control", placeholder="Position")}}
+				</div>
+				<div class="col-md-3">
+					<br>
+					<label for="area_of_business" class="form-label">{{ form.area_of_business.label()}}</label>
+					{{form.area_of_business(class="form-control", placeholder="Working Area")}}
+				</div>
+
+				<div class="col-md-12">
+					<hr>
+				</div> 
+				<div class="col-md-12">
+					<Label><strong>Access Role:</strong></Label>
+					<br>
+					<h5>Access Roles From Before :  {{roles}}</h5>
+				</div>
+				<div class="col-md-12">
+					<br>
+					<div class="form-check form-check-inline">
+						{{form.admin(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.admin.label (class="form-check-label")}}
+						</label>
+					</div>    
+					<div class="form-check form-check-inline">
+						{{form.rep(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.rep.label (class="form-check-label")}}
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						{{form.rep_superv(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.rep_superv.label (class="form-check-label")}}
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						{{form.escort(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.escort.label (class="form-check-label")}}
+						</label>
+					</div> 
+					<div class="form-check form-check-inline">
+						{{form.bibliosha(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.bibliosha.label (class="form-check-label")}}
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						{{form.off_rec(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.off_rec.label (class="form-check-label")}}
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						{{form.off_hr(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.off_hr.label (class="form-check-label")}}
+						</label>
+					</div>
+					<div class="form-check form-check-inline">
+						{{form.off_exc(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.off_exc.label (class="form-check-label")}}
+						</label>
+					</div>
+
+					<div class="form-check form-check-inline">
+						{{form.leaves(class="form-check-input")}}
+						<label class="form-check-label" for="flexCheckDefault">
+							{{form.leaves.label (class="form-check-label")}}
+						</label>
+					</div>
+				</div> 
+				
+				<div class="col-md-12">
+					<hr>                 
+						<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-person"></i></button>
+					<hr> 
+				</div> 
+				<div class="col-md-12">   
+					<a class="btn btn-lg btn-block btn-primary" href="{{url_for('employees')}}" role="button">Back</a> 
+				</div> 
+
+
+
+			</form>	
+
+		</div>
+	<div>
+{% endblock %}

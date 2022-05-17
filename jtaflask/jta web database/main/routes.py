@@ -693,6 +693,24 @@ def add_user():
 	return render_template('add_user_form.html', form = form, title='Add a User')
 
 
+@app.route('/edit_user/<int:id>', methods=['GET','POST'])
+#@login_required
+def edit_user(id):
+	edit_user_db = db.session.query(Users).filter(Users.id==id).first()
+	form = User_Edit_Form(formdata=request.form, obj=edit_user_db)
+	
+	if form.validate_on_submit():
+		print('YES FORM VALIDATION')
+		print(form.name.data)
+		print(form.surname.data)
+		print(form.mobile_phone.data)
+		print(form.email.data)
+
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+		print('form errors')
+	return render_template('edit_user.html',title = 'Edit User', form = form, roles = edit_user_db.role  )	
 
 @app.route('/test')
 def test_home():  
