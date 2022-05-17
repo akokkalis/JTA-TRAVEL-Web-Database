@@ -1,5 +1,6 @@
 from email import message
 from turtle import position
+from unicodedata import name
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField, SelectMultipleField, DateField
 from wtforms.validators import Length, Email, DataRequired, ValidationError, NumberRange, Regexp
@@ -65,8 +66,13 @@ class LoginForm(FlaskForm):
 
 
 class DeleteForm(FlaskForm):
-    submit = SubmitField(label = 'Delete')
+    submit = SubmitField(label = 'Delete', name='submit_button')
 
+class DisableForm(FlaskForm):
+    submit = SubmitField(label = 'Disable', name='submit_button')
+
+class EnableForm(FlaskForm):
+    submit = SubmitField(label = 'Enable', name='submit_button')
 
 class AssetsForm(FlaskForm):
     # validation function has to start with validate_ and then put exact column name

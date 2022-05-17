@@ -593,18 +593,38 @@ def confirm_daily_liquidation(id):
 @app.route('/employees', methods=['GET','POST'])
 def employees():
 	deleteform = DeleteForm()
+	disableform = DisableForm()
+	enableform = EnableForm()
 	if request.method=="POST":
-		#print(request.form.get('delete_emp'))
-		#print(type(request.form.get('delete_emp')))
-		delete_employee = Users.query.filter_by(id=int(request.form.get('delete_emp'))).delete()
-		#print(delete_employee)
-		db.session.commit()
-		flash('Employee Deleted Succesfully', category='primary' )
+		if request.form['submit_button'] == "Delete":
+			#print(request.form.get('delete_emp'))
+			#print(type(request.form.get('delete_emp')))
+		
+			delete_employee = Users.query.filter_by(id=int(request.form.get('delete_emp'))).delete()
+			#print(delete_employee)
+			db.session.commit()
+			flash('Employee Deleted Succesfully', category='primary' )
+		if request.form['submit_button'] == "Disable":
+			print('yes is disabled')
+			print(request.form.get('disable_emp'))
+			dea_emp = db.session.query(Users).filter(Users.id==int(request.form.get('disable_emp'))).one()
+			dea_emp.active = False
+			db.session.commit()
+			flash('Employee Deactivate Succesfully', category='primary' )
+		if request.form['submit_button'] == "Enable":
+			print('yes is enable')
+			print(request.form.get('enable_emp'))
+			ena_emp = db.session.query(Users).filter(Users.id==int(request.form.get('enable_emp'))).one()
+			ena_emp.active = True
+			db.session.commit()
+			flash('Employee Enabled Succesfully', category='primary' )
+			
 
-	
-	emp =  db.session.query(Users.name,Users.surname,Users.email, Users.							mobile_phone, Users.area_of_business, Users.							position, Users.active, Users.role, 									column_property(func.to_char(Users.										date_of_birth, 'DD/MM/YYYY').label										('date_of_birth')), Users.annual_leave_total  )
+	emp =  db.session.query(Users.id,Users.name,Users.surname,Users.email, 							Users.mobile_phone, Users.area_of_business, 
+							Users.position, Users.active, Users.role, 		column_property(func.to_char(Users.date_of_birth, 'DD/MM/YYYY').label('date_of_birth')), 
+							Users.annual_leave_total  )
 
-	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform)
+	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform, disableform=disableform, enableform=enableform)
 
 
 

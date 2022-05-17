@@ -3,15 +3,21 @@
 	<div class="modal-dialog">
 	  <div class="modal-content">
 		<div class="modal-header">
-		  <h5 class="modal-title" id="exampleModalLabel">Delete An Employee</h5>
+		  <h5 class="modal-title" id="exampleModalLabel">Delete Employee</h5>
 		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
 		</div>
 		<div class="modal-body">
 		  <form method="POST">
 			  {{deleteform.hidden_tag()}}
 			  Are You Sure You want to delete Employee <em><strong>{{item.name}} {{item.surname}}</strong></em>?
+			  <br>
+
+			  <br>
+			  <p class="bg-warning"><strong>Notice that if you delete An EMployee all records related to him or her should be deleted also.</strong> </p>
+
 			  <input id="delete_emp" name="delete_emp" type="hidden" value="{{item.id}}">
-			  {{deleteform.submit(class = "btn btn-outline-danger btn-block" )}}
+			  <br>
+			  {{deleteform.submit(class = "btn btn-outline-danger btn-block")}}
 
 
 		  </form>		
@@ -25,21 +31,53 @@
 	</div>
   </div>
 
-    <!-- Modal Delete Employee -->
+    <!-- Modal Disable Employee -->
 	<div class="modal fade" id="Modal-Disable-Emp-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 		  <div class="modal-content">
 			<div class="modal-header">
-			  <h5 class="modal-title" id="exampleModalLabel">Disable An Employee</h5>
+			  <h5 class="modal-title" id="exampleModalLabel">Disable Employee</h5>
 			  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
 			</div>
 			<div class="modal-body">
 			  <form method="POST">
-				  {{deleteform.hidden_tag()}}
+				  {{disableform.hidden_tag()}}
 				  Are You Sure You want to Disable Employee <em><strong>{{item.name}} {{item.surname}}</strong></em>?
-				  <input id="delete_emp" name="delete_emp" type="hidden" value="{{item.id}}">
-				  {{deleteform.submit(class = "btn btn-outline-danger btn-block" )}}
+				  <br>
+				  <input id="disable_emp" name="disable_emp" type="hidden" value="{{item.id}}">
+				  <br>
+				  {{disableform.submit(class = "btn btn-outline-danger btn-block" )}}
 	
+			  </form>		
+	
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+			</div>
+		  </div>
+		</div>
+	  </div>
+
+    <!-- Modal Enable Employee -->
+	<div class="modal fade" id="Modal-Enable-Emp-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="exampleModalLabel">Enable Employee</h5>
+			  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body">
+			  <form method="POST">
+				  {{enableform.hidden_tag()}}
+				  Are You Sure You want to Enable Employee <em><strong>{{item.name}} {{item.surname}}</strong></em>?
+				  <br>
+				  <br>
+				  <p class="bg-warning"><strong>Notice. If Enable An Employee he/she will gain access to system!</strong> </p>
+
+				  <input id="enable_emp" name="enable_emp" type="hidden" value="{{item.id}}">
+				  <br>
+				  {{enableform.submit(class = "btn btn-outline-danger btn-block" )}}
 	
 			  </form>		
 	
