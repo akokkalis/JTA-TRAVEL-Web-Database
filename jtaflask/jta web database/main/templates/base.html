@@ -33,7 +33,7 @@
     <body>
 
         <p class="p-2 mb-2 text-center text-black-200 bg-warning">JTA TRAVEL Web DB<p>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
             <a class="navbar-brand" href="{{url_for('home')}}"><i class="bi bi-building"></i> JTA </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -56,14 +56,17 @@
                                 <a class="nav-link" href="{{url_for('card_returns')}}"> <i class="bi bi-arrow-clockwise"></i> Card Payment Returns</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{url_for('leaves')}}"> <i class="bi bi-house-heart"></i> Leaves</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{url_for('daily_liquidation')}}"><i class="bi bi-currency-euro"></i> Daily Liquidations</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true"  aria-expanded="false">
-                                Dropdown link
+                                <a class="nav-link dropdown-toggle" href="{{url_for('employees')}}" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true"  aria-expanded="false">
+                                Employees
                                 </a>
-                                <div class="dropdown-menu bg-info text-danger" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
+                                <div class="dropdown-menu bg-primary text-info" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{url_for('employees')}}">See All Employees</a>
                                 <a class="dropdown-item" href="#">Another action</a>
                                 <a class="dropdown-item" href="{{url_for('add_user')}}">Add User</a>
                                 </div>

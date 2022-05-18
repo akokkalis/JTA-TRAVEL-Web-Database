@@ -620,11 +620,15 @@ def employees():
 			flash('Employee Enabled Succesfully', category='primary' )
 			
 
-	emp =  db.session.query(Users.id,Users.name,Users.surname,Users.email, 							Users.mobile_phone, Users.area_of_business, 
+	emp =  db.session.query(Users.id,Users.name,Users.surname,Users.email, 								Users.mobile_phone, Users.area_of_business, 
 							Users.position, Users.active, Users.role, 		column_property(func.to_char(Users.date_of_birth, 'DD/MM/YYYY').label('date_of_birth')), 
-							Users.annual_leave_total  )
+							Users.annual_leave_total).filter(Users.active==True).order_by(Users.name)
+	disabled_emp =  db.session.query(Users.id,Users.name,Users.surname,
+									Users.email, Users.mobile_phone, Users.area_of_business, 
+									Users.position, Users.active, Users.role, 	column_property(func.to_char(Users.date_of_birth, 'DD/MM/YYYY').label('date_of_birth')), 
+									Users.annual_leave_total).filter(Users.active==False).order_by(Users.name)						
 
-	return render_template('employee.html', emp = emp, title='Employees', deleteform=deleteform, disableform=disableform, enableform=enableform)
+	return render_template('employee.html', emp = emp, disabled_emp= disabled_emp, title='Employees', deleteform=deleteform, disableform=disableform, enableform=enableform)
 
 
 
@@ -635,14 +639,6 @@ def add_user():
 	form = UsersForm()
 	if form.validate_on_submit():
 
-		print(f'NAme : {form.name.data}')
-		print(f'surnAme : {form.surname.data}')
-		print(f'email : {form.email.data}')
-		print(f'Password : {form.password.data}')
-		print(f'Active: {form.active.data}')
-		print(f'Area of Business : {form.area_of_business.data}')
-		print(f'Mobile : {form.mobile_phone.data}')
-		print(f'Date of birth: {form.date_of_birth.data}')
 		user_role = ''
 		if form.admin.data:
 			user_role = user_role + 'Administrator'
@@ -700,13 +696,6 @@ def edit_user(id):
 	form = User_Edit_Form(formdata=request.form, obj=edit_user_db)
 	
 	if form.validate_on_submit():
-		print('YES FORM VALIDATION')
-		print(form.name.data)
-		print(form.surname.data)
-		print(form.mobile_phone.data)
-		print(form.email.data)
-		print(form.edit_password.data)
-		print(form.admin.data)
 		if form.name.data:
 			edit_user_db.name = form.name.data
 		if form.surname.data:
@@ -760,6 +749,30 @@ def edit_user(id):
 		print('form errors')
 	
 	return render_template('edit_user.html',title = 'Edit User', form = form, roles = edit_user_db.role  )	
+
+@app.route('/more_info_user/<int:id>', methods=['GET','POST'])
+#@login_required
+def more_info_user(id):
+	ownwed_daily_liqu = db.session.query(DailyLiquidation.id, DailyLiquidation.						total_sales, DailyLiquidation.bank_deposit, 								DailyLiquidation.visa_transaction, 
+						DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, 
+						column_property(func.to_char(DailyLiquidation.date_time_actual, 'DD/MM/YYYY').label('date_time_actual')) ,
+						#DailyLiquidation.date_time_actual,
+						column_property(func.to_char(DailyLiquidation.date_liquidated,'DD/MM/YYYY').label('date_liquidated')),			
+						DailyLiquidation.bank_dep_image, 
+						DailyLiquidation.jcc_daily_batch_image,DailyLiquidation.canceled_ticket_image, DailyLiquidation.daily_liquidation_balance, DailyLiquidation.remarks,DailyLiquidation.confirm, Users.name,Users.surname, Users.position).filter(DailyLiquidation.owner ==id ).outerjoin(Users, Users.id==id).order_by(DailyLiquidation.id.desc()).all()
+	
+	
+	
+	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu))
+
+
+@app.route('/leaves', methods=['GET','POST'])
+#@login_required
+def leaves():	
+	return render_template('leaves.html', title = 'Leaves')
+
+
+
 
 @app.route('/test')
 def test_home():  

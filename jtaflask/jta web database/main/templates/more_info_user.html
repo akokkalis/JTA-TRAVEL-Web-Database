@@ -1,14 +1,14 @@
-
 {% extends 'base.html' %}
-
+	
 
 
 {% block title %}
-	{{title}}
+{{title}}
 {% endblock %}
 
 
 {%block head_links%}
+
 
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.0/dist/bootstrap-table.min.css">
 
@@ -20,26 +20,25 @@
 
 {%endblock%}
 
+
+
+
 {% block content %}
-	Daily Liquidation Page
-	<br>
-	{%if 'Representative' in current_user.role %}
-		{% if already>0 %}
-			<span data-toggle="tooltip" data-placement="top" title="{{current_user.name}} {{current_user.surname}} you have Already Submited A Liquidation For Today. For Any Help Call Your Supervisor">
-				<a  class="btn btn-primary disabled " href=""  role="button">Send Daily Liquidation</a>
-			</span>
-		{% else %}
-			<a class="btn btn-primary" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
-		{%endif%}
-	{%else%}
-		<a class="btn btn-primary" href="{{url_for('add_daily_liquidation')}}" role="button">Send Daily Liquidation</a>
-	{%endif%}
+
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-clipboard-data"></i>All Employee Records </h3>
+</div>
+
+<hr class="border-primary border-3 opacity-100">
 
 
+<!--Daily Liquidation Table if it exist-->
+{%if owned_daily_liq_exisatnce > 0 %}
 	<div class="card p-3 bg-light">
-		<h3 class="text-center text-"><i class="bi bi-wallet-fill"></i>List of Your Daily Liquidation</h3>
+		<h3 class="text-center text-"><i class="bi bi-wallet-fill"></i> Daily Liquidation Records</h3>
+
 		<div class="table-responsive">
-			<caption>List of Your Daily Liquidation</caption>
+			
 			<table id="mytable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
 
 				<thead>
@@ -70,11 +69,7 @@
 				</tr>
 				</thead>
 				<tbody>
-					{% for item in ownwed_daily_liqu %}
-
-					
-				
-					
+					{% for item in ownwed_daily_liqu %}				
 						<tr>
 							<th scope="row">{{loop.index}}</th>
 							<td>&euro; {{item.total_sales}}</td>
@@ -108,13 +103,9 @@
 								<td>Yes</td>
 							{%else%}
 								<td>No</td>
-							{%endif%}
-							{% if 'Administrator' in current_user.role%}
-								<td>{{item.fname}} {{item.surname}}</td>
-							{%elif 'Representative' in current_user.role %}		<td>{{current_user.name}} {{current_user.surname}}</td>
-							 {%endif%}                          
-							
-							 <td>
+							{%endif%}						
+							<td>{{item.name}} {{item.surname}}</td>
+							<td>
 								{% if 'Administrator' in current_user.role  %}
 									{%if item.confirm ==True %}
 										<button 
@@ -152,7 +143,7 @@
 						</tr>
 					
 					{%endfor%}
- 
+
 						
 				</tbody>
 
@@ -169,35 +160,50 @@
 		<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.js"></script>
 
 
-	
-<script>
-	$(document).ready(function(){
-		$('#mytable').DataTable({					
-			'hover':true,
-			"ordering": true,
-			'paging':true,
-			'dom':'BQlfrtip',				
-			'buttons' : ['print','excel','csv','pdf','colvis'],
-			'colReorder': true,
-			'responsive': false,
-			'select':false,
+
+		<script>
+		$(document).ready(function(){
+			$('#mytable').DataTable({					
+				'hover':true,
+				"ordering": true,
+				'paging':true,
+				'dom':'BQlfrtip',				
+				'buttons' : ['print','excel','csv','pdf','colvis'],
+				'colReorder': true,
+				'responsive': false,
+				'select':false,
+				
+			}
 			
-		}
+			);
+			
+			$('[data-toggle="tooltip"]').tooltip({placement: "right"});
+
+
 		
-		);
+		});
+
+
+		</script>
+
 		
-		$('[data-toggle="tooltip"]').tooltip({placement: "right"});
-		
-		
-   	
-	});
-	
-	
-</script>
+	</div> 
 
-</div>
+{%endif%}
+
+<!--Daily Liquidation Table Ends-->
 
 
 
 
-{% endblock %}
+
+
+
+
+
+
+
+
+
+<!-- End Content Block --> 
+{%endblock%}
