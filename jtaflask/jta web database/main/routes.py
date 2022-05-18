@@ -658,7 +658,7 @@ def add_user():
 			user_role = user_role + ', Office-Rec'	
 		if form.off_hr.data:
 			user_role = user_role + ', Office-HR'
-		if form.escort.data:
+		if form.off_exc.data:
 			user_role = user_role + ', Office-Exc'
 		if form.leaves.data:
 			user_role = user_role + ', Leaves'	
@@ -705,11 +705,60 @@ def edit_user(id):
 		print(form.surname.data)
 		print(form.mobile_phone.data)
 		print(form.email.data)
-
+		print(form.edit_password.data)
+		print(form.admin.data)
+		if form.name.data:
+			edit_user_db.name = form.name.data
+		if form.surname.data:
+			edit_user_db.surname = form.surname.data
+		if form.mobile_phone.data:
+			edit_user_db.mobile_phone = form.mobile_phone.data
+		if form.email.data:
+			edit_user_db.email = form.email.data
+		if form.date_of_birth.data:
+			edit_user_db.date_of_birth = form.date_of_birth.data			
+		if form.edit_password.data:
+			edit_user_db.password = form.edit_password.data		
+		if form.position.data:
+			edit_user_db.position = form.position.data			
+		if form.area_of_business.data:
+			edit_user_db.area_of_business = form.area_of_business.data			
+		
+		user_role = ''
+		if form.admin.data:
+			user_role = user_role + 'Administrator'
+		if form.rep.data:
+			user_role = user_role + ', Representative'
+		if form.rep_superv.data:
+			user_role = user_role + ', Rep Supervisor'
+		if form.escort.data:
+			user_role = user_role + ', Escort'
+		if form.bibliosha.data:
+			user_role = user_role + ', Bibliosha'
+		if form.off_rec.data:
+			user_role = user_role + ', Office-Rec'	
+		if form.off_hr.data:
+			user_role = user_role + ', Office-HR'
+		if form.off_exc.data:
+			user_role = user_role + ', Office-Exc'
+		if form.leaves.data:
+			user_role = user_role + ', Leaves'
+		
+		if user_role:
+			edit_user_db.role = user_role.strip(',').strip(' ')
+		
+		db.session.add(edit_user_db)
+		db.session.commit()	
+		flash(f'User:{edit_user_db.name} {edit_user_db.surname} Updated Succesfully', category='info')
+		return (redirect(url_for('employees')))
+	
+	
+	
 	if form.errors != {}:
 		for error_msg in form.errors.values():
-			flash(f'Error!!! {error_msg[0]}', category='danger' )
+			flash(f'Error Message : {error_msg[0]}', category='danger' )
 		print('form errors')
+	
 	return render_template('edit_user.html',title = 'Edit User', form = form, roles = edit_user_db.role  )	
 
 @app.route('/test')

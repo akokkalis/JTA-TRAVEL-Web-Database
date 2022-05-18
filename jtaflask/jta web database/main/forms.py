@@ -64,23 +64,37 @@ class UsersForm(FlaskForm):
 
 class User_Edit_Form(FlaskForm):
     
-    def validate_id(self, id_to_check):
+    def validate_email(self, email_to_check):
+               
+        user1 = Users.query.filter_by(email = email_to_check.data).first()
         
-        def validate_email(self, email_to_check):
-            user1 = Users.query.filter_by(email = email_to_check.data).first()
-            if user1:
-                if user1.id != id_to_check.data:         
-                    print('inside user1',f'{user1.id}')
-                    raise ValidationError('Email Already Exists in Database. Please Enter a Different Email')
+        if user1:
+            
+            if user1.id != self.id.data:         
+                print('inside user1',f'{user1.id}')
+                raise ValidationError('Email Already Belongs To Another User in Database. Please Use a Different Email')
     
+    def validate_mobile_phone(self, mobile_phone_check):
+        '''
+        Validate mobile phone only for active users. We can have same number but for inactive users.        '''
+               
+        user1 = Users.query.filter_by(mobile_phone = mobile_phone_check.data).first()
+        
+        if user1:            
+            if (user1.id != self.id.data) and (user1.active==True):                
+                raise ValidationError('Mobile Number Already Belongs To Another User in Database. Please Use a Different Mobile Number')    
+
+
+
     id = IntegerField()
     name = StringField(label='First Name:', validators=[Length(min=2, max=15),DataRequired()])
     surname = StringField(label='Last Name:', validators=[Length(min=2, max=15),DataRequired()])
     email = EmailField(label='Email:', validators=[Email(),DataRequired()])
     mobile_phone = StringField(label = 'Mobile Number', validators=[Regexp('^\d{8}$',message = 'Telephone must contains only digits, No letters and has to be minimum 8 length'),Length(min=8), DataRequired()])
     date_of_birth = DateField(label='Date of Birth:')
+
     area_of_business = SelectField (label = 'Working Area', choices=['LARNACA', 'AYIA NAPA', 'PROTARAS', 'PAPHOS', 'LIMASOL', 'OFFICE'])
-    #password = PasswordField( label='password',validators=[Length(min=5),DataRequired()] )
+    edit_password = PasswordField( label='New Passwod:' )
     admin = BooleanField('Administrator:')
     rep = BooleanField('Representative:')
     rep_superv = BooleanField('Rep Supervisor:')

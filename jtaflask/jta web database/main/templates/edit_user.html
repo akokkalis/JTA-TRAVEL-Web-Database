@@ -40,7 +40,8 @@
 				</div>
 				<div class="col-md-6">
 					<br>
-					<label for="date_of_birth" class="form-label">password here</label>
+					<label for="edit_password" class="form-label">{{ form.edit_password.label()}}</label>
+					{{form.edit_password(class="form-control", placeholder="New Password")}}
 				</div>
 
 				<div class="col-md-3">
@@ -60,7 +61,7 @@
 				<div class="col-md-12">
 					<Label><strong>Access Role:</strong></Label>
 					<br>
-					<h5>Access Roles From Before :  {{roles}}</h5>
+					<h5>Access Roles From Before : {{roles}}</h5>
 				</div>
 				<div class="col-md-12">
 					<br>
