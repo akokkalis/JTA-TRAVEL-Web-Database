@@ -1,3 +1,4 @@
+from cgi import print_form
 from dataclasses import dataclass
 from tkinter import TRUE
 from click import edit
@@ -769,8 +770,25 @@ def more_info_user(id):
 @app.route('/leaves', methods=['GET','POST'])
 #@login_required
 def leaves():	
-	return render_template('leaves.html', title = 'Leaves')
+	return render_template('leaves.html', title = 'Leaves',)
 
+@app.route('/leaves/add_leave', methods=['GET','POST'])
+def add_leave():
+	form = Leaves()
+	if form.validate_on_submit():
+		pass
+		# print(form.from_.data)
+		# print(form.to_.data)
+		# print(form.reason.data)
+		# print(form.docs.data)
+		# print(form.remarks.data)
+		# print(form.half_day.data)
+	
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+		print('form errors')
+	return render_template('add_leave.html', title='Add Leave', form=form)
 
 
 

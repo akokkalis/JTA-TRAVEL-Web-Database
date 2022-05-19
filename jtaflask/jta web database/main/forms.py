@@ -189,3 +189,29 @@ class Liq_Edit_Form(FlaskForm):
     remarks = TextAreaField(label=f'Remarks', widget=TextArea())
     submit = SubmitField(label = 'Save')
 
+class Leaves(FlaskForm):
+    def validate_from_(self, from_):
+        from datetime import date
+        from dateutil.relativedelta import relativedelta
+       
+        three_months = date.today() - relativedelta(months=+3)
+        
+        if three_months > self.from_.data:
+            raise ValidationError('"From Date" Has To Be Earlier than 3 months') 
+    
+    def validate_remarks(self, remarks): 
+        '''
+        Validate Other Reason has to put some remarks
+        '''
+        
+        if self.reason.data == 'Other' and len(self.remarks.data) < 5:          
+            raise ValidationError('Because You Specify Reason Of Leave "Other" You Need To Explain For What is your Leave Request On Remarks Field.') 
+
+
+    from_ = DateField(label='From:',validators=[DataRequired()])
+    to_ = DateField(label='To:',validators=[DataRequired()])    
+    half_day = BooleanField('Half Day:')
+    reason = SelectField(label='Reason Of Leave:', choices=['Annual Leave','Military', 'Sick - Leave', 'UnPaid', 'Working-Off','Working-On', 'Public-On', 'Public-Off', 'Other' ], default='Annual Leave')
+    docs = FileField(label = 'Document For Leave:')
+    remarks = TextAreaField(label=f'Remarks:', widget=TextArea())
+    submit = SubmitField(label = 'Save')

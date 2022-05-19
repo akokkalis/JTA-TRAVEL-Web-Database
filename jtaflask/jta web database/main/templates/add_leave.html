@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<br>
+<div class="container" >
+	<div class="card p-3 bg-info">
+		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Insert A Leave</h1>
+		<form method = "POST" class="row g-3"> 
+			{{form.hidden_tag()}}   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server-->           
+			
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<label for="from_" class="form-label">{{ form.from_.label()}}</label>
+					
+					{{form.from_(class="form-control", placeholder="Leave From")}}
+				</div>
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<label for="to_" class="form-label">{{ form.to_.label()}}</label>
+					
+					{{form.to_(class="form-control", placeholder="Leave Until")}}
+				</div>
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<br>
+					<label for="reason" class="form-label">{{ form.reason.label()}}</label>
+					
+					{{form.reason(class="form-control", placeholder="Reason")}}
+				</div>
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<br>
+					<label for="docs" class="form-label">{{ form.docs.label()}}</label>
+					
+					{{form.docs(class="form-control", placeholder="Documnet For Leave:")}}
+				</div>
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<br>
+					<label for="remarks" class="form-label">{{ form.remarks.label()}}</label>
+					
+					{{form.remarks(class="form-control", placeholder="Remarks")}}
+				</div>
+				
+				<div class="col-md-6 text-center ">
+					<hr>
+					<label for="half_day" class="form-label">{{ form.half_day.label()}}</label>
+					<h6><span class="bg-warning">Check Half Day Only If You Want To Specify That Its Half Day Leave.</span></h6>				
+					{{form.half_day(class="form-control", placeholder="Half Day?")}}
+				</div>
+
+				<div class="col-md-12">
+					<hr>                 
+						<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+					<hr> 
+				</div> 
+				<div class="col-md-12">   
+					<a class="btn btn-lg btn-block btn-primary" href="{{url_for('leaves')}}" role="button">Back</a> 
+				</div> 
+		</form>			
+	</div>
+</div>	
+{% endblock %}
