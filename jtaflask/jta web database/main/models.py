@@ -29,7 +29,7 @@ class Users(db.Model, UserMixin):
     active = db.Column(db.Boolean, nullable = False, default=True)
     balance = db.Column(db.Float(), nullable=False, default=0.0)
     annual_leave_total = db.Column(db.Float(), nullable=False, default=21)
-    mobile_phone = db.Column(db.String(length=15), nullable=False)
+    mobile_phone = db.Column(db.String(length=15), nullable=False, unique=True)
     date_of_birth = db.Column(db.Date())
     area_of_business = db.Column(db.String(length=15), nullable=False)
     dai_liq = db.relationship('DailyLiquidation', backref='owned_user', lazy=True)

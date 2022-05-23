@@ -770,25 +770,55 @@ def more_info_user(id):
 @app.route('/leaves', methods=['GET','POST'])
 #@login_required
 def leaves():	
-	return render_template('leaves.html', title = 'Leaves',)
+
+	leaves_table =  db.session.query(Leaves.id,
+									column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
+									column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
+									((Leaves.to_ - Leaves.from_)+1).label('total_days'),
+									Leaves.reason,
+									Leaves.half,
+									Leaves.docs,
+									Leaves.remarks,	
+									Leaves.confirm,
+									Leaves.creator,
+									Leaves.owner,
+									Users.name.label('fname'),
+									Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).order_by(Leaves.id.desc())
+	print(leaves_table[0])
+	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table )
 
 @app.route('/leaves/add_leave', methods=['GET','POST'])
 def add_leave():
-	form = Leaves()
+	form = LeavesForm()
 	if form.validate_on_submit():
 		pass
-		# print(form.from_.data)
-		# print(form.to_.data)
-		# print(form.reason.data)
-		# print(form.docs.data)
-		# print(form.remarks.data)
-		# print(form.half_day.data)
+		print('Form is Validated')
+		print(form.from_.data)
+		print(current_user.id)
+
+		leave_create = Leaves(
+						  from_ = form.from_.data,
+						  to_ = form.to_.data,	
+						  half = form.half_day.data,
+						  reason= form.reason.data,
+						  remarks = form.remarks.data,
+						  creator = f'{current_user.name} {current_user.surname}',
+						  owner = current_user.id
+
+
+						  
+							)
+		db.session.add(leave_create)
+		db.session.commit()
+		flash(f'A Leave is Created Succesfully', category='primary' )
+		return redirect(url_for('leaves'))
+
 	
 	if form.errors != {}:
 		for error_msg in form.errors.values():
 			flash(f'Error!!! {error_msg[0]}', category='danger' )
-		print('form errors')
-	return render_template('add_leave.html', title='Add Leave', form=form)
+		
+	return render_template('Leaves/add_leave.html', title='Add Leave', form=form)
 
 
 
