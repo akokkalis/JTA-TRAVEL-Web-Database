@@ -13,8 +13,24 @@
 <div class="container" >
 	<div class="card p-3 bg-info">
 		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Insert A Leave</h1>
-		<form method = "POST" class="row g-3"> 
-			{{form.hidden_tag()}}   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server-->           
+		<form method = "POST" enctype="multipart/form-data" class="row g-3"> 
+			{{form.hidden_tag()}}   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server--> 
+			
+				{%if 'Administrator' in current_user.role or 'Office-HR' in current_user.role%}	
+					<div class="col-md-12 col-lg-12" >
+						<hr>
+						<label for="employee" class="form-label">{{ form.employee.label()}}</label>				
+						{{form.employee(class="form-control text-center", placeholder="employee")}}
+					</div>
+				{%else%} 
+					<div class="col-md-12 col-lg-12 d-none" >
+						<hr>
+						<label for="employee" class="form-label">{{ form.employee.label()}}</label>				
+						{{form.employee(class="form-control text-center", placeholder="employee")}}
+					</div>
+				{%endif%}
+			
+			
 			
 				<div class="col-md-6 col-lg-6">
 					<hr>

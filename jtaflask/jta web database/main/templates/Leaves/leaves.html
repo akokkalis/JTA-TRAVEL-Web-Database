@@ -45,8 +45,7 @@
 					<th scope="col">Half Day</th>
 					<th scope="col">Reason</th>
 					<th scope="col">Remarks</th>					
-					<th scope="col">Docs</th>
-					<th scope="col">Confirm</th>
+					<th scope="col">Docs</th>					
 					<th scope="col">Creator</th>
 					<th scope="col">Confirm</th>
 					<th scope="col">Edit</th>
@@ -80,8 +79,18 @@
 							<td>{{item.half}}</td>
 							<td>{{item.reason}}</td>
 							<td>{{item.remarks}}</td>
-							<td>{{item.remarks}}</td> 
-							<td>{{item.docs}}</td>
+							 
+							{% if item.docs!= None %}
+							<td>
+								<a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block"	
+								href="{{url_for('down_leave_file', file_name = item.docs)}}" role="button"><i class="bi bi-cloud-download"></i></a>
+							</td>
+							{%else%}
+							<td>
+								<span data-toggle="tooltip" data-placement="top" title="No File Exist "><a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block disabled"								href="" role="button"><i class="bi bi-cloud-download"></i></a></span>
+							</td>
+							{%endif%}
+
 							<td>{{item.creator}}</td>
 							<td>
 								<a class="btn  btn-primary btn-block" href="#" role="button"> <i class="bi bi-check-circle"></i> Confirm</a>

@@ -2,6 +2,7 @@ from email import message
 from turtle import position
 from unicodedata import name
 from wsgiref import validate
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField, SelectMultipleField, DateField
 from wtforms.validators import Length, Email, DataRequired, ValidationError, NumberRange, Regexp
@@ -190,6 +191,7 @@ class Liq_Edit_Form(FlaskForm):
     submit = SubmitField(label = 'Save')
 
 class LeavesForm(FlaskForm):
+    
     def validate_from_(self, from_):
         from datetime import date
         from dateutil.relativedelta import relativedelta
@@ -213,7 +215,8 @@ class LeavesForm(FlaskForm):
         if self.reason.data == 'Other' and len(self.remarks.data) < 5:          
             raise ValidationError('Because You Specify Reason Of Leave "Other" You Need To Explain For What is your Leave Request On Remarks Field.') 
     
-
+    
+    employee = SelectField(label='Employee Name:', coerce=str)
     from_ = DateField(label='From:',validators=[DataRequired()])
     to_ = DateField(label='To:',validators=[DataRequired()])    
     half_day = BooleanField('Half Day:')

@@ -770,48 +770,144 @@ def more_info_user(id):
 @app.route('/leaves', methods=['GET','POST'])
 #@login_required
 def leaves():	
+	if ('Administrator' in current_user.role) or ('Office-HR' in current_user.role):
+		
+		leaves_table =  db.session.query(Leaves.id,
+										column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
+										column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
+										((Leaves.to_ - Leaves.from_)+1).label('total_days'),
+										Leaves.reason,
+										Leaves.half,
+										Leaves.docs,
+										Leaves.remarks,	
+										Leaves.confirm,
+										Leaves.creator,
+										Leaves.owner,
+										Users.name.label('fname'),
+										Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).order_by(Leaves.id.desc())
+	
+	else:
 
-	leaves_table =  db.session.query(Leaves.id,
-									column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
-									column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
-									((Leaves.to_ - Leaves.from_)+1).label('total_days'),
-									Leaves.reason,
-									Leaves.half,
-									Leaves.docs,
-									Leaves.remarks,	
-									Leaves.confirm,
-									Leaves.creator,
-									Leaves.owner,
-									Users.name.label('fname'),
-									Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).order_by(Leaves.id.desc())
-	print(leaves_table[0])
+		leaves_table =  db.session.query(Leaves.id,
+								column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
+								column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
+								((Leaves.to_ - Leaves.from_)+1).label('total_days'),
+								Leaves.reason,
+								Leaves.half,
+								Leaves.docs,
+								Leaves.remarks,	
+								Leaves.confirm,
+								Leaves.creator,
+								Leaves.owner,							Users.name.label('fname'),
+								Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).filter(current_user.id == Leaves.owner).order_by(Leaves.id.desc())
+	#print(leaves_table.all())
 	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table )
 
 @app.route('/leaves/add_leave', methods=['GET','POST'])
 def add_leave():
 	form = LeavesForm()
-	if form.validate_on_submit():
-		pass
-		print('Form is Validated')
-		print(form.from_.data)
-		print(current_user.id)
+	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
+		#if the user is administrator or HR has to choose some employees names
+		emp =  db.session.query(Users.name,Users.surname).filter(Users.								active==True).order_by(Users.name)
 
-		leave_create = Leaves(
-						  from_ = form.from_.data,
-						  to_ = form.to_.data,	
-						  half = form.half_day.data,
-						  reason= form.reason.data,
-						  remarks = form.remarks.data,
-						  creator = f'{current_user.name} {current_user.surname}',
-						  owner = current_user.id
+		final_emp= [f'{item[0]} {item[1]}' for item in list(emp.all())]
+		print(final_emp)
+		form.employee.choices = final_emp
+	else:
+		form.employee.choices=[f'{current_user.name} {current_user.surname}']
+
+	if request.method=="POST":
+		print(f'test ::::: {request.files}')
+		
+		if form.validate_on_submit():
+			
+				
+			print(request.files)
+			file_names_dict={}
+
+			for key, value in request.files.items():
+				# if the file is not empty	
+				if not 'application/octet-stream' in value.content_type:
+					
+					file_s = request.files[key]
+					print('this is my file')
+					print(file_s)
 
 
-						  
-							)
-		db.session.add(leave_create)
-		db.session.commit()
-		flash(f'A Leave is Created Succesfully', category='primary' )
-		return redirect(url_for('leaves'))
+					if not file_s.filename:
+						flash(f'You cant Upload a file with out a name', category='danger' )
+						return redirect(request.url)
+					
+					if not usefull_functions.allowed_files_ext(file_s.filename):
+						flash(f'You cant Upload a file with out a name. Allowed File Names "PNG", "JPG", "JPEG" , "GIF", "PDF","DOC", "DOCX" ', category='danger' )
+						return redirect(request.url)
+					
+					else:
+						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+						filename = current_user.surname+ '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
+						
+						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+						file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_LEAVES'], filename))
+						file_names_dict[key] = f'{filename}'
+			
+					print(file_names_dict)
+					print(len(file_names_dict))
+			
+					print(file_names_dict)
+					print(len(file_names_dict))
+
+			if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
+				search_val = form.employee.data.split()
+				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
+				print(search_emp.all()[0][0])
+				if len(file_names_dict)>0:		
+					leave_create = Leaves(
+										from_ = form.from_.data,
+										to_ = form.to_.data,	
+										half = form.half_day.data,
+										reason= form.reason.data,
+										remarks = form.remarks.data,
+										docs = file_names_dict['docs'],
+										creator = f'{current_user.name} {current_user.surname}',
+										owner = search_emp.all()[0][0]			  
+										)
+				else:
+					leave_create = Leaves(
+										from_ = form.from_.data,
+										to_ = form.to_.data,	
+										half = form.half_day.data,
+										reason= form.reason.data,
+										remarks = form.remarks.data,	
+										creator = f'{current_user.name} {current_user.surname}',
+										owner = search_emp.all()[0][0]	
+										)	
+			else:
+				if len(file_names_dict)>0:		
+					leave_create = Leaves(
+										from_ = form.from_.data,
+										to_ = form.to_.data,	
+										half = form.half_day.data,
+										reason= form.reason.data,
+										remarks = form.remarks.data,
+										docs = file_names_dict['docs'],
+										creator = f'{current_user.name} {current_user.surname}',
+										owner = current_user.id				  
+										)
+				else:
+					leave_create = Leaves(
+										from_ = form.from_.data,
+										to_ = form.to_.data,	
+										half = form.half_day.data,
+										reason= form.reason.data,
+										remarks = form.remarks.data,	
+										creator = f'{current_user.name} {current_user.surname}',
+										owner = current_user.id	
+										)	
+														
+			db.session.add(leave_create)
+			db.session.commit()
+			flash(f'A Leave is Created Succesfully', category='primary' )
+			return redirect(url_for('leaves'))
 
 	
 	if form.errors != {}:
@@ -908,6 +1004,19 @@ def down_file(file_name):
 		print('abort')
 		abort(404)
 	 
+
+@app.route('/down-leave-file/<string:file_name>', methods=['GET','POST'])
+def down_leave_file(file_name):
+	print(file_name)
+	print(app.config['FILE_UPLOADS_FOR_LEAVES'])
+	try:
+		return send_from_directory(app.config['FILE_UPLOADS_FOR_LEAVES'],path=file_name, as_attachment=True)
+
+	except FileNotFoundError:
+		print('abort')
+		abort(404)
+
+
 
 @app.route('/testing', methods=['GET','POST'])
 def test():

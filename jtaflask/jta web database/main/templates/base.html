@@ -77,16 +77,14 @@
 
                         </ul>
                     {% elif 'Representative' in  current_user.role%}
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('daily_liquidation')}}"><i class="bi bi-currency-euro"></i> Daily Liquidations <span class="sr-only">(current)</span></a>
-                        </li>                        
+                        {% include 'base_navbar/base_rep_role.html' %}
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{url_for('assets_page')}}"><i class="bi bi-boxes"></i> Assets</a>
-                        </li>                 
-                    </ul>
+                    {% elif 'Leaves' in  current_user.role%}
+                        {% include 'base_navbar/base_leave_role.html' %}
+                    
                     {% endif %}
+
+                    
                 {% endif %}
 
                 {% if current_user.is_authenticated %}
