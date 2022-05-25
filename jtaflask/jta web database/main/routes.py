@@ -769,7 +769,15 @@ def more_info_user(id):
 
 @app.route('/leaves', methods=['GET','POST'])
 #@login_required
-def leaves():	
+def leaves():
+	deleteform = DeleteForm()	
+	if request.method=="POST":
+		if request.form['submit_button'] =="Delete":
+			delete_leave = Leaves.query.filter_by(id=int(request.form.get('delete_leave'))).delete()
+			#print(delete_employee)
+			db.session.commit()
+			flash('Leave Deleted Succesfully', category='primary' )
+
 	if ('Administrator' in current_user.role) or ('Office-HR' in current_user.role):
 		
 		leaves_table =  db.session.query(Leaves.id,
@@ -801,7 +809,7 @@ def leaves():
 								Leaves.owner,							Users.name.label('fname'),
 								Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).filter(current_user.id == Leaves.owner).order_by(Leaves.id.desc())
 	#print(leaves_table.all())
-	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table )
+	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table, deleteform = deleteform  )
 
 @app.route('/leaves/add_leave', methods=['GET','POST'])
 def add_leave():
@@ -915,6 +923,108 @@ def add_leave():
 			flash(f'Error!!! {error_msg[0]}', category='danger' )
 		
 	return render_template('Leaves/add_leave.html', title='Add Leave', form=form)
+
+@app.route('/leaves/edit/<int:id>', methods=['GET','POST'])
+#@login_required
+def leave_edit(id):
+	print(id)
+	leave_to_edit = db.session.query(Leaves).filter(Leaves.id==id).first()
+	print(leave_to_edit.owner)
+	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
+	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
+		#if the user is administrator or HR has to choose some employees names
+		emp =  db.session.query(Users.name,Users.surname).filter(Users.							active==True).filter(Users.id == 								leave_to_edit.owner).order_by(Users.name)
+		print(emp.all())
+		final_emp= [f'{item[0]} {item[1]}' for item in list(emp.all())]
+		print(final_emp)
+		form.employee.choices = final_emp
+	else:
+		form.employee.choices=[f'{current_user.name} {current_user.surname}']
+
+	if request.method=="POST":
+		print(f'test ::::: {request.files}')
+		
+		if form.validate_on_submit():
+			
+				
+			print(request.files)
+			file_names_dict={}
+
+			for key, value in request.files.items():
+				# if the file is not empty	
+				if not 'application/octet-stream' in value.content_type:
+					
+					file_s = request.files[key]
+					print('this is my file')
+					print(file_s)
+
+
+					if not file_s.filename:
+						flash(f'You cant Upload a file with out a name', category='danger' )
+						return redirect(request.url)
+					
+					if not usefull_functions.allowed_files_ext(file_s.filename):
+						flash(f'You cant Upload a file with out a name. Allowed File Names "PNG", "JPG", "JPEG" , "GIF", "PDF","DOC", "DOCX" ', category='danger' )
+						return redirect(request.url)
+					
+					else:
+						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+						filename = current_user.surname+ '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
+						
+						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+						file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_LEAVES'], filename))
+						file_names_dict[key] = f'{filename}'
+			
+					print(file_names_dict)
+					print(len(file_names_dict))
+			
+					print(file_names_dict)
+					print(len(file_names_dict))
+
+			if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
+				search_val = form.employee.data.split()
+				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
+				print(search_emp.all()[0][0])
+				
+				leave_to_edit.from_ = form.from_.data
+				leave_to_edit.to_ = form.to_.data
+				leave_to_edit.half = form.half_day.data
+				leave_to_edit.reason = form.reason.data
+				leave_to_edit.remarks = form.remarks.data
+				if len(file_names_dict)>0:
+					leave_to_edit.docs = file_names_dict['docs']
+				leave_to_edit.creator = f'{current_user.name} {current_user.surname}'
+				leave_to_edit.owner = search_emp.all()[0][0]
+
+
+			else:
+				leave_to_edit.from_ = form.from_.data
+				leave_to_edit.to_ = form.to_.data
+				leave_to_edit.half = form.half_day.data
+				leave_to_edit.reason = form.reason.data
+				leave_to_edit.remarks = form.remarks.data
+				if len(file_names_dict)>0:
+					leave_to_edit.docs = file_names_dict['docs']
+				leave_to_edit.creator = f'{current_user.name} {current_user.surname}'
+				leave_to_edit.owner = current_user.id			
+
+			db.session.commit()
+			flash(f'A Leave is Edited Succesfully', category='primary' )
+			return redirect(url_for('leaves'))
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+	return render_template('Leaves/leave_edit.html', form = form)
+
+@app.route('/leaves/confirm/<int:id>', methods=['GET','POST'])
+#@login_required
+def leave_confirm(id):
+	print(id)
+	leave_to_confirm = db.session.query(Leaves).filter(Leaves.id==id).one()
+	leave_to_confirm.confirm=True
+	db.session.commit()
+	flash(f'Leave Entrie Confirmed Succesfully', category='primary' )
+	return redirect(url_for('leaves'))	
 
 
 
