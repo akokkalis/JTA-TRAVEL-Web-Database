@@ -215,7 +215,20 @@ class LeavesForm(FlaskForm):
         if self.reason.data == 'Other' and len(self.remarks.data) < 5:          
             raise ValidationError('Because You Specify Reason Of Leave "Other" You Need To Explain For What is your Leave Request On Remarks Field.') 
     
-    
+    def validate_reason(self, reason):
+        if self.reason.data == 'Annual Leave':
+            print('this is my reason')
+            name = self.employee.data.split()[0]
+            surname = self.employee.data.split()[1]
+            user_to_check = db.session.query(Users).filter(Users.name==name).filter(Users.surname==surname).one()
+            print(user_to_check.annual_leave_total)
+            try_to_insert = self.to_.data - self.from_.data 
+            if (try_to_insert.days + 1) > user_to_check.annual_leave_total:                
+                raise ValidationError(f'Your Annual Remaining Leave days are {user_to_check.annual_leave_total}. You are trying to insert {(try_to_insert.days + 1)} days') 
+
+
+
+
     employee = SelectField(label='Employee Name:', coerce=str)
     from_ = DateField(label='From:',validators=[DataRequired()])
     to_ = DateField(label='To:',validators=[DataRequired()])    

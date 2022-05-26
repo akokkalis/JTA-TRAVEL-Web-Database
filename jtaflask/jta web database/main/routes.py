@@ -660,9 +660,9 @@ def add_user():
 		if form.leaves.data:
 			user_role = user_role + ', Leaves'	
 		
-		user_create=Users(name = form.name.data,
-						  surname = form.surname.data,	
-						  email = form.email.data,
+		user_create=Users(name = form.name.data.strip(),
+						  surname = form.surname.data.strip(),	
+						  email = form.email.data.strip(),
 						  password= form.password.data,
 						  active = form.active.data,
 						  area_of_business = form.area_of_business.data,
@@ -866,8 +866,11 @@ def add_leave():
 
 			if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
 				search_val = form.employee.data.split()
+				print(search_val)				
 				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
-				print(search_emp.all()[0][0])
+				#print(search_emp.all())
+				
+				#print(search_emp.all()[0][0])
 				if len(file_names_dict)>0:		
 					leave_create = Leaves(
 										from_ = form.from_.data,
@@ -1021,12 +1024,46 @@ def leave_edit(id):
 def leave_confirm(id):
 	print(id)
 	leave_to_confirm = db.session.query(Leaves).filter(Leaves.id==id).one()
-	leave_to_confirm.confirm=True
+	if leave_to_confirm.half==False:
+		leave_days= db.session.query(((Leaves.to_ - Leaves.from_)+1).label('total_days'),).filter(Leaves.id==id).one()
+
+		print(type(leave_days.total_days))
+		print(leave_days)
+		leave_to_confirm.confirm = True
+		
+		if leave_to_confirm.reason == 'Annual Leave':
+			user_to_update_leave_days = db.session.query(Users).filter(Users.id==leave_to_confirm.owner).one()
+			print('inside annual')
+			print( user_to_update_leave_days)
+			
+			if  user_to_update_leave_days.annual_leave_total >= leave_days.total_days:
+				user_to_update_leave_days.annual_leave_total = user_to_update_leave_days.annual_leave_total- leave_days.total_days
+	else:
+		leave_days = 0.5
+		if leave_to_confirm.reason == 'Annual Leave':
+			user_to_update_leave_days = db.session.query(Users).filter(Users.id==leave_to_confirm.owner).one()
+			print('inside annual')
+			print( user_to_update_leave_days)
+			leave_to_confirm.confirm = True
+			
+			if  user_to_update_leave_days.annual_leave_total >= leave_days:
+				user_to_update_leave_days.annual_leave_total = user_to_update_leave_days.annual_leave_total - leave_days
+
+
+
 	db.session.commit()
 	flash(f'Leave Entrie Confirmed Succesfully', category='primary' )
 	return redirect(url_for('leaves'))	
 
-
+@app.route('/leaves/decline/<int:id>', methods=['GET','POST'])
+#@login_required
+def leave_decline(id):
+	print(id)
+	leave_to_decline = db.session.query(Leaves).filter(Leaves.id==id).one()
+	leave_to_decline.confirm=False
+	db.session.commit()
+	flash(f'Leave Entrie Declined Succesfully', category='primary' )
+	return redirect(url_for('leaves'))	
 
 @app.route('/test')
 def test_home():  

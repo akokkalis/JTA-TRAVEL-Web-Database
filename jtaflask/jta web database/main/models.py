@@ -56,15 +56,23 @@ class Leaves(db.Model):
     reason =  db.Column(db.String(length=20), nullable=False)
     docs = db.Column(db.String(length=100), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
-    confirm = db.Column(db.Boolean, nullable = False, default=False)
+    confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
-    owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
-    decline_leave = db.relationship('DeclineLeaves', backref='owned_user', lazy=True)
+    owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    leave_history = db.relationship('LeavesHistory', backref='owned_user', lazy=True)
 
-class DeclineLeaves(db.Model):
+class LeavesHistory(db.Model):
     id= db.Column(db.Integer(), primary_key=True)
-    leave_id = db.Column(db.Integer(), db.ForeignKey('leaves.id'))
-    remarks = db.Column(db.String(length=300), nullable=False, unique=False)
+    leave_id = db.Column(db.Integer(), db.ForeignKey('leaves.id', ondelete='CASCADE'))
+    from_ = db.Column(db.Date(), nullable=False)
+    to_ = db.Column(db.Date(), nullable=False)
+    half = db.Column(db.Boolean, nullable = False, default=False)
+    reason =  db.Column(db.String(length=20), nullable=False)
+    docs = db.Column(db.String(length=100), nullable=True)
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
+    creator = db.Column(db.String(length=20), nullable=False, unique=False)
+    owner = db.Column(db.Integer())
 
 
 class Assets(db.Model):

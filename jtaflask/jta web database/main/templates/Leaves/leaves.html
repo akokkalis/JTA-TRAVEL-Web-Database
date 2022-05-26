@@ -97,18 +97,23 @@
 								<span data-toggle="tooltip" data-placement="top" title="No File Exist "><a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block disabled"								href="" role="button"><i class="bi bi-cloud-download"></i></a></span>
 							</td>
 							{%endif%}
-							{%if item.confirm == False %}
-								<td>Waiting Confirmation</td>
-							{%else%}
+							{%if item.confirm == 'true'%}		
 								<td>Confirmed</td>
-							{%endif%}	
+							{%elif item.confirm == 'false'%}
+								<td>Rejected</td>
+							{%else%}
+								<td>{{item.confirm}}</td>
+							{%endif%}
+							
 							<td>{{item.creator}}</td>
 							{% if 'Administrator' in current_user.role or 'Office-HR' in current_user.role %}
 							<td>
-								{% if item.confirm == False%}
+								{% if item.confirm == 'Pending Confirmation'%}
 								<a class="btn  btn-primary btn-block" href="{{url_for('leave_confirm',id=item.id)}}" role="button"> <i class="bi bi-check-circle"></i> Confirm</a>
+								<a class="btn  btn-primary btn-block" href="{{url_for('leave_decline',id=item.id)}}" role="button"> <i class="bi bi-x-octagon"></i> Decline</a>
 								{%else%}
-								<span data-toggle="tooltip" data-placement="top" title="Already Confirmed "><button 
+								<span data-toggle="tooltip" data-placement="top" title="Already Confirmed ">
+									<button 
 										class="btn btn-sm btn-info btn-block disabled" >    
 										<i class="bi bi-check-circle-fill"></i> Confirmed
 									</button>
@@ -122,7 +127,7 @@
 									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
 								</td>
 							{%else%}
-								{%if item.confirm == False%}
+								{%if item.confirm == 'Pending Confirmation'%}
 								<td>
 									<a class="btn btn-sm btn-primary btn-block" 
 									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
@@ -148,7 +153,7 @@
 									</button>
 								</td>
 							{%else%}
-								{%if item.confirm == False%}
+								{%if item.confirm == 'Pending Confirmation'%}
 								<td>
 															
 									<button title='Delete Entrie'     				  
