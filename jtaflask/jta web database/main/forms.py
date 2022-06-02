@@ -195,7 +195,7 @@ class LeavesForm(FlaskForm):
     def validate_from_(self, from_):
         from datetime import date
         from dateutil.relativedelta import relativedelta
-       
+        self.existance()
         three_months = date.today() - relativedelta(months=+3)
         
         if three_months > self.from_.data:
@@ -220,13 +220,51 @@ class LeavesForm(FlaskForm):
             print('this is my reason')
             name = self.employee.data.split()[0]
             surname = self.employee.data.split()[1]
-            user_to_check = db.session.query(Users).filter(Users.name==name).filter(Users.surname==surname).one()
-            print(user_to_check.annual_leave_total)
+            
+            
+            user_to_check = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum((Leaves.to_ - Leaves.from_)+1 )).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
+            
+            print(user_to_check)
+          
+
+
             try_to_insert = self.to_.data - self.from_.data 
-            if (try_to_insert.days + 1) > user_to_check.annual_leave_total:                
-                raise ValidationError(f'Your Annual Remaining Leave days are {user_to_check.annual_leave_total}. You are trying to insert {(try_to_insert.days + 1)} days') 
+            if user_to_check:
+                if (try_to_insert.days + 1) + user_to_check[0][3] > user_to_check[0][2]:
+                    raise ValidationError(f'Too Many Days. You are over exceed the limit for {((try_to_insert.days + 1) + user_to_check[0][3]) - user_to_check[0][2] } day annual leave') 
+            else: 
+                #the user first time tries to send leave request
+                user_to_check = db.session.query(Users).filter(Users.name==name).filter(Users.surname==surname).one()
+                if (try_to_insert.days + 1) > user_to_check.annual_leave_total: 
+                    raise ValidationError(f'Too Many Days. You are over exceed the limit for annual leave in total {(try_to_insert.days + 1) - user_to_check.annual_leave_total }')  
+    
+    def existance(self):        
+        import datetime
+        # take the employee name and split so we can make a query
+        search_val = self.employee.data.split()
+        #query the database and give the user object with al of his attributes	
+        search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1]).one()
+        print(search_emp[0])
+		#Query leave period and give me all users leaves entries that he has bigger to	
+        leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= self.from_.data).order_by(Leaves.id.desc())
+ 	
+        # for loop to compare the dates 
+        for item in leaves_period:
+            date_generated_db = [str(item.from_ + datetime.timedelta(days=x)) for x in range(0, (item.to_ - item.from_ ).days +1 )]
 
+            print(date_generated_db)
+            
 
+            date_range_form = [ str(self.from_.data + datetime.timedelta(days=x)) for x in range(0, (self.to_.data  - self.from_.data ).days +1 )]
+            print('List generated according form request')
+            print(date_range_form)
+
+            same_dates = set(date_range_form).intersection(date_generated_db)
+            if len(same_dates) != 0:
+                raise ValidationError(f'You are Trying to request {self.reason.data} leave, but you already have an entrie leave for that date period in database - {sorted(same_dates)} - for a reason {item.reason}. Please delete that existing entrie and try again.')  
+            
+        
+        
 
 
     employee = SelectField(label='Employee Name:', coerce=str)

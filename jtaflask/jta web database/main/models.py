@@ -56,6 +56,7 @@ class Leaves(db.Model):
     reason =  db.Column(db.String(length=20), nullable=False)
     docs = db.Column(db.String(length=100), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
     confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
     owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
@@ -99,5 +100,8 @@ class DailyLiquidation(db.Model):
     daily_liquidation_balance = db.Column(db.Float(), nullable=False)
     owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
 
-
+class PublicHolidays(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    date_of_holiday = db.Column(db.Date(), nullable=False, unique=True)
+    country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
 

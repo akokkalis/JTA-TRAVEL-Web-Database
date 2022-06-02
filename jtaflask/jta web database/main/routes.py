@@ -815,8 +815,8 @@ def leaves():
 def add_leave():
 	form = LeavesForm()
 	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
-		#if the user is administrator or HR has to choose some employees names
-		emp =  db.session.query(Users.name,Users.surname).filter(Users.								active==True).order_by(Users.name)
+		#if the user is administrator or HR has to choose some employees names Excursions.days.contains(aday)
+		emp =  db.session.query(Users.name,Users.surname).filter(Users.							active==True, Users.role.contains								('Leave')).order_by(Users.name)
 
 		final_emp= [f'{item[0]} {item[1]}' for item in list(emp.all())]
 		print(final_emp)
@@ -825,12 +825,27 @@ def add_leave():
 		form.employee.choices=[f'{current_user.name} {current_user.surname}']
 
 	if request.method=="POST":
-		print(f'test ::::: {request.files}')
-		
+				
 		if form.validate_on_submit():
+
+			search_val = form.employee.data.split()
+			print(search_val)				
+			search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1]).one()
+			print(search_emp[0])
+			
+			leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= form.from_.data).order_by(Leaves.id.desc())
+			
+			for item in leaves_period:
+				print(item.from_)
+				usefull_functions.range_dates_between(item,form.from_.data, form.to_.data )
+				print(f'{item.from_ } - {item.to_}')
+			
+
+
+
 			
 				
-			print(request.files)
+
 			file_names_dict={}
 
 			for key, value in request.files.items():
@@ -852,7 +867,7 @@ def add_leave():
 					
 					else:
 						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
-						filename = current_user.surname+ '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
+						filename = form.employee.data + '_' + str(form.from_.data) + '_' + str(form.to_.data) + '_' + form.reason.data + file_ext(file_s.filename)
 						
 						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
 						file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_LEAVES'], filename))
