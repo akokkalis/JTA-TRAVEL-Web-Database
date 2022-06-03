@@ -23,223 +23,221 @@ import werkzeug
 
 from main.usefull_functions import file_ext
 
-@app.route('/home')
-@app.route('/')
-def home():
-	
-	
-	page_title = 'Home Page'
-	room_list = [
-		{ "room": 100,
-			"use": "reception",
-			"sq-ft": 50,
-			"price": 75
-		},
-		{ "room": 101,
-			"use": "waiting",
-			"sq-ft": 250,
-			"price": 75
-		},
-		{ "room": 102,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 103,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 104,
-			"use": "office",
-			"sq-ft": 150,
-			"price": 100
-		},
-		{ "room": 100,
-			"use": "reception",
-			"sq-ft": 50,
-			"price": 75
-		},
-		{ "room": 101,
-			"use": "waiting",
-			"sq-ft": 250,
-			"price": 75
-		},
-		{ "room": 102,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 103,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 104,
-			"use": "office",
-			"sq-ft": 150,
-			"price": 100
-		},
-		{ "room": 100,
-			"use": "reception",
-			"sq-ft": 50,
-			"price": 75
-		},
-		{ "room": 101,
-			"use": "waiting",
-			"sq-ft": 250,
-			"price": 75
-		},
-		{ "room": 102,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 103,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 104,
-			"use": "office",
-			"sq-ft": 150,
-			"price": 100
-		},
-		{ "room": 100,
-			"use": "reception",
-			"sq-ft": 50,
-			"price": 75
-		},
-		{ "room": 101,
-			"use": "waiting",
-			"sq-ft": 250,
-			"price": 75
-		},
-		{ "room": 102,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 103,
-			"use": "examination",
-			"sq-ft": 125,
-			"price": 150
-		},
-		{ "room": 104,
-			"use": "office",
-			"sq-ft": 150,
-			"price": 100
-		}
+# @app.route('/home')
+# @app.route('/')
+# def home():
+# 	page_title = 'Home Page'
+# 	room_list = [
+# 		{ "room": 100,
+# 			"use": "reception",
+# 			"sq-ft": 50,
+# 			"price": 75
+# 		},
+# 		{ "room": 101,
+# 			"use": "waiting",
+# 			"sq-ft": 250,
+# 			"price": 75
+# 		},
+# 		{ "room": 102,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 103,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 104,
+# 			"use": "office",
+# 			"sq-ft": 150,
+# 			"price": 100
+# 		},
+# 		{ "room": 100,
+# 			"use": "reception",
+# 			"sq-ft": 50,
+# 			"price": 75
+# 		},
+# 		{ "room": 101,
+# 			"use": "waiting",
+# 			"sq-ft": 250,
+# 			"price": 75
+# 		},
+# 		{ "room": 102,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 103,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 104,
+# 			"use": "office",
+# 			"sq-ft": 150,
+# 			"price": 100
+# 		},
+# 		{ "room": 100,
+# 			"use": "reception",
+# 			"sq-ft": 50,
+# 			"price": 75
+# 		},
+# 		{ "room": 101,
+# 			"use": "waiting",
+# 			"sq-ft": 250,
+# 			"price": 75
+# 		},
+# 		{ "room": 102,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 103,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 104,
+# 			"use": "office",
+# 			"sq-ft": 150,
+# 			"price": 100
+# 		},
+# 		{ "room": 100,
+# 			"use": "reception",
+# 			"sq-ft": 50,
+# 			"price": 75
+# 		},
+# 		{ "room": 101,
+# 			"use": "waiting",
+# 			"sq-ft": 250,
+# 			"price": 75
+# 		},
+# 		{ "room": 102,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 103,
+# 			"use": "examination",
+# 			"sq-ft": 125,
+# 			"price": 150
+# 		},
+# 		{ "room": 104,
+# 			"use": "office",
+# 			"sq-ft": 150,
+# 			"price": 100
+# 		}
 		
-	]
-	return render_template('home.html', title=page_title, room_list=room_list)
+# 	]
+# 	return render_template('home.html', title=page_title, room_list=room_list)
 
-@app.route('/about')
-def about():
-		room_list = [
-			{ "room": 100,
-				"use": "reception",
-				"sq-ft": 50,
-				"price": 75
-			},
-			{ "room": 101,
-				"use": "waiting",
-				"sq-ft": 250,
-				"price": 75
-			},
-			{ "room": 102,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 103,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 104,
-				"use": "office",
-				"sq-ft": 150,
-				"price": 100
-			},
-			{ "room": 100,
-				"use": "reception",
-				"sq-ft": 50,
-				"price": 75
-			},
-			{ "room": 101,
-				"use": "waiting",
-				"sq-ft": 250,
-				"price": 75
-			},
-			{ "room": 102,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 103,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 104,
-				"use": "office",
-				"sq-ft": 150,
-				"price": 100
-			},
-			{ "room": 100,
-				"use": "reception",
-				"sq-ft": 50,
-				"price": 75
-			},
-			{ "room": 101,
-				"use": "waiting",
-				"sq-ft": 250,
-				"price": 75
-			},
-			{ "room": 102,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 103,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 104,
-				"use": "office",
-				"sq-ft": 150,
-				"price": 100
-			},
-			{ "room": 100,
-				"use": "reception",
-				"sq-ft": 50,
-				"price": 75
-			},
-			{ "room": 101,
-				"use": "waiting",
-				"sq-ft": 250,
-				"price": 75
-			},
-			{ "room": 102,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 103,
-				"use": "examination",
-				"sq-ft": 125,
-				"price": 150
-			},
-			{ "room": 104,
-				"use": "office",
-				"sq-ft": 150,
-				"price": 100
-			}
+# # @app.route('/about')
+# # def about():
+# 		room_list = [
+# 			{ "room": 100,
+# 				"use": "reception",
+# 				"sq-ft": 50,
+# 				"price": 75
+# 			},
+# 			{ "room": 101,
+# 				"use": "waiting",
+# 				"sq-ft": 250,
+# 				"price": 75
+# 			},
+# 			{ "room": 102,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 103,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 104,
+# 				"use": "office",
+# 				"sq-ft": 150,
+# 				"price": 100
+# 			},
+# 			{ "room": 100,
+# 				"use": "reception",
+# 				"sq-ft": 50,
+# 				"price": 75
+# 			},
+# 			{ "room": 101,
+# 				"use": "waiting",
+# 				"sq-ft": 250,
+# 				"price": 75
+# 			},
+# 			{ "room": 102,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 103,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 104,
+# 				"use": "office",
+# 				"sq-ft": 150,
+# 				"price": 100
+# 			},
+# 			{ "room": 100,
+# 				"use": "reception",
+# 				"sq-ft": 50,
+# 				"price": 75
+# 			},
+# 			{ "room": 101,
+# 				"use": "waiting",
+# 				"sq-ft": 250,
+# 				"price": 75
+# 			},
+# 			{ "room": 102,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 103,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 104,
+# 				"use": "office",
+# 				"sq-ft": 150,
+# 				"price": 100
+# 			},
+# 			{ "room": 100,
+# 				"use": "reception",
+# 				"sq-ft": 50,
+# 				"price": 75
+# 			},
+# 			{ "room": 101,
+# 				"use": "waiting",
+# 				"sq-ft": 250,
+# 				"price": 75
+# 			},
+# 			{ "room": 102,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 103,
+# 				"use": "examination",
+# 				"sq-ft": 125,
+# 				"price": 150
+# 			},
+# 			{ "room": 104,
+# 				"use": "office",
+# 				"sq-ft": 150,
+# 				"price": 100
+# 			}
 			
-		]
-		return render_template('about.html', room_list=room_list)
+# 		]
+# 		return render_template('about.html', room_list=room_list)
 
 
 
@@ -827,23 +825,6 @@ def add_leave():
 	if request.method=="POST":
 				
 		if form.validate_on_submit():
-
-			search_val = form.employee.data.split()
-			print(search_val)				
-			search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1]).one()
-			print(search_emp[0])
-			
-			leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= form.from_.data).order_by(Leaves.id.desc())
-			
-			for item in leaves_period:
-				print(item.from_)
-				usefull_functions.range_dates_between(item,form.from_.data, form.to_.data )
-				print(f'{item.from_ } - {item.to_}')
-			
-
-
-
-			
 				
 
 			file_names_dict={}
@@ -892,6 +873,7 @@ def add_leave():
 										to_ = form.to_.data,	
 										half = form.half_day.data,
 										reason= form.reason.data,
+										country = form.country.data,
 										remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
@@ -903,6 +885,7 @@ def add_leave():
 										to_ = form.to_.data,	
 										half = form.half_day.data,
 										reason= form.reason.data,
+										country = form.country.data,
 										remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = search_emp.all()[0][0]	
@@ -914,6 +897,7 @@ def add_leave():
 										to_ = form.to_.data,	
 										half = form.half_day.data,
 										reason= form.reason.data,
+										country = form.country.data,
 										remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
@@ -925,6 +909,7 @@ def add_leave():
 										to_ = form.to_.data,	
 										half = form.half_day.data,
 										reason= form.reason.data,
+										country = form.country.data,
 										remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = current_user.id	
@@ -1079,6 +1064,45 @@ def leave_decline(id):
 	db.session.commit()
 	flash(f'Leave Entrie Declined Succesfully', category='primary' )
 	return redirect(url_for('leaves'))	
+
+
+
+@app.route('/public_holidays', methods=['GET','POST'])
+#@login_required
+def public_holidays():
+	deleteform = DeleteForm()
+	if request.method=="POST":
+		if request.form['submit_button'] =="Delete":			
+			delete_pu_hol = PublicHolidays.query.filter_by(id=int(request.form.get('delete_public_holiday'))).delete()
+			#print(delete_employee)
+			db.session.commit()
+			flash('Public Holiday Deleted Succesfully', category='danger' )
+
+
+	holidays =  db.session.query(PublicHolidays.id, column_property(func.to_char(PublicHolidays.date_of_holiday, 'DD/MM/YYYY').label('date_of_holiday')), PublicHolidays.country).order_by(PublicHolidays.country).order_by(PublicHolidays.date_of_holiday)
+	
+	return render_template('Public Holidays/public_holidays.html', holidays=holidays, title= 'Public Holidays', deleteform= deleteform)
+
+@app.route('/add_public_holiday', methods=['GET','POST'])
+#@login_required
+def add_public_holiday():
+	form = PublicHolidayForm()
+	if request.method=="POST":
+				
+		if form.validate_on_submit():
+			pub_create = PublicHolidays(
+						date_of_holiday = form.date_of_holiday.data,
+						country = form.country.data)
+			db.session.add(pub_create)
+			db.session.commit()
+			flash(f'Public Holiday Created Succesfully', category='primary' )
+
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )		
+	
+	return render_template('Public Holidays/add_public_holiday.html', form=form, title='Insert Public Holiday')
+
 
 @app.route('/test')
 def test_home():  

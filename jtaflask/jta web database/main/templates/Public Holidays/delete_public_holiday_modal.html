@@ -1,0 +1,32 @@
+  <!-- Modal Delete Public Holiday -->
+  <div class="modal fade" id="Modal-Delete-PuHo-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Delete Public Holiday</h5>
+		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+		</div>
+		<div class="modal-body text-center"> 
+		  <form method="POST">
+			  {{deleteform.hidden_tag()}}
+
+
+			 
+			  <p class="bg-warning"><strong>Are You Sure You want to Delete Public Holiday <br><em><strong>{{item.date_of_holiday}} for Country : {{item.country}} ?</strong></em><br> 
+				<br> </p>
+
+			  <input id="delete_public_holiday" name="delete_public_holiday" type="hidden" value="{{item.id}}">
+			  <br>
+			  {{deleteform.submit(class = "btn btn-outline-danger btn-block")}}
+
+
+		  </form>		
+
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+	  </div>
+	</div>
+  </div>

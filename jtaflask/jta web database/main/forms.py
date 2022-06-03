@@ -269,9 +269,24 @@ class LeavesForm(FlaskForm):
 
     employee = SelectField(label='Employee Name:', coerce=str)
     from_ = DateField(label='From:',validators=[DataRequired()])
-    to_ = DateField(label='To:',validators=[DataRequired()])    
+    to_ = DateField(label='To:',validators=[DataRequired()])
+    country= SelectField(label='Public Holiday Country:', choices=['CY', 'RU'], default='CY')
     half_day = BooleanField('Half Day:')
     reason = SelectField(label='Reason Of Leave:', choices=['Annual Leave','Military', 'Sick - Leave', 'UnPaid', 'Working-Off','Working-On', 'Public-On', 'Public-Off', 'Other' ], default='Annual Leave')
     docs = FileField(label = 'Document For Leave:')
     remarks = TextAreaField(label=f'Remarks:', widget=TextArea())
+    submit = SubmitField(label = 'Save')
+
+
+class PublicHolidayForm(FlaskForm):
+
+    def validate_date_of_holiday(self,date_of_holiday):
+        record = db.session.query(PublicHolidays).filter(PublicHolidays.date_of_holiday == self.date_of_holiday.data, 
+        PublicHolidays.country==self.country.data).all()
+        print(len(record))
+        if len(record)!=0:
+            raise ValidationError(f'Date {self.date_of_holiday.data} for Country {self.country.data} already exists. ')
+
+    country = SelectField(label='Country:', choices=['CY', 'RU'])
+    date_of_holiday =  DateField(label='Date:',validators=[DataRequired()])
     submit = SubmitField(label = 'Save')

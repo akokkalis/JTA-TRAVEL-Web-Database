@@ -1,4 +1,5 @@
 #from email.policy import default
+from email.policy import default
 from enum import unique
 from tkinter import CASCADE
 from main import db, login_manager, usefull_functions
@@ -57,6 +58,7 @@ class Leaves(db.Model):
     docs = db.Column(db.String(length=100), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
+    total = db.Column(db.Float(), nullable=False, default=0.0)
     confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
     owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
@@ -102,6 +104,6 @@ class DailyLiquidation(db.Model):
 
 class PublicHolidays(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    date_of_holiday = db.Column(db.Date(), nullable=False, unique=True)
+    date_of_holiday = db.Column(db.Date(), nullable=False)
     country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
 

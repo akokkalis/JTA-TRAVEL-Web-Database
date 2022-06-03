@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block myjavascript %}
+
+{%endblock%}
+
+
+{% block content %}
+<br>
+<div class="container" >
+	<div class="card p-3 bg-info">
+		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Insert A Public Holiday</h1>
+		<form method = "POST" enctype="multipart/form-data" class="row g-3"> 
+			{{form.hidden_tag()}}   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server--> 
+			
+				
+				<div class="col-md-6 col-lg-6">
+					<hr>
+					<label for="date_of_holiday" class="form-label">{{ form.date_of_holiday.label()}}</label>
+					
+					{{form.date_of_holiday(class="form-control",  placeholder="")}}
+				</div>
+
+				<div class="col-md-6 col-lg-6" >
+					<hr>
+					<label for="country class="form-label">{{ form.country.label()}}</label>				
+					{{form.country(class="form-control text-center", placeholder="Country")}}
+				</div>
+
+			
+
+
+				<div class="col-md-12">
+					<hr>                 
+						<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+					<hr> 
+				</div> 
+				<div class="col-md-12">   
+					<a class="btn btn-lg btn-block btn-primary" href="{{url_for('public_holidays')}}" role="button">Back</a> 
+				</div> 
+		</form>			
+	</div>
+
+</div>	
+
+{% endblock %}
