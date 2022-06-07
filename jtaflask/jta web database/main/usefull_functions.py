@@ -56,9 +56,9 @@ def leave_days(start, end, holidays=[]):
 						weekmask=[1,1,1,1,1,0,0],
 						holidays=holidays)
 	weekends = np.busday_count(start, end, weekmask=[0,0,0,0,0,1,1])
+	total_inc_hol_weekends = np.busday_count(start, end, weekmask=[1,1,1,1,1,1,1])  
 	hol = total_inc_hol - total
-	return [total, weekends, hol]
-
+	return [total, weekends, hol, total_inc_hol_weekends]
 
 
 

@@ -233,15 +233,35 @@ class LeavesForm(FlaskForm):
             
             user_to_check = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
             
-            print(f'user is {user_to_check}'  )
+            conf = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'true').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
+            try:
+                pend = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'Pending Confirmation').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
+                must_ded = pend[0][3]
+            except IndexError:
+                must_ded=0
+
             
+            print(conf)
+            print(pend)
+            print(must_ded)
+            print(f'user is {user_to_check}'  )
 
+      
 
-            try_to_insert = self.to_.data - self.from_.data 
+            #try_to_insert = self.to_.data - self.from_.data 
             
             if user_to_check:
-                if total_days + user_to_check[0][3] > user_to_check[0][2]:
-                    raise ValidationError(f'You allowed {user_to_check[0][2] - user_to_check[0][3]} days to request as annual leave and you request {total_days} days ') 
+                if (total_days>=1) and (self.half_day.data ==False):
+                    if total_days > user_to_check[0][2] - must_ded:
+                        raise ValidationError(f'You allowed {user_to_check[0][2] - must_ded} days to request as annual leave and you request {total_days} days ') 
+
+                elif (total_days==1) and (self.half_day.data ==True):
+                    if 0.5   > user_to_check[0][2] - must_ded :
+                        raise ValidationError(f'You allowed {user_to_check[0][2] - must_ded} days to request as annual leave and you request {0.5} days ')
+                elif (total_days==0):
+                    raise ValidationError(f'The Date that you are trying to request is public holiday!')
+
+            
             else: 
                 #the user first time tries to send leave request
                 user_to_check = db.session.query(Users).filter(Users.name==name).filter(Users.surname==surname).one()
@@ -281,6 +301,7 @@ class LeavesForm(FlaskForm):
         holidays = [item[0] for item in pu_h]            
 
         total_days = usefull_functions.leave_days(self.from_.data, self.to_.data, holidays)
+        print('Inside total_days_calc function')
         return(total_days)
 
         

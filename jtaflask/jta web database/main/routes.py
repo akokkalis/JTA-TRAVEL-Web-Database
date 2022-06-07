@@ -771,8 +771,15 @@ def leaves():
 	deleteform = DeleteForm()	
 	if request.method=="POST":
 		if request.form['submit_button'] =="Delete":
-			delete_leave = Leaves.query.filter_by(id=int(request.form.get('delete_leave'))).delete()
-			#print(delete_employee)
+			delete_leave = Leaves.query.filter_by(id=int(request.form.get('delete_leave'))).one()
+			
+			if delete_leave.reason=='Annual Leave' and delete_leave.confirm == 'true':
+				
+				emp = Users.query.filter(Users.id ==delete_leave.owner).one()
+				emp.annual_leave_total = emp.annual_leave_total + delete_leave.total
+			
+			delete_leave = Leaves.query.filter_by(id=int(request.form.get('delete_leave'))).delete()			
+			
 			db.session.commit()
 			flash('Leave Deleted Succesfully', category='primary' )
 
@@ -825,7 +832,7 @@ def add_leave():
 	if request.method=="POST":
 				
 		if form.validate_on_submit():
-				
+
 
 			file_names_dict={}
 
@@ -867,22 +874,35 @@ def add_leave():
 				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
 				print(f'form total days {form.total_days_calc()}')
 				
-				#print(search_emp.all())
+				if form.half_day.data == True:
+					total_days = 0.5
+				else:
+					if form.reason.data == 'Annual Leave':
+						total_days = float(form.total_days_calc()[0])
+					else: 
+						total_days = float(form.total_days_calc()[3])
+					print(total_days)	
 				
-				#print(search_emp.all()[0][0])
-				if len(file_names_dict)>0:		
+				if form.reason.data == 'Annual Leave':
+					remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
+				else:
+					remarks = form.remarks.data			
+				
+				if len(file_names_dict)>0:
+
+
 					leave_create = Leaves(
 										from_ = form.from_.data,
 										to_ = form.to_.data,	
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										total = float(form.total_days_calc()[0]),
+										total = total_days,
 										#remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = search_emp.all()[0][0],
-										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'			  
+										remarks = remarks			  
 										)
 				else:
 					leave_create = Leaves(
@@ -891,13 +911,26 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										total = float(form.total_days_calc()[0]),
+										total = total_days,
 										#remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = search_emp.all()[0][0],
-										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'	
+										remarks = remarks	
 										)	
-			else:
+			else:# if its not Admin or HR
+				if form.half_day.data == True:
+					total_days = 0.5
+				else:
+					if form.reason.data == 'Annual Leave':
+						total_days = float(form.total_days_calc()[0])
+					else: 
+						total_days = float(form.total_days_calc()[3])
+					print(total_days)	
+				if form.reason.data == 'Annual Leave':
+					remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
+				else:
+					remarks = form.remarks.data
+				
 				if len(file_names_dict)>0:		
 					leave_create = Leaves(
 										from_ = form.from_.data,
@@ -905,12 +938,12 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										total = float(form.total_days_calc()[0]),
+										total = total_days,
 										#remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = current_user.id	,
-										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'			  
+										remarks = remarks			  
 										)
 				else:
 					leave_create = Leaves(
@@ -919,11 +952,11 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										total = float(form.total_days_calc()[0]),
+										total = total_days,
 										#remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
 										owner = current_user.id	,
-										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
+										remarks = remarks
 										)	
 														
 			db.session.add(leave_create)
@@ -1036,19 +1069,15 @@ def leave_confirm(id):
 	print(id)
 	leave_to_confirm = db.session.query(Leaves).filter(Leaves.id==id).one()
 	if leave_to_confirm.half==False:
-		leave_days= db.session.query(((Leaves.to_ - Leaves.from_)+1).label('total_days'),).filter(Leaves.id==id).one()
-
-		print(type(leave_days.total_days))
-		print(leave_days)
 		leave_to_confirm.confirm = True
 		
 		if leave_to_confirm.reason == 'Annual Leave':
 			user_to_update_leave_days = db.session.query(Users).filter(Users.id==leave_to_confirm.owner).one()
-			print('inside annual')
+			
 			print( user_to_update_leave_days)
 			
-			if  user_to_update_leave_days.annual_leave_total >= leave_days.total_days:
-				user_to_update_leave_days.annual_leave_total = user_to_update_leave_days.annual_leave_total- leave_days.total_days
+			if  user_to_update_leave_days.annual_leave_total >= leave_to_confirm.total:
+				user_to_update_leave_days.annual_leave_total = user_to_update_leave_days.annual_leave_total- leave_to_confirm.total
 	else:
 		leave_days = 0.5
 		if leave_to_confirm.reason == 'Annual Leave':
