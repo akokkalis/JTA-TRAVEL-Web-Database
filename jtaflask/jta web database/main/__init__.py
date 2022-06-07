@@ -10,6 +10,9 @@ app.config['SECRET_KEY'] = '987456123'
 
 # file uploading settings
 app.config['FILE_UPLOADS_LIQUIDATION'] = 'F:\\Python Repo\\web database\\jtaflask\\jta web database\\main\\Files_Uploads\\Liquidation'
+
+app.config['FILE_UPLOADS_FOR_LEAVES'] = 'F:\\Python Repo\\web database\\jtaflask\\jta web database\\main\\Files_Uploads\\Leave_Docs'
+
 app.config['ALLOWED_FILE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG' , 'GIF', 'PDF','DOC', 'DOCX']
 
 #app.config['MAX_CONTENT_LENGTH'] = 1024

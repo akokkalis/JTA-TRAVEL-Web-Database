@@ -804,7 +804,7 @@ def leaves():
 		leaves_table =  db.session.query(Leaves.id,
 								column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
 								column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
-								((Leaves.to_ - Leaves.from_)+1).label('total_days'),
+								Leaves.total,
 								Leaves.reason,
 								Leaves.half,
 								Leaves.docs,
