@@ -4,6 +4,7 @@ from unicodedata import name
 from wsgiref import validate
 from flask_login import current_user
 from flask_wtf import FlaskForm
+from sqlalchemy import TEXT
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField, SelectMultipleField, DateField
 from wtforms.validators import Length, Email, DataRequired, ValidationError, NumberRange, Regexp
 from main.models import *
@@ -221,22 +222,33 @@ class LeavesForm(FlaskForm):
             name = self.employee.data.split()[0]
             surname = self.employee.data.split()[1]
             
+
             
-            user_to_check = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum((Leaves.to_ - Leaves.from_)+1 )).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
+            print(self.half_day.data)
             
-            print(user_to_check)
-          
+            total_days = self.total_days_calc()[0]
+            
+            
+            
+            
+            user_to_check = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
+            
+            print(f'user is {user_to_check}'  )
+            
 
 
             try_to_insert = self.to_.data - self.from_.data 
+            
             if user_to_check:
-                if (try_to_insert.days + 1) + user_to_check[0][3] > user_to_check[0][2]:
-                    raise ValidationError(f'Too Many Days. You are over exceed the limit for {((try_to_insert.days + 1) + user_to_check[0][3]) - user_to_check[0][2] } day annual leave') 
+                if total_days + user_to_check[0][3] > user_to_check[0][2]:
+                    raise ValidationError(f'You allowed {user_to_check[0][2] - user_to_check[0][3]} days to request as annual leave and you request {total_days} days ') 
             else: 
                 #the user first time tries to send leave request
                 user_to_check = db.session.query(Users).filter(Users.name==name).filter(Users.surname==surname).one()
-                if (try_to_insert.days + 1) > user_to_check.annual_leave_total: 
-                    raise ValidationError(f'Too Many Days. You are over exceed the limit for annual leave in total {(try_to_insert.days + 1) - user_to_check.annual_leave_total }')  
+                print(f'first {user_to_check.annual_leave_total} ')
+               
+                if total_days > user_to_check.annual_leave_total: 
+                    raise ValidationError(f'You allowed {user_to_check.annual_leave_total} days to request as annual leave and you request {total_days} days ')  
     
     def existance(self):        
         import datetime
@@ -262,11 +274,19 @@ class LeavesForm(FlaskForm):
             same_dates = set(date_range_form).intersection(date_generated_db)
             if len(same_dates) != 0:
                 raise ValidationError(f'You are Trying to request {self.reason.data} leave, but you already have an entrie leave for that date period in database - {sorted(same_dates)} - for a reason {item.reason}. Please delete that existing entrie and try again.')  
-            
+
+    def total_days_calc(self):
+        pu_h = db.session.query(db.func.to_char(PublicHolidays.date_of_holiday,'yyyy-mm-dd')).filter(PublicHolidays.country == self.country.data).all()
+        
+        holidays = [item[0] for item in pu_h]            
+
+        total_days = usefull_functions.leave_days(self.from_.data, self.to_.data, holidays)
+        return(total_days)
+
         
         
 
-
+    
     employee = SelectField(label='Employee Name:', coerce=str)
     from_ = DateField(label='From:',validators=[DataRequired()])
     to_ = DateField(label='To:',validators=[DataRequired()])

@@ -45,16 +45,19 @@ def file_deleter(filename):
 
 
 
-def weekend_exclude():
-	''' Check if we need that'''
+def leave_days(start, end, holidays=[]):
+	from datetime import datetime, timedelta    
+	end = end +  timedelta(days=1)	
 	import numpy as np
-	import datetime as dt
-
-	start = dt.date( 2022, 5, 23 )
-	end = dt.date( 2022, 6, 5 )
-
-	days = np.busday_count( start, end )+1
-	return days
+	total_inc_hol = np.busday_count(start,end,
+						weekmask=[1,1,1,1,1,0,0],
+						)
+	total = np.busday_count(start,end,
+						weekmask=[1,1,1,1,1,0,0],
+						holidays=holidays)
+	weekends = np.busday_count(start, end, weekmask=[0,0,0,0,0,1,1])
+	hol = total_inc_hol - total
+	return [total, weekends, hol]
 
 
 

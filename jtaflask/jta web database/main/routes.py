@@ -781,7 +781,7 @@ def leaves():
 		leaves_table =  db.session.query(Leaves.id,
 										column_property(func.to_char(Leaves.from_, 'DD/MM/YYYY').label('from_')),
 										column_property(func.to_char(Leaves.to_, 'DD/MM/YYYY').label('to_')),
-										((Leaves.to_ - Leaves.from_)+1).label('total_days'),
+										Leaves.total,
 										Leaves.reason,
 										Leaves.half,
 										Leaves.docs,
@@ -859,11 +859,14 @@ def add_leave():
 			
 					print(file_names_dict)
 					print(len(file_names_dict))
+			
 
 			if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
 				search_val = form.employee.data.split()
-				print(search_val)				
+							
 				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
+				print(f'form total days {form.total_days_calc()}')
+				
 				#print(search_emp.all())
 				
 				#print(search_emp.all()[0][0])
@@ -874,10 +877,12 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										remarks = form.remarks.data,
+										total = float(form.total_days_calc()[0]),
+										#remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
-										owner = search_emp.all()[0][0]			  
+										owner = search_emp.all()[0][0],
+										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'			  
 										)
 				else:
 					leave_create = Leaves(
@@ -886,9 +891,11 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										remarks = form.remarks.data,	
+										total = float(form.total_days_calc()[0]),
+										#remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
-										owner = search_emp.all()[0][0]	
+										owner = search_emp.all()[0][0],
+										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'	
 										)	
 			else:
 				if len(file_names_dict)>0:		
@@ -898,10 +905,12 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										remarks = form.remarks.data,
+										total = float(form.total_days_calc()[0]),
+										#remarks = form.remarks.data,
 										docs = file_names_dict['docs'],
 										creator = f'{current_user.name} {current_user.surname}',
-										owner = current_user.id				  
+										owner = current_user.id	,
+										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'			  
 										)
 				else:
 					leave_create = Leaves(
@@ -910,9 +919,11 @@ def add_leave():
 										half = form.half_day.data,
 										reason= form.reason.data,
 										country = form.country.data,
-										remarks = form.remarks.data,	
+										total = float(form.total_days_calc()[0]),
+										#remarks = form.remarks.data,	
 										creator = f'{current_user.name} {current_user.surname}',
-										owner = current_user.id	
+										owner = current_user.id	,
+										remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
 										)	
 														
 			db.session.add(leave_create)

@@ -76,12 +76,8 @@
 							<th scope="row">{{loop.index}}</th>
 							<td>{{item.fname}} {{item.surname}} </td>
 							<td>{{item.from_}}</td>
-							<td>{{item.to_}}</td>
-							{%if item.half == False%}
-								<td>{{item.total_days}}</td>
-							{%else%}
-								<td>0.5</td>
-							{%endif%}
+							<td>{{item.to_}}</td>							
+							<td>{{item.total}}</td>
 							<td>{{item.half}}</td>
 							<td>{{item.reason}}</td>
 							<td>{{item.remarks}}</td>
