@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
@@ -27,6 +28,5 @@ login_manager.login_message_category = 'info'
 #print(app.config)
 from main import routes
 from main import models
-from main.routing import routing_test
 from main import usefull_functions
 

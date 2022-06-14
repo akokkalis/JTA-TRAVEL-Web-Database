@@ -33,6 +33,7 @@ class Users(db.Model, UserMixin):
     mobile_phone = db.Column(db.String(length=15), nullable=False, unique=True)
     date_of_birth = db.Column(db.Date())
     area_of_business = db.Column(db.String(length=15), nullable=False)
+    registration_date = db.Column(db.Date(), nullable=False, default = usefull_functions.current_date() )
     dai_liq = db.relationship('DailyLiquidation', backref='owned_user', lazy=True)
     asset = db.relationship('Assets', backref='owned_user', lazy=True)
     leave = db.relationship('Leaves', backref='owned_user', lazy=True)

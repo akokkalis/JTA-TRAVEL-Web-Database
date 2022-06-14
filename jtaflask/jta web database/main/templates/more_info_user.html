@@ -26,10 +26,105 @@
 {% block content %}
 
 <div class="card p-3 bg-light">
-	<h3 class="text-center text-"><i class="bi bi-clipboard-data"></i>All Employee Records </h3>
+	<h3 class="text-center text-"><i class="bi bi-clipboard-data"></i> Employee Records For {{name[0]}} {{name[1]}}</h3>
 </div>
 
 <hr class="border-primary border-3 opacity-100">
+
+
+{%if leaves_existance > 0 %}
+<!--Leave from begining Statistics-->
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-file-spreadsheet-fill"></i> From Register Date Annual Leave Totals</h3>
+	<div class="table-responsive">
+		
+		<table id="from_beg_table" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
+
+			<thead>
+				<!--Table Columns Here-->
+			<tr>
+				
+				<th scope="col">No</th>
+				<th scope="col">From Beginig Days</th>
+				<th scope="col">Total Annual Leaves Taken</th>
+				<th scope="col">Remaining Annual Leaves</th>
+			</tr>
+			</thead>
+			<tbody>				
+								
+					<tr>
+						<th scope="row">1</th>
+						<td>{{total_from_begining_annuals[0]}}</td>
+						<td class="table-dark">{{total_from_begining_annuals[1]}}</td>
+						<td class="table-warning">{{total_from_begining_annuals[2]}}</td>
+					</tr>
+				
+			</tbody>
+
+		</table>
+
+	</div>
+</div>
+<!--Leave from begining Statistics End-->
+<hr class="border-primary border-3 opacity-100">
+<!--Leave Statistics-->
+
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-file-spreadsheet-fill"></i> Year's Statistics</h3>
+
+	<div class="table-responsive">
+		
+		<table id="leavetable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
+
+			<thead>
+				<!--Table Columns Here-->
+			<tr>
+				
+				<th scope="col">No</th>
+				<th scope="col">Year</th>
+				<th scope="col">Annual Leave</th>
+				<th scope="col">Military</th>
+				<th scope="col">Sick-Leave</th>
+				<th scope="col">UnPaid</th>
+				<th scope="col">Working-On</th>
+				<th scope="col">Working-Off</th>
+				<th scope="col">Public-On</th>
+				<th scope="col">Public-Off</th>
+				<th scope="col">Other</th>
+			</tr>
+			</thead>
+			<tbody>
+				{% for item in year_stats %}
+								
+					<tr>
+						<th scope="row">{{loop.index}}</th>
+						<td>{{item['Year']}}</td>
+						<td>{{item['Annual Leave'] }}</td>
+						<td>{{item['Military']}}</td>
+						<td>{{item['Sick - Leave']}}</td>
+						<td>{{item['UnPaid']}}</td>
+						<td>{{item['Working-On']}}</td> 						
+						<td>{{item['Working-Off']}}</td>
+						<td>{{item['Public-On']}}</td>
+						<td>{{item['Public-Off']}}</td>
+						<td>{{item['Other']}}</td>
+										
+					</tr>
+				{% endfor %}
+			</tbody>
+
+		</table>
+
+	</div>
+
+</div>
+<!--Leave Statistics Table End-->
+<hr class="border-primary border-3 opacity-100">
+{%endif%}
+
+
+
+
 
 
 <!--Daily Liquidation Table if it exist-->
@@ -171,10 +266,20 @@
 				'buttons' : ['print','excel','csv','pdf','colvis'],
 				'colReorder': true,
 				'responsive': false,
-				'select':false,
-				
+				'select':false,				
 			}
-			
+			);
+
+			$('#leavetable').DataTable({					
+				'hover':true,
+				"ordering": true,
+				'paging':true,
+				'dom':'BQlfrtip',				
+				'buttons' : ['print','excel','csv','pdf','colvis'],
+				'colReorder': true,
+				'responsive': false,
+				'select':false,				
+			}
 			);
 			
 			$('[data-toggle="tooltip"]').tooltip({placement: "right"});
@@ -192,6 +297,8 @@
 {%endif%}
 
 <!--Daily Liquidation Table Ends-->
+
+
 
 
 

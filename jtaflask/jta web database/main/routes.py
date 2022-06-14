@@ -1,12 +1,9 @@
-from cgi import print_form
 from dataclasses import dataclass
-from tkinter import TRUE
-from click import edit
 from numpy import concatenate
 from flask import session
-from datetime import timedelta
+from datetime import timedelta,date
 from sqlalchemy import values
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import column_property
 from main import app
 from main.models import *
@@ -23,225 +20,195 @@ import werkzeug
 
 from main.usefull_functions import file_ext
 
-# @app.route('/home')
-# @app.route('/')
-# def home():
-# 	page_title = 'Home Page'
-# 	room_list = [
-# 		{ "room": 100,
-# 			"use": "reception",
-# 			"sq-ft": 50,
-# 			"price": 75
-# 		},
-# 		{ "room": 101,
-# 			"use": "waiting",
-# 			"sq-ft": 250,
-# 			"price": 75
-# 		},
-# 		{ "room": 102,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 103,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 104,
-# 			"use": "office",
-# 			"sq-ft": 150,
-# 			"price": 100
-# 		},
-# 		{ "room": 100,
-# 			"use": "reception",
-# 			"sq-ft": 50,
-# 			"price": 75
-# 		},
-# 		{ "room": 101,
-# 			"use": "waiting",
-# 			"sq-ft": 250,
-# 			"price": 75
-# 		},
-# 		{ "room": 102,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 103,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 104,
-# 			"use": "office",
-# 			"sq-ft": 150,
-# 			"price": 100
-# 		},
-# 		{ "room": 100,
-# 			"use": "reception",
-# 			"sq-ft": 50,
-# 			"price": 75
-# 		},
-# 		{ "room": 101,
-# 			"use": "waiting",
-# 			"sq-ft": 250,
-# 			"price": 75
-# 		},
-# 		{ "room": 102,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 103,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 104,
-# 			"use": "office",
-# 			"sq-ft": 150,
-# 			"price": 100
-# 		},
-# 		{ "room": 100,
-# 			"use": "reception",
-# 			"sq-ft": 50,
-# 			"price": 75
-# 		},
-# 		{ "room": 101,
-# 			"use": "waiting",
-# 			"sq-ft": 250,
-# 			"price": 75
-# 		},
-# 		{ "room": 102,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 103,
-# 			"use": "examination",
-# 			"sq-ft": 125,
-# 			"price": 150
-# 		},
-# 		{ "room": 104,
-# 			"use": "office",
-# 			"sq-ft": 150,
-# 			"price": 100
-# 		}
+def count_annual_leaves(id) ->list:
+	'''Function to take  employee id and calculates the total of annual leaves that should be taken  and how many is taken
+	return total from begining, total taken from begining, remains
+	[51.26301369387, 20.5, 30.76301369387]
+	'''
+
+	user_is = db.session.query(Users.name, Users.surname, Users.registration_date).filter(Users.id==id, Users.active==True).one()
+	
+	#total annual taken from all entries
+	total_annual_taken = db.session.query(db.func.sum(Leaves.total)).filter( Leaves.owner == id, Leaves.reason=='Annual Leave' ).first()
+	
+	start = user_is.registration_date
+	end = date.today()
+	total_worked_days_from_begining = usefull_functions.leave_days(start, end, holidays=[])[3]
+
+	annual_total_from_begining = total_worked_days_from_begining * 0.05753424657
+	try:
+		remaining = annual_total_from_begining - total_annual_taken[0]
+	except TypeError:
+		remaining = 0
+
+	return [annual_total_from_begining, total_annual_taken[0], remaining ]
+def statistics_current_year(id)->dict:
+	'''Function to take  employee id and annual leave current year total
+		totals = {'Annual Leave' : 0.0, 'Military' : 0.0, 'Sick - Leave' : 0.0, 'UnPaid': 0.0, 'Working-Off' : 0.0, 'Working-On' : 0.0, 
+		'Public-On' : 0.0, 'Public-Off' : 0.0, 'Other' : 0.0}	'''
+	'''select extract(year from to_) from leaves
+					where owner=4;'''
+	year = usefull_functions.current_date()[-4:]
+
+	
+	years_from = db.session.query(db.func.extract('year', Leaves.from_)).filter(Leaves.owner == id).all()
+	years_to = db.session.query(db.func.extract('year', Leaves.to_)).filter(Leaves.owner == id).all()
+	
+	years_from_list=[str(item[0])[:-2] for item in years_from]
+	years_to_list = [str(item[0])[:-2] for item in years_to]
+	all_years_list = years_from_list + years_to_list
+	all_years_list = usefull_functions.years_uniques(all_years_list)
+	print(all_years_list)
+
+	#user_is = db.session.query(Users.name, Users.surname, Users.registration_date).filter(Users.id==id, Users.active==True).one()
+	#DATE_PART('year',  from_) = 2022
+	#a = db.session.query(db.func.date_part(year, Leaves.from_)==str(year)).filter( Leaves.owner == id, Leaves.reason=='Annual Leave',  ).first()
+	years_stat=[]
+	for year in all_years_list:
+		total_for_current_year = db.session.query(Leaves.from_, Leaves.to_, Leaves.reason, Leaves.country,Leaves.total).filter(or_(db.func.date_part('year', Leaves.from_)==year,
+		db.func.date_part('year', Leaves.to_)==year), 
+		Leaves.owner==id, Leaves.confirm!="false").all()		
 		
-# 	]
-# 	return render_template('home.html', title=page_title, room_list=room_list)
+		totals = {'Year':year,'Annual Leave' : 0.0, 'Military' : 0.0, 
+				  'Sick - Leave' : 0.0, 'UnPaid': 0.0, 'Working-Off' : 0.0, 'Working-On' : 0.0, 'Public-On' : 0.0, 'Public-Off' : 0.0, 'Other' : 0.0}
+		for item in total_for_current_year:	
 
-# # @app.route('/about')
-# # def about():
-# 		room_list = [
-# 			{ "room": 100,
-# 				"use": "reception",
-# 				"sq-ft": 50,
-# 				"price": 75
-# 			},
-# 			{ "room": 101,
-# 				"use": "waiting",
-# 				"sq-ft": 250,
-# 				"price": 75
-# 			},
-# 			{ "room": 102,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 103,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 104,
-# 				"use": "office",
-# 				"sq-ft": 150,
-# 				"price": 100
-# 			},
-# 			{ "room": 100,
-# 				"use": "reception",
-# 				"sq-ft": 50,
-# 				"price": 75
-# 			},
-# 			{ "room": 101,
-# 				"use": "waiting",
-# 				"sq-ft": 250,
-# 				"price": 75
-# 			},
-# 			{ "room": 102,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 103,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 104,
-# 				"use": "office",
-# 				"sq-ft": 150,
-# 				"price": 100
-# 			},
-# 			{ "room": 100,
-# 				"use": "reception",
-# 				"sq-ft": 50,
-# 				"price": 75
-# 			},
-# 			{ "room": 101,
-# 				"use": "waiting",
-# 				"sq-ft": 250,
-# 				"price": 75
-# 			},
-# 			{ "room": 102,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 103,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 104,
-# 				"use": "office",
-# 				"sq-ft": 150,
-# 				"price": 100
-# 			},
-# 			{ "room": 100,
-# 				"use": "reception",
-# 				"sq-ft": 50,
-# 				"price": 75
-# 			},
-# 			{ "room": 101,
-# 				"use": "waiting",
-# 				"sq-ft": 250,
-# 				"price": 75
-# 			},
-# 			{ "room": 102,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 103,
-# 				"use": "examination",
-# 				"sq-ft": 125,
-# 				"price": 150
-# 			},
-# 			{ "room": 104,
-# 				"use": "office",
-# 				"sq-ft": 150,
-# 				"price": 100
-# 			}
+			for key in totals:
+				if (year != item[0].strftime("%Y") or year != item[1].strftime("%Y")):
+					#MAKE A LIST WITH ALL PUBLIC HOLIDAYS
+					holidays:list = usefull_functions.days_period(db.session.query(func.to_char(PublicHolidays.date_of_holiday,'yyyy-mm-dd')).filter(PublicHolidays.country == item[3]).all())
+					
+					dd = [item[0] + timedelta(days=x)  for x in range((item[1]-item[0]).days + 1) if (item[0] + timedelta(days=x)).strftime("%Y")==year]
+					start = dd[0]
+					end = dd[-1]
+				
+					total = usefull_functions.leave_days(start, end, holidays)[0]
+				
+					
+					if key == item.reason:
+						totals[key] = totals[key] + total
+				
+				else:
+					if key == item.reason:
+						totals[key] = totals[key] + item.total
+		years_stat.append(totals)
 			
-# 		]
-# 		return render_template('about.html', room_list=room_list)
+
+	return years_stat
+	
 
 
 
+@app.route('/home')
+@app.route('/')
+def home():
 
+	page_title = 'Home Page'
+	room_list = [
+		{ "room": 859
+		,
+			"use": "reception",
+			"sq-ft": 50,
+			"price": 75
+		},
+		{ "room": 101,
+			"use": "waiting",
+			"sq-ft": 250,
+			"price": 75
+		},
+		{ "room": 102,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 103,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 104,
+			"use": "office",
+			"sq-ft": 150,
+			"price": 100
+		},
+		{ "room": 100,
+			"use": "reception",
+			"sq-ft": 50,
+			"price": 75
+		},
+		{ "room": 101,
+			"use": "waiting",
+			"sq-ft": 250,
+			"price": 75
+		},
+		{ "room": 102,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 103,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 104,
+			"use": "office",
+			"sq-ft": 150,
+			"price": 100
+		},
+		{ "room": 100,
+			"use": "reception",
+			"sq-ft": 50,
+			"price": 75
+		},
+		{ "room": 101,
+			"use": "waiting",
+			"sq-ft": 250,
+			"price": 75
+		},
+		{ "room": 102,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 103,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 104,
+			"use": "office",
+			"sq-ft": 150,
+			"price": 100
+		},
+		{ "room": 100,
+			"use": "reception",
+			"sq-ft": 50,
+			"price": 75
+		},
+		{ "room": 101,
+			"use": "waiting",
+			"sq-ft": 250,
+			"price": 75
+		},
+		{ "room": 102,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 103,
+			"use": "examination",
+			"sq-ft": 125,
+			"price": 150
+		},
+		{ "room": 104,
+			"use": "office",
+			"sq-ft": 150,
+			"price": 100
+		}
+		
+	]
+	return render_template('home.html', title=page_title, room_list=room_list)
 
 @app.route('/cars')
 def cars_page():
@@ -667,6 +634,7 @@ def add_user():
 						  mobile_phone = form.mobile_phone.data,
 						  date_of_birth = form.date_of_birth.data,
 						  position = form.position.data,
+						  registration_date = form.registration_date.data,
 						  role = user_role.strip(',').strip(' ')
 
 						  
@@ -752,6 +720,8 @@ def edit_user(id):
 @app.route('/more_info_user/<int:id>', methods=['GET','POST'])
 #@login_required
 def more_info_user(id):
+	
+
 	ownwed_daily_liqu = db.session.query(DailyLiquidation.id, DailyLiquidation.						total_sales, DailyLiquidation.bank_deposit, 								DailyLiquidation.visa_transaction, 
 						DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, 
 						column_property(func.to_char(DailyLiquidation.date_time_actual, 'DD/MM/YYYY').label('date_time_actual')) ,
@@ -760,14 +730,26 @@ def more_info_user(id):
 						DailyLiquidation.bank_dep_image, 
 						DailyLiquidation.jcc_daily_batch_image,DailyLiquidation.canceled_ticket_image, DailyLiquidation.daily_liquidation_balance, DailyLiquidation.remarks,DailyLiquidation.confirm, Users.name,Users.surname, Users.position).filter(DailyLiquidation.owner ==id ).outerjoin(Users, Users.id==id).order_by(DailyLiquidation.id.desc()).all()
 	
+	user_is = db.session.query(Users.name, Users.surname, Users.registration_date).filter(Users.id==id, Users.active==True).one()
+
+	owned_leaves = db.session.query(Leaves).filter( Leaves.owner == id ).all()
 	
 	
-	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu))
+	#user_is = db.session.query(Users.name, Users.surname, Users.registration_date).filter(Users.id==id, Users.active==True).one()
+	year = usefull_functions.current_date()[-4:]
+	total_from_begining_annuals = count_annual_leaves(id)
+
+	total_annual_current_year:dict = statistics_current_year(id)
+
+	print(total_annual_current_year)
+	
+	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu), name =user_is, total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, year = year, leaves_existance = len(total_annual_current_year)   )
 
 
 @app.route('/leaves', methods=['GET','POST'])
 #@login_required
 def leaves():
+	
 	deleteform = DeleteForm()	
 	if request.method=="POST":
 		if request.form['submit_button'] =="Delete":
@@ -974,10 +956,11 @@ def add_leave():
 @app.route('/leaves/edit/<int:id>', methods=['GET','POST'])
 #@login_required
 def leave_edit(id):
-	print(id)
+	print('Inside edit leave')
 	leave_to_edit = db.session.query(Leaves).filter(Leaves.id==id).first()
-	print(leave_to_edit.owner)
+	print(leave_to_edit.total)
 	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
+	
 	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
 		#if the user is administrator or HR has to choose some employees names
 		emp =  db.session.query(Users.name,Users.surname).filter(Users.							active==True).filter(Users.id == 								leave_to_edit.owner).order_by(Users.name)
@@ -1029,31 +1012,74 @@ def leave_edit(id):
 					print(len(file_names_dict))
 
 			if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
+				if form.half_day.data == True:
+					total_days = 0.5
+				else:
+					if form.reason.data == 'Annual Leave':
+						total_days = float(form.total_days_calc()[0])
+						if ((form.to_.data != leave_to_edit.to_) or (form.from_.data != leave_to_edit.from_ ) )and leave_to_edit.confirm =='true':
+							upd_user = db.session.query(Users).filter(Users.id == leave_to_edit.owner).first()					
+							print(leave_to_edit.total)
+							upd_user.annual_leave_total = upd_user.annual_leave_total + leave_to_edit.total
+							db.session.commit()
+
+					else: 
+						total_days = float(form.total_days_calc()[3])
+					print(total_days)	
+				
+				if form.reason.data == 'Annual Leave':
+					remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
+				else:
+					remarks = form.remarks.data
+
+
+				
 				search_val = form.employee.data.split()
 				search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1])
 				print(search_emp.all()[0][0])
 				
 				leave_to_edit.from_ = form.from_.data
+				leave_to_edit.total =total_days
 				leave_to_edit.to_ = form.to_.data
 				leave_to_edit.half = form.half_day.data
 				leave_to_edit.reason = form.reason.data
-				leave_to_edit.remarks = form.remarks.data
+				leave_to_edit.remarks = remarks
 				if len(file_names_dict)>0:
 					leave_to_edit.docs = file_names_dict['docs']
 				leave_to_edit.creator = f'{current_user.name} {current_user.surname}'
 				leave_to_edit.owner = search_emp.all()[0][0]
+				if leave_to_edit.confirm =='true':		
+					leave_confirm(id) 
 
 
-			else:
+			else: # if its normal user not admin or hr
+				if form.half_day.data == True:
+					total_days = 0.5
+				else:
+					if form.reason.data == 'Annual Leave':
+						total_days = float(form.total_days_calc()[0])
+					else: 
+						total_days = float(form.total_days_calc()[3])
+					print(total_days)	
+				
+				if form.reason.data == 'Annual Leave':
+					remarks = f'{form.remarks.data}, WeekendsDays: {form.total_days_calc()[1]}, Holiday days: {form.total_days_calc()[2]}'
+				else:
+					remarks = form.remarks.data
+
+				#execute query	
 				leave_to_edit.from_ = form.from_.data
 				leave_to_edit.to_ = form.to_.data
 				leave_to_edit.half = form.half_day.data
+				leave_to_edit.total = total_days
 				leave_to_edit.reason = form.reason.data
-				leave_to_edit.remarks = form.remarks.data
+				leave_to_edit.remarks = remarks
 				if len(file_names_dict)>0:
 					leave_to_edit.docs = file_names_dict['docs']
 				leave_to_edit.creator = f'{current_user.name} {current_user.surname}'
 				leave_to_edit.owner = current_user.id			
+				
+					
 
 			db.session.commit()
 			flash(f'A Leave is Edited Succesfully', category='primary' )
@@ -1061,6 +1087,10 @@ def leave_edit(id):
 	if form.errors != {}:
 		for error_msg in form.errors.values():
 			flash(f'Error!!! {error_msg[0]}', category='danger' )
+	form.id.data = id
+	form.remarks.data=''
+	if leave_to_edit.half == True:
+		form.half_day.data = True
 	return render_template('Leaves/leave_edit.html', form = form)
 
 @app.route('/leaves/confirm/<int:id>', methods=['GET','POST'])
@@ -1097,8 +1127,7 @@ def leave_confirm(id):
 
 @app.route('/leaves/decline/<int:id>', methods=['GET','POST'])
 #@login_required
-def leave_decline(id):
-	print(id)
+def leave_decline(id):	
 	leave_to_decline = db.session.query(Leaves).filter(Leaves.id==id).one()
 	leave_to_decline.confirm=False
 	db.session.commit()

@@ -61,9 +61,16 @@
                 <div class="col-md-3">
                     
                     <h5>Active OR Not:</h5>
+                    
 					<label for="active" class="form-label">{{ form.active.label()}}</label>                    
-						{{form.active}}             
+						{{form.active(class="form-control")}}             
 					
+				</div>
+
+                <div class="col-md-3">                  
+                    
+					<label for="active" class="form-label">{{ form.registration_date.label()}}</label>                    
+						{{form.registration_date(class="form-control")}}       
 				</div>	
 
                 <div class="col-md-12">

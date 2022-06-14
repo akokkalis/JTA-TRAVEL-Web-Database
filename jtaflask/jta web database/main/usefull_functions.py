@@ -1,10 +1,18 @@
+
 from main import app
+from main.models import *
+from main import db
+from datetime import date
+
+
 import os
+
+
+
 def current_date()-> str:
 	'''
-	Returns Current Date
-	'''
-	from datetime import date
+	Returns Current Date in a string format	'''
+	
 	return date.today().strftime("%m/%d/%Y")
 
 def yesterday_date()->str:
@@ -43,9 +51,12 @@ def file_deleter(filename):
 
 
 
+def days_period(period:list) ->list:
+	'''Take a list of datetime objects and returns them in to a list of strings'''
+	all_dates = [item[0] for item in period]
+	return all_dates
 
-
-def leave_days(start, end, holidays=[]):
+def leave_days(start:date, end:date, holidays=[])->list:
 	from datetime import datetime, timedelta    
 	end = end +  timedelta(days=1)	
 	import numpy as np
@@ -60,7 +71,8 @@ def leave_days(start, end, holidays=[]):
 	hol = total_inc_hol - total
 	return [total, weekends, hol, total_inc_hol_weekends]
 
-
-
-
-
+def years_uniques(mylist : list) -> list:
+	''' Function that takes a list off all years and return only the unique 		values'''
+	import numpy as np
+	x = np.array(mylist)
+	return np.unique(x)

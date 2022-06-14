@@ -4,6 +4,7 @@ from unicodedata import name
 from wsgiref import validate
 from flask_login import current_user
 from flask_wtf import FlaskForm
+from numpy import integer
 from sqlalchemy import TEXT
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField, RadioField, SelectField, BooleanField, FloatField, FileField, TextAreaField, SelectMultipleField, DateField
 from wtforms.validators import Length, Email, DataRequired, ValidationError, NumberRange, Regexp
@@ -63,6 +64,8 @@ class UsersForm(FlaskForm):
     position = SelectField(label='Position:', choices=['Administrator', 'Representative', 'Rep Supervisor','Escort', 'Bibliosha','Airport', 'Office-Staff' ])
     #role= SelectMultipleField(label = 'Role', choices=['Administrator', 'Office Rec Staff', 'Representative', 'HR'])
     active = BooleanField(label = 'Active: ')#, choices=[True, False])
+    registration_date = DateField(label = 'Registration Date:')
+
 
 class User_Edit_Form(FlaskForm):
     
@@ -192,7 +195,7 @@ class Liq_Edit_Form(FlaskForm):
     submit = SubmitField(label = 'Save')
 
 class LeavesForm(FlaskForm):
-    
+
     def validate_from_(self, from_):
         from datetime import date
         from dateutil.relativedelta import relativedelta
@@ -219,6 +222,8 @@ class LeavesForm(FlaskForm):
     def validate_reason(self, reason):
         if self.reason.data == 'Annual Leave':
             print('this is my reason')
+            
+            
             name = self.employee.data.split()[0]
             surname = self.employee.data.split()[1]
             
@@ -231,11 +236,13 @@ class LeavesForm(FlaskForm):
             
             
             
-            user_to_check = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
+            user_to_check = db.session.query(Users.name, Users.surname, Users.
+            annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm != 'false').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all()           
             
-            conf = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'true').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
+            conf = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'true', Leaves.id != self.id.data).outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
+            
             try:
-                pend = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'Pending Confirmation').outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
+                pend = db.session.query(Users.name, Users.surname, Users.annual_leave_total, db.func.sum(Leaves.total)).filter(Users.name==name, Users.surname == surname, Leaves.reason=='Annual Leave', Leaves.confirm == 'Pending Confirmation', Leaves.id != self.id.data).outerjoin(Leaves, Leaves.owner==Users.id).group_by(Users.id, Leaves.owner).all() 
                 must_ded = pend[0][3]
             except IndexError:
                 must_ded=0
@@ -277,13 +284,17 @@ class LeavesForm(FlaskForm):
         #query the database and give the user object with al of his attributes	
         search_emp = db.session.query(Users.id).filter(Users.name==search_val[0]).filter(Users.surname == search_val[1]).one()
         print(search_emp[0])
-		#Query leave period and give me all users leaves entries that he has bigger to	
-        leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= self.from_.data).order_by(Leaves.id.desc())
- 	
+		#Query leave period and give me all users leaves entries that he has bigger to
+        try:	
+            print('Inside try')
+            print(self.id.data) 
+            leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= self.from_.data, Leaves.id != self.id.data).order_by(Leaves.id.desc())
+        except TypeError:
+            leaves_period = db.session.query(Leaves).filter(Leaves.owner==search_emp[0], Leaves.to_ >= self.from_.data ).order_by(Leaves.id.desc())
+        
         # for loop to compare the dates 
         for item in leaves_period:
             date_generated_db = [str(item.from_ + datetime.timedelta(days=x)) for x in range(0, (item.to_ - item.from_ ).days +1 )]
-
             print(date_generated_db)
             
 
@@ -304,10 +315,11 @@ class LeavesForm(FlaskForm):
         print('Inside total_days_calc function')
         return(total_days)
 
-        
-        
+  
 
-    
+     
+
+    id = IntegerField()
     employee = SelectField(label='Employee Name:', coerce=str)
     from_ = DateField(label='From:',validators=[DataRequired()])
     to_ = DateField(label='To:',validators=[DataRequired()])
