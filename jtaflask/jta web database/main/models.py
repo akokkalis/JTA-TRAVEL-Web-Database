@@ -75,6 +75,8 @@ class LeavesHistory(db.Model):
     docs = db.Column(db.String(length=100), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
+    country = db.Column(db.String(length=300), nullable=False, unique=False)
+    total = db.Column(db.Float(), nullable=False, default=0.0)
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
     owner = db.Column(db.Integer())
 

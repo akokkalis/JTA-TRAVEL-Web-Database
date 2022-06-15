@@ -312,7 +312,7 @@ class LeavesForm(FlaskForm):
         holidays = [item[0] for item in pu_h]            
 
         total_days = usefull_functions.leave_days(self.from_.data, self.to_.data, holidays)
-        print('Inside total_days_calc function')
+       
         return(total_days)
 
   

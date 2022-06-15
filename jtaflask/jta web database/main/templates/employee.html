@@ -39,7 +39,7 @@
 	<div class="table-responsive">
 		<caption>List of Employees</caption>
 		<table id="mytable" class="table table-hover table-info table-bordered text-center " >
-			<thead>
+			<thead >
 				<!--Table Columns Here-->
 			<tr>
 				<th scope="col">No</th>				
@@ -137,7 +137,8 @@
 
 <script>
 $(document).ready(function(){
-	$('#mytable').DataTable({					
+	$('#mytable').DataTable({	
+						
 		'hover':true,
 		"ordering": true,
 		'paging':true,

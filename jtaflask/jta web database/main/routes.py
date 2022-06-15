@@ -39,7 +39,7 @@ def count_annual_leaves(id) ->list:
 	try:
 		remaining = annual_total_from_begining - total_annual_taken[0]
 	except TypeError:
-		remaining = 0
+		remaining = annual_total_from_begining - 0
 
 	return [annual_total_from_begining, total_annual_taken[0], remaining ]
 def statistics_current_year(id)->dict:
@@ -58,7 +58,7 @@ def statistics_current_year(id)->dict:
 	years_to_list = [str(item[0])[:-2] for item in years_to]
 	all_years_list = years_from_list + years_to_list
 	all_years_list = usefull_functions.years_uniques(all_years_list)
-	print(all_years_list)
+	
 
 	#user_is = db.session.query(Users.name, Users.surname, Users.registration_date).filter(Users.id==id, Users.active==True).one()
 	#DATE_PART('year',  from_) = 2022
@@ -95,7 +95,12 @@ def statistics_current_year(id)->dict:
 			
 
 	return years_stat
+def leave_hist_add():
+	'''Function that returns the latest entrie for leaves
+	We will use it to grap the latest id so we can use it for inserting in leaves history'''
 	
+	leave_h = db.session.query(func.max(Leaves.id)).first()
+	return leave_h[0]
 
 
 
@@ -798,8 +803,10 @@ def leaves():
 	#print(leaves_table.all())
 	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table, deleteform = deleteform  )
 
+
 @app.route('/leaves/add_leave', methods=['GET','POST'])
 def add_leave():
+	
 	form = LeavesForm()
 	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
 		#if the user is administrator or HR has to choose some employees names Excursions.days.contains(aday)
@@ -943,6 +950,21 @@ def add_leave():
 														
 			db.session.add(leave_create)
 			db.session.commit()
+			leave_history_create = LeavesHistory(leave_id = leave_hist_add(), 
+										from_ = leave_create.from_,
+										to_ = leave_create.to_,	
+										half = leave_create.half,
+										reason= leave_create.reason,
+										country = leave_create.country,
+										total = leave_create.total,	
+										creator = leave_create.creator,
+										owner = leave_create.owner	,		
+										remarks = leave_create.remarks)
+			try:
+				db.session.add(leave_history_create)
+				db.session.commit()
+			except:
+				pass
 			flash(f'A Leave is Created Succesfully', category='primary' )
 			return redirect(url_for('leaves'))
 
@@ -958,9 +980,11 @@ def add_leave():
 def leave_edit(id):
 	print('Inside edit leave')
 	leave_to_edit = db.session.query(Leaves).filter(Leaves.id==id).first()
-	print(leave_to_edit.total)
-	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
 	
+	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
+	print(leave_to_edit.remarks)
+	
+
 	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
 		#if the user is administrator or HR has to choose some employees names
 		emp =  db.session.query(Users.name,Users.surname).filter(Users.							active==True).filter(Users.id == 								leave_to_edit.owner).order_by(Users.name)
@@ -1042,6 +1066,7 @@ def leave_edit(id):
 				leave_to_edit.total =total_days
 				leave_to_edit.to_ = form.to_.data
 				leave_to_edit.half = form.half_day.data
+				leave_to_edit.country = form.country.data
 				leave_to_edit.reason = form.reason.data
 				leave_to_edit.remarks = remarks
 				if len(file_names_dict)>0:
@@ -1072,6 +1097,7 @@ def leave_edit(id):
 				leave_to_edit.to_ = form.to_.data
 				leave_to_edit.half = form.half_day.data
 				leave_to_edit.total = total_days
+				leave_to_edit.country = form.country.data
 				leave_to_edit.reason = form.reason.data
 				leave_to_edit.remarks = remarks
 				if len(file_names_dict)>0:
@@ -1080,7 +1106,19 @@ def leave_edit(id):
 				leave_to_edit.owner = current_user.id			
 				
 					
-
+			leave_hist_add = LeavesHistory(leave_id = id,
+										from_ = leave_to_edit.from_,
+										to_ = leave_to_edit.to_,
+										half = leave_to_edit.half,
+										total = leave_to_edit.total,
+										reason = leave_to_edit.reason,
+										remarks = leave_to_edit.remarks,
+										docs = leave_to_edit.docs,
+										owner = leave_to_edit.owner,
+										country = leave_to_edit.country,
+										creator = leave_to_edit.creator
+			)
+			db.session.add(leave_hist_add)
 			db.session.commit()
 			flash(f'A Leave is Edited Succesfully', category='primary' )
 			return redirect(url_for('leaves'))
@@ -1119,8 +1157,20 @@ def leave_confirm(id):
 			if  user_to_update_leave_days.annual_leave_total >= leave_days:
 				user_to_update_leave_days.annual_leave_total = user_to_update_leave_days.annual_leave_total - leave_days
 
-
-
+	leave_edit_his= LeavesHistory(leave_id = id,
+								  	from_ = leave_to_confirm.from_,
+									to_ = leave_to_confirm.to_,
+								 	half = leave_to_confirm.half,
+									total = leave_to_confirm.total,
+									reason = leave_to_confirm.reason,
+									confirm = True,
+									remarks = leave_to_confirm.remarks,
+									docs = leave_to_confirm.docs,
+									owner = leave_to_confirm.owner,
+									country = leave_to_confirm.country,
+									creator = f'{current_user.name} {current_user.surname}')
+	leave_to_confirm.creator = f'{current_user.name} {current_user.surname}'
+	db.session.add(leave_edit_his)
 	db.session.commit()
 	flash(f'Leave Entrie Confirmed Succesfully', category='primary' )
 	return redirect(url_for('leaves'))	
@@ -1130,9 +1180,39 @@ def leave_confirm(id):
 def leave_decline(id):	
 	leave_to_decline = db.session.query(Leaves).filter(Leaves.id==id).one()
 	leave_to_decline.confirm=False
+	leave_to_decline.creator = f'{current_user.name} {current_user.surname}'
+	
+	leave_edit_his= LeavesHistory(leave_id = id,
+								  	from_ = leave_to_decline.from_,
+									to_ = leave_to_decline.to_,
+								 	half = leave_to_decline.half,
+									total = leave_to_decline.total,
+									reason = leave_to_decline.reason,
+									confirm = False,
+									remarks = leave_to_decline.remarks,
+									docs = leave_to_decline.docs,
+									owner = leave_to_decline.owner,
+									country = leave_to_decline.country,
+									creator = f'{current_user.name} {current_user.surname}')
+	
+	db.session.add(leave_edit_his)	
 	db.session.commit()
 	flash(f'Leave Entrie Declined Succesfully', category='primary' )
 	return redirect(url_for('leaves'))	
+
+@app.route('/leaves/more/<int:id>', methods=['GET','POST'])
+#@login_required
+def leave_more(id):
+	#aquery=db.session.query(Scheduler,Guides,Excursions).outerjoin(Scheduler, Guides.id==Scheduler.id_guides).outerjoin(Excursions, Excursions.id==Scheduler.id_excursion).
+
+	leave_history = db.session.query(column_property(func.to_char								(LeavesHistory.from_, 'DD/MM/YYYY').label('from_')), 
+										column_property(func.to_char(LeavesHistory.to_, 'DD/MM/YYYY').label('to_')), LeavesHistory.reason, LeavesHistory.docs, LeavesHistory.remarks, LeavesHistory.confirm, LeavesHistory.creator, LeavesHistory.country, LeavesHistory.total, Users.name, Users.surname).outerjoin(Users,LeavesHistory.owner == Users.id).filter(LeavesHistory.leave_id==id).order_by(LeavesHistory.id.desc()).all()
+	
+	for item in leave_history:
+		print (item.from_)
+		print (item.name)
+	exit()
+	return render_template('Leaves/leaves_more.html')
 
 
 
