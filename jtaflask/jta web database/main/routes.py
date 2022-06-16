@@ -783,6 +783,7 @@ def leaves():
 										Leaves.confirm,
 										Leaves.creator,
 										Leaves.owner,
+										Leaves.country,
 										Users.name.label('fname'),
 										Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).order_by(Leaves.id.desc())
 	
@@ -797,6 +798,7 @@ def leaves():
 								Leaves.docs,
 								Leaves.remarks,	
 								Leaves.confirm,
+								Leaves.country,
 								Leaves.creator,
 								Leaves.owner,							Users.name.label('fname'),
 								Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).filter(current_user.id == Leaves.owner).order_by(Leaves.id.desc())
@@ -982,7 +984,7 @@ def leave_edit(id):
 	leave_to_edit = db.session.query(Leaves).filter(Leaves.id==id).first()
 	
 	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
-	print(leave_to_edit.remarks)
+	
 	
 
 	if 'Administrator' in current_user.role or 'Office-HR' in current_user.role:
@@ -1134,8 +1136,10 @@ def leave_edit(id):
 @app.route('/leaves/confirm/<int:id>', methods=['GET','POST'])
 #@login_required
 def leave_confirm(id):
-	print(id)
+	print(id)	
 	leave_to_confirm = db.session.query(Leaves).filter(Leaves.id==id).one()
+	con = leave_to_confirm.confirm
+	print(con)
 	if leave_to_confirm.half==False:
 		leave_to_confirm.confirm = True
 		
@@ -1170,9 +1174,11 @@ def leave_confirm(id):
 									country = leave_to_confirm.country,
 									creator = f'{current_user.name} {current_user.surname}')
 	leave_to_confirm.creator = f'{current_user.name} {current_user.surname}'
-	db.session.add(leave_edit_his)
+	if con==False or con=="Pending Confirmation":
+		db.session.add(leave_edit_his)
+		flash(f'Leave Entrie Confirmed Succesfully', category='primary' )
 	db.session.commit()
-	flash(f'Leave Entrie Confirmed Succesfully', category='primary' )
+	
 	return redirect(url_for('leaves'))	
 
 @app.route('/leaves/decline/<int:id>', methods=['GET','POST'])
@@ -1206,14 +1212,20 @@ def leave_more(id):
 	#aquery=db.session.query(Scheduler,Guides,Excursions).outerjoin(Scheduler, Guides.id==Scheduler.id_guides).outerjoin(Excursions, Excursions.id==Scheduler.id_excursion).
 
 	leave_history = db.session.query(column_property(func.to_char								(LeavesHistory.from_, 'DD/MM/YYYY').label('from_')), 
-										column_property(func.to_char(LeavesHistory.to_, 'DD/MM/YYYY').label('to_')), LeavesHistory.reason, LeavesHistory.docs, LeavesHistory.remarks, LeavesHistory.confirm, LeavesHistory.creator, LeavesHistory.country, LeavesHistory.total, Users.name, Users.surname).outerjoin(Users,LeavesHistory.owner == Users.id).filter(LeavesHistory.leave_id==id).order_by(LeavesHistory.id.desc()).all()
-	
-	for item in leave_history:
-		print (item.from_)
-		print (item.name)
-	exit()
-	return render_template('Leaves/leaves_more.html')
+										column_property(func.to_char(LeavesHistory.to_, 'DD/MM/YYYY').label('to_')), LeavesHistory.reason, LeavesHistory.docs, LeavesHistory.remarks, LeavesHistory.confirm, LeavesHistory.creator, LeavesHistory.country, LeavesHistory.total, LeavesHistory.log_time, Users.name, Users.surname).outerjoin(Users,LeavesHistory.owner == Users.id).filter(LeavesHistory.leave_id==id).order_by(LeavesHistory.id.desc()).all()
 
+	
+	return render_template('Leaves/leaves_more.html', table= leave_history)
+
+@app.route('/leaves/leave_statistics/', methods=['GET','POST'])
+def leave_statistics():
+	'''route to present leaves statistics to the user mode only'''
+	total_from_begining_annuals = count_annual_leaves(current_user.id)
+	total_annual_current_year:dict = statistics_current_year(current_user.id)
+	print(current_user.name, current_user.surname)
+	print(total_from_begining_annuals)
+	print(total_annual_current_year)
+	return render_template('Leaves/leave_statistics.html', name=f'{current_user.name} {current_user.surname}',total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, leaves_existance = len(total_annual_current_year), title = 'Leave Statistics' )
 
 
 @app.route('/public_holidays', methods=['GET','POST'])

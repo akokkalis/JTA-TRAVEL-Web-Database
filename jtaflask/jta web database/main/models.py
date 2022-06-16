@@ -1,4 +1,5 @@
 #from email.policy import default
+import datetime
 from email.policy import default
 from enum import unique
 from tkinter import CASCADE
@@ -78,6 +79,7 @@ class LeavesHistory(db.Model):
     country = db.Column(db.String(length=300), nullable=False, unique=False)
     total = db.Column(db.Float(), nullable=False, default=0.0)
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
+    log_time = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.now)
     owner = db.Column(db.Integer())
 
 

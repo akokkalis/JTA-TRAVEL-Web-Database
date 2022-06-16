@@ -22,6 +22,9 @@ def yesterday_date()->str:
 	from datetime import date, timedelta	
 	return ((date.today()- timedelta(days=1)).strftime("%m/%d/%Y"))
 
+
+
+
 def allowed_files_ext(filename):
 	if not '.' in filename:
 		return False

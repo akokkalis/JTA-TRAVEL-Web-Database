@@ -29,10 +29,10 @@
 <!-- Content Begins-->
 {% block content %}
 	<br>
-	<a class="btn btn-primary" href="{{url_for('add_leave')}}" role="button">Add A Leave</a>
+
 
 	<div class="card p-3 bg-light">
-		<h3 class="text-center text-"><i class="bi bi-grid-3x2-gap"></i> Leave Records</h3>
+		<h3 class="text-center text-"><i class="bi bi-grid-3x2-gap"></i> Leave Record History</h3>
 		<div class="table-responsive">
 			
 			<table id="mytable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
@@ -44,46 +44,30 @@
 					<th scope="col">Emp. Name</th>
 					<th scope="col">Start Date</th>
 					<th scope="col">End(inc.) Date</th>
+					<th scope="col">Reason</th>
 					<th scope="col">Total Days</th>
 					<th scope="col">Half Day</th>
-					<th scope="col">Reason</th>
-					<th scope="col">Remarks</th>					
-					<th scope="col">Docs</th>
-					<th scope="col">Status</th>					
+					<th scope="col">Docs</th>					
+					<th scope="col">Remarks</th>							
+					<th scope="col">Status</th>	
+					<th scope="col">Country</th>					
 					<th scope="col">Creator</th>
-					{% if 'Administrator' in current_user.role or 'Office-HR' in current_user.role %}
-						<th scope="col">Confirm</th>
-					{%endif%}
-					<th scope="col">Edit</th>
-					<th scope="col">More</th>
-					<th scope="col">Delete</th>
-					<!-- <th scope="col">Liq Balance</th>
-					<th scope="col">Remarks</th>
-					<th scope="col">Confirmed</th>
-					<th scope="col">Owner</th>
-					{% if 'Administrator' in current_user.role %}
-						<th scope="col">#Confirm</th>
-					{% elif 'Representative' in current_user.role %}
-						<th scope="col" data-visible="false">#Confirm</th>
-					{%endif%}						
-					<th scope="col">Edit</th>
-					<th scope="col">Delete</th>
-				</tr> -->
+					<th scope="col"> Log Time</th>
+
+				</tr>
 				</thead>
 				<tbody>
-					{% for item in leaves_table %}	
-					{% include 'Leaves/delete_leave_modal.html' %}			
+					{% for item in table %}	
+								
 					
 						<tr>
 							<th scope="row">{{loop.index}}</th>
-							<td>{{item.fname}} {{item.surname}} </td>
+							<td>{{item.name}} {{item.surname}} </td>
 							<td>{{item.from_}}</td>
-							<td>{{item.to_}}</td>							
+							<td>{{item.to_}}</td>	
+							<td>{{item.reason}}</td>						
 							<td>{{item.total}}</td>
 							<td>{{item.half}}</td>
-							<td>{{item.reason}}</td>
-							<td>{{item.remarks}}</td>
-							 
 							{% if item.docs!= None %}
 							<td>
 								<a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block"	
@@ -95,6 +79,7 @@
 								<span data-toggle="tooltip" data-placement="top" title="No File Exist "><a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block disabled"					href="" role="button"><i class="bi bi-cloud-download"></i></a></span>
 							</td>
 							{%endif%}
+							<td>{{item.remarks}}</td>
 							{%if item.confirm == 'true'%}		
 								<td>Confirmed by {{item.creator}}</td>
 							{%elif item.confirm == 'false'%}
@@ -102,101 +87,15 @@
 							{%else%}
 								<td>{{item.confirm}}</td>
 							{%endif%}
-							
+							<td>{{item.country}}</td>
 							<td>{{item.creator}}</td>
-							{% if 'Administrator' in current_user.role or 'Office-HR' in current_user.role %}
-							<td>
-								{% if item.confirm == 'Pending Confirmation'%}
-								<a class="btn  btn-primary btn-block" href="{{url_for('leave_confirm',id=item.id)}}" role="button"> <i class="bi bi-check-circle"></i> Confirm</a>
-								<a class="btn  btn-primary btn-block" href="{{url_for('leave_decline',id=item.id)}}" role="button"> <i class="bi bi-x-octagon"></i> Decline</a>
-								{%elif  item.confirm =='true' %}
-								<span data-toggle="tooltip" data-placement="top" title="Already Confirmed ">
-									<button 
-										class="btn btn-sm btn-info btn-block disabled" >    
-										<i class="bi bi-check-circle-fill"></i> Confirmed
-									</button>
-								</span>
-								{%else%}
-								<span data-toggle="tooltip" data-placement="top" title="Already Rejected ">
-									<button 
-										class="btn btn-sm btn-info btn-block disabled" >    
-										<i class="bi bi-x-square"></i></i> Rejected
-									</button>
+							<td>{{item.log_time}}</td>
 
-								{%endif%}
-							</td>
-							{%endif%}
-							{%if 'Administrator' in current_user.role or 'Office-HR' in current_user.role%}
-								<td>
-									<a class="btn btn-sm btn-primary btn-block" 
-									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
-								</td>
-							{%else%}
-								{%if item.confirm == 'Pending Confirmation'%}
-								<td>
-									<a class="btn btn-sm btn-primary btn-block" 
-									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
-								</td>
-								{%elif item.confirm == 'true' %}
-								<td>
-									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Confirmed. You Cant Edit.">
-									<a class="btn btn-sm btn-primary btn-block disabled" 
-									href="#" role="button"><i class="bi bi-pencil"></i> Edit</a>
-									</span>
-								</td>
-								{%else%}
-								<td>
-									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Rejected. You Cant Edit.">
-									<a class="btn btn-sm btn-primary btn-block disabled" 
-									href="#" role="button"><i class="bi bi-pencil"></i> Edit</a>
-									</span>
-								</td>
-
-								{%endif%}
-							{%endif%}
-								<td>
-									<a class="btn  btn-primary btn-block" href="{{url_for('leave_more',id=item.id)}}"role="button"><i class="bi bi-three-dots-vertical"></i> More</a>
-								</td>
-
-
-							{%if 'Administrator' in current_user.role or 'Office-HR' in current_user.role%}
-								<td>
-									<button title='Delete Entrie'      				  
-									class="btn btn-sm btn-outline-danger
-									 btn-block" data-toggle ="modal" data-target="#Modal-Delete-Leave-{{item.id}}">    
-									<i class="bi bi-trash"></i>
-									</button>
-								</td>
-							{%else%}
-								{%if item.confirm == 'Pending Confirmation'%}
-								<td>
-															
-									<button title='Delete Entrie'     				  
-									class="btn btn-sm btn-outline-danger btn-block" data-toggle ="modal" data-target="#Modal-Delete-Leave-{{item.id}}">    
-									<i class="bi bi-trash"></i>
-									</button>
-									
-								</td>
-								{%else%}
-								<td>
-									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Confirmed. You Cant Delete.">	
-									<button      				  
-									class="btn btn-sm btn-outline-danger btn-block disabled">    
-									<i class="bi bi-trash"></i>
-									</button>						
-									</span>
-								</td>
-								{%endif%}
-							{%endif%}
-
-							
-
-
-					
 					{%endfor%}
- 
+								
 						
 				</tbody>
+
 
 			</table>
 

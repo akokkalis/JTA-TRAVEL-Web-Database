@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	{{title}}
+{% endblock %}
+
+
+{%block head_links%}
+
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.0/dist/bootstrap-table.min.css">
+
+<link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+<link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/js/query.dataTables.min.js">
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.css"/>
+
+{%endblock%}
+
+
+{% block content %}
+<!--Leave from begining Statistics-->
+<h1 class="text-center">{{name}} Leave Statistics</h1>
+<hr>
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-file-spreadsheet-fill"></i> From Register Date Annual Leave Totals</h3>
+	<div class="table-responsive">
+		
+		<table id="from_beg_table" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
+
+			<thead>
+				<!--Table Columns Here-->
+			<tr>
+				
+				<th scope="col">No</th>
+				<th scope="col">From Beginig Days</th>
+				<th scope="col">Total Annual Leaves Taken</th>
+				<th scope="col">Remaining Annual Leaves</th>
+				<th scope="col">Year Remains Annual Leaves  </th>
+			</tr>
+			</thead>
+			<tbody>		
+				
+					<tr>
+						<th scope="row">1</th>
+						<td>{{total_from_begining_annuals[0]}}</td>				
+						<td class="table-dark">{{total_from_begining_annuals[1]}}</td>
+						<td class="table-warning">{{total_from_begining_annuals[2]}}</td>
+						<td><span data-toggle="tooltip" data-placement="top" title="Number is subjective. It doesnt subtract not confirmed Annual Leaves. ">
+							{{current_user.annual_leave_total}}
+						</span>
+						</td>
+					</tr>
+				
+			</tbody>
+
+		</table>
+
+	</div>
+</div>
+<!--Leave from begining Statistics End-->
+
+{%if leaves_existance > 0 %}
+<hr class="border-primary border-3 opacity-100">
+<!--Leave Statistics-->
+
+<div class="card p-3 bg-light">
+	<h3 class="text-center text-"><i class="bi bi-file-spreadsheet-fill"></i> Year's Statistics</h3>
+
+	<div class="table-responsive">
+		
+		<table id="leavetable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
+
+			<thead>
+				<!--Table Columns Here-->
+			<tr>
+				
+				<th scope="col">No</th>
+				<th scope="col">Year</th>
+				<th scope="col">Annual Leave</th>
+				<th scope="col">Military</th>
+				<th scope="col">Sick-Leave</th>
+				<th scope="col">UnPaid</th>
+				<th scope="col">Working-On</th>
+				<th scope="col">Working-Off</th>
+				<th scope="col">Public-On</th>
+				<th scope="col">Public-Off</th>
+				<th scope="col">Other</th>
+			</tr>
+			</thead>
+			<tbody>
+				{% for item in year_stats %}
+								
+					<tr>
+						<th scope="row">{{loop.index}}</th>
+						<td>{{item['Year']}}</td>
+						<td>{{item['Annual Leave'] }}</td>
+						<td>{{item['Military']}}</td>
+						<td>{{item['Sick - Leave']}}</td>
+						<td>{{item['UnPaid']}}</td>
+						<td>{{item['Working-On']}}</td> 						
+						<td>{{item['Working-Off']}}</td>
+						<td>{{item['Public-On']}}</td>
+						<td>{{item['Public-Off']}}</td>
+						<td>{{item['Other']}}</td>
+										
+					</tr>
+				{% endfor %}
+			</tbody>
+
+		</table>
+
+	</div>
+
+
+
+	<script> src = "js/jQuery-3.1..1.min.js"</script>
+	<script> src = "js/bootstrap.min.js"</script>
+	<script> src = "js/bootstrap-table.min.js"</script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.js"></script>
+
+
+
+<script>
+$(document).ready(function(){
+	$('#leavetable').DataTable({					
+		'hover':true,
+		"ordering": true,
+		'paging':true,
+		'dom':'BQlfrtip',				
+		'buttons' : ['print','excel','csv','pdf','colvis'],
+		'colReorder': true,
+		'responsive': false,
+		'select':false,
+		
+	}
+	
+	);
+	
+	$('[data-toggle="tooltip"]').tooltip({placement: "bottom"});
+	
+	
+   
+});
+
+
+</script>
+
+</div>
+{%endif%}
+<!--Leave Statistics Table End-->
+{% endblock %}

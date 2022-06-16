@@ -48,6 +48,7 @@
 					<th scope="col">Reason</th>
 					<th scope="col">Remarks</th>					
 					<th scope="col">Docs</th>
+					<th scope="col">Country</th>
 					<th scope="col">Status</th>					
 					<th scope="col">Creator</th>
 					{% if 'Administrator' in current_user.role or 'Office-HR' in current_user.role %}
@@ -94,6 +95,9 @@
 								<span data-toggle="tooltip" data-placement="top" title="No File Exist "><a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block disabled"					href="" role="button"><i class="bi bi-cloud-download"></i></a></span>
 							</td>
 							{%endif%}
+							<td>{{item.country}}</td>
+								
+
 							{%if item.confirm == 'true'%}		
 								<td>Confirmed by {{item.creator}}</td>
 							{%elif item.confirm == 'false'%}
@@ -125,34 +129,21 @@
 								{%endif%}
 							</td>
 							{%endif%}
-							{%if 'Administrator' in current_user.role or 'Office-HR' in current_user.role%}
-								<td>
-									<a class="btn btn-sm btn-primary btn-block" 
-									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
-								</td>
-							{%else%}
+
 								{%if item.confirm == 'Pending Confirmation'%}
 								<td>
 									<a class="btn btn-sm btn-primary btn-block" 
 									href="{{url_for('leave_edit',id=item.id)}}" role="button"><i class="bi bi-pencil"></i> Edit</a>
 								</td>
-								{%elif item.confirm == 'true' %}
-								<td>
-									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Confirmed. You Cant Edit.">
-									<a class="btn btn-sm btn-primary btn-block disabled" 
-									href="#" role="button"><i class="bi bi-pencil"></i> Edit</a>
-									</span>
-								</td>
 								{%else%}
 								<td>
-									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Rejected. You Cant Edit.">
+									<span data-toggle="tooltip" data-placement="top" title="Entrie is already Confrimed or Rejected. You Cant Edit.">
 									<a class="btn btn-sm btn-primary btn-block disabled" 
 									href="#" role="button"><i class="bi bi-pencil"></i> Edit</a>
 									</span>
 								</td>
-
 								{%endif%}
-							{%endif%}
+							
 								<td>
 									<a class="btn  btn-primary btn-block" href="{{url_for('leave_more',id=item.id)}}"role="button"><i class="bi bi-three-dots-vertical"></i> More</a>
 								</td>
