@@ -49,7 +49,8 @@ def file_ext(filename):
 	ext = filename.rsplit('.', 1)[1]
 	return f'.{ext}'
 
-def file_deleter(filename):
+def file_deleter(filename:str):
+	'''Function that deletes unescesary files after edition'''
 	folder_p = ['FILE_UPLOADS_LIQUIDATION', 'FILE_UPLOADS_FOR_CARDS' ]
 	for path in folder_p:
 		try:

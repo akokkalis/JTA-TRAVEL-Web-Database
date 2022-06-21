@@ -972,7 +972,7 @@ def leaves():
 								Leaves.creator,
 								Leaves.owner,							Users.name.label('fname'),
 								Users.surname.label('surname')).outerjoin(Users, Users.id == Leaves.owner).filter(current_user.id == Leaves.owner).order_by(Leaves.id.desc())
-	#print(leaves_table.all())
+
 	return render_template('Leaves/leaves.html', title = 'Leaves', leaves_table = leaves_table, deleteform = deleteform  )
 
 
@@ -1016,7 +1016,7 @@ def add_leave():
 					
 					else:
 						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
-						filename = form.employee.data + '_' + str(form.from_.data) + '_' + str(form.to_.data) + '_' + form.reason.data + file_ext(file_s.filename)
+						filename = form.employee.data.split()[0] + '_' + form.employee.data.split()[1]  + '_' + str(form.from_.data) + '_' + str(form.to_.data) + '_' + form.reason.data + file_ext(file_s.filename)
 						
 						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
 						file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_LEAVES'], filename))

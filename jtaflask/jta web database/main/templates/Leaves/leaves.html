@@ -86,8 +86,11 @@
 							 
 							{% if item.docs!= None %}
 							<td>
-								<a title='Download Leave Doc' class="btn btn-sm btn-primary btn-block"	
-								href="{{url_for('down_leave_file', file_name = item.docs)}}" role="button"><i class="bi bi-cloud-download"></i></a>
+								<span data-toggle="tooltip" data-placement="top" title={{item.docs}}>
+									<a title='' class="btn btn-sm btn-primary btn-block"	
+									href="{{url_for('down_leave_file', file_name = item.docs)}}" role="button"><i class="bi bi-cloud-download"></i></a>
+							</span>
+							
 							</td>
 							{%else%}
 							
