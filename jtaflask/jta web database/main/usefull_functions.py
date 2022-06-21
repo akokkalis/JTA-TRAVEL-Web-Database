@@ -50,8 +50,12 @@ def file_ext(filename):
 	return f'.{ext}'
 
 def file_deleter(filename):
-	os.remove(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'],filename))
-
+	folder_p = ['FILE_UPLOADS_LIQUIDATION', 'FILE_UPLOADS_FOR_CARDS' ]
+	for path in folder_p:
+		try:
+			os.remove(os.path.join(app.config[path],filename))
+		except FileNotFoundError:
+			pass
 
 
 def days_period(period:list) ->list:

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<div class="container" >
+	<br>
+	<div class="card p-3 bg-info">
+		
+		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-cash-stack"></i> Edit Card Payment Return</h1>
+		
+		<form method = "POST" enctype="multipart/form-data"  class="row g-3"> 
+
+			{{form.hidden_tag()}}
+
+			<div class="col-md-12 col-lg-12 text-center" >
+				<hr>
+				<label for="employee" class="form-label">{{ form.employee.label()}}</label>	
+				{{form.employee(class="form-control text-center", placeholder="employee")}}
+			</div>
+
+		
+			<div class="col-md-6 col-lg-6 text-center">
+				<hr>
+				<label for="ticket_cancelled" class="form-label">{{ form.ticket_cancelled.label()}}</label>					
+				{{form.ticket_cancelled(class="form-control", placeholder="Ticket Cancelled")}}
+			</div>
+
+			<div class="col-md-6 col-lg-6 text-center">
+				<hr>
+				<label  for="excursion_name" class="form-label">{{ form.excursion_name.label()}}</label>
+				
+				{{form.excursion_name(class="form-control", placeholder="Excursion Name")}}
+			</div>
+
+			<div class="col-md-3 col-lg-3 text-center">
+				<hr>
+				<br>
+				<label for="booked_date" class="form-label">{{ form.booked_date.label()}}</label>
+				
+				{{form.booked_date(class="form-control", placeholder="Booked Date")}}
+			</div>
+			
+			<div class="col-md-9 col-lg-9 text-center">
+				<hr>
+				<br>
+				<label for="clients_name" class="form-label">{{ form.clients_name.label()}}</label>
+				
+				{{form.clients_name(class="form-control",  placeholder="Clients Name")}}
+			</div>
+
+			<div class="col-md-4 col-lg-4 text-center">
+				<hr>
+				<br>
+				<label for="amount_returned" class="form-label">{{ form.amount_returned.label()}}</label>
+				
+				{{form.amount_returned(class="form-control", placeholder="Amount Returned")}}
+			</div>
+			
+			<div class="col-md-4 text-center ">
+				<hr>
+				<br>
+				<label for="batch_number" class="form-label">{{ form.batch_number.label()}}</label>
+				
+				{{form.batch_number(class="form-control", placeholder="Batch Number")}}
+			</div>
+			<div class="col-md-4 col-lg-4 text-center">
+				<hr>
+				<br>
+				<label for="docs" class="form-label">{{ form.docs.label()}}</label>					
+				{{form.docs(class="form-control", placeholder="Documnet For Return:")}}
+			</div>
+
+			<div class="col-md-6 text-center ">
+				<hr>
+				<br>
+				<label for="cancelled_date" class="form-label">{{ form.cancelled_date.label()}}</label>
+				
+				{{form.cancelled_date(class="form-control", placeholder="Cancelled Date")}}
+			</div>
+
+			<div class="col-md-6 text-center ">
+				<hr>
+				<br>
+				<label for="previous_week" class="form-label">{{ form.previous_week.label()}}</label>
+				
+				{{form.previous_week(class="form-control", placeholder="Previous Week")}}
+			</div>
+
+
+			<div class="col-md-12 text-center ">
+				<hr>
+				<br>
+				<label for="remarks" class="form-label">{{ form.remarks.label()}}</label>
+				
+				{{form.remarks(class="form-control", placeholder="Remarks")}}
+			</div>
+
+
+			<div class="col-md-12">
+				<hr>                 
+					<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+				<hr> 
+			</div> 
+			<div class="col-md-12">   
+				<a class="btn btn-lg btn-block btn-primary" href="{{url_for('card_returns')}}" role="button">Back</a> 
+			</div> 
+		</form>
+	
+	</div>
+	
+</div>
+
+
+{%endblock%}

@@ -11,6 +11,7 @@ from wtforms.validators import Length, Email, DataRequired, ValidationError, Num
 from main.models import *
 from main.usefull_functions import yesterday_date
 from wtforms.widgets import TextArea
+from datetime import datetime
 #from main.usefull_functions import current_date, yesterday_date
 
 
@@ -343,3 +344,60 @@ class PublicHolidayForm(FlaskForm):
     country = SelectField(label='Country:', choices=['CY', 'RU'])
     date_of_holiday =  DateField(label='Date:',validators=[DataRequired()])
     submit = SubmitField(label = 'Save')
+
+
+class CardReturnsForm(FlaskForm):
+    def validate_ticket_cancelled(self, ticket_cancelled):
+        ticket_existanse = db.session.query(CardPaymentReturns).filter(CardPaymentReturns.ticket_cancelled==ticket_cancelled.data).first()
+        if ticket_existanse:
+            raise ValidationError("Excursion Ticket Already Exists")
+    def validate_batch_number(seld, batch_number):
+        batch_exist = db.session.query(CardPaymentReturns).filter(CardPaymentReturns.batch_number == batch_number.data).first()
+        if batch_exist:
+            raise ValidationError("Batch Number Already Exists")
+
+    employee = SelectField(label='Employee Name:', coerce=str)
+
+    ticket_cancelled = StringField(label='* Ticket Cancelled:', validators=[Length(min=2, max=20)])
+    
+    excursion_name = StringField(label='* Excursion Name:', validators=[Length(min=5, max=100),DataRequired()])
+    
+    booked_date = DateField(label='* Ticket Booked Date:')
+    
+    clients_name = StringField(label='* Clients Name:', validators=[Length(min=5, max=60),DataRequired()])
+    
+    amount_returned = FloatField(label='* Return Amount', validators=[DataRequired()])
+
+    docs = FileField(label = '* Document For Return:',validators=[DataRequired()])
+
+    batch_number = StringField(label=' * Batch Number:', validators=[Length(min=2, max=10),DataRequired()])
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+
+    cancelled_date = DateField(label='* Return Date:', default=datetime.today())
+
+    previous_week = SelectField(label='* Previous Week:', choices=['Yes', 'No'], default='No')
+
+class CardReturnsFormEdit(FlaskForm):
+
+    employee = SelectField(label='Employee Name:', coerce=str)
+
+    ticket_cancelled = StringField(label='* Ticket Cancelled:', validators=[Length(min=2, max=20)])
+    
+    excursion_name = StringField(label='* Excursion Name:', validators=[Length(min=5, max=100),DataRequired()])
+    
+    booked_date = DateField(label='* Ticket Booked Date:')
+    
+    clients_name = StringField(label='* Clients Name:', validators=[Length(min=5, max=60),DataRequired()])
+    
+    amount_returned = FloatField(label='* Return Amount', validators=[DataRequired()])
+
+    docs = FileField(label = 'Document For Return:')
+
+    batch_number = StringField(label=' * Batch Number:', validators=[Length(min=2, max=10),DataRequired()])
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+
+    cancelled_date = DateField(label='* Return Date:', default=datetime.today())
+
+    previous_week = SelectField(label='* Previous Week:', choices=['Yes', 'No'], default='No')

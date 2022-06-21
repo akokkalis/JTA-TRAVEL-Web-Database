@@ -101,7 +101,40 @@ def leave_hist_add():
 	
 	leave_h = db.session.query(func.max(Leaves.id)).first()
 	return leave_h[0]
+def file_returner(request, file_name_details):
+	
+	file_names_dict={}
+	for key, value in request.files.items():
+		
+		if not 'application/octet-stream' in value.content_type:
+			#file_s = request.files['jcc_daily_image']
+			file_s = request.files[key]			
+			print(file_s)
+			if not file_s.filename:
+				flash(f'You cant Upload a file with out a name', category='danger' )
+				return redirect(request.url)
+			
+			if not usefull_functions.allowed_files_ext(file_s.filename):
+				flash(f'You cant Upload a file with that extension', category='danger' )
+				return redirect(request.url)
+			
+			else:
+				#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+				filename = file_name_details['Employee'].split()[0]+ '_' +file_name_details['Employee'].split()[1]+ '_'+'Batch_'+ file_name_details['batch']+ '_'+'ticket_'+ file_name_details['ticket'] + file_ext(file_s.filename)
+				
+				#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+				file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_CARDS'], filename))
+				file_names_dict[key] = f'{filename}'
 
+			return file_names_dict
+def active_reps_for_forms()->list:
+	'''Return the active reps as list of strings containig Name and Surname of each rep '''
+	reps = db.session.query(Users).filter(Users.
+	position=='Representative', Users.active == True).order_by(Users.name).all()
+	
+	reps_for_form = [f'{rep.name} {rep.surname}' for rep in reps]		
+	return reps_for_form
+	
 
 
 @app.route('/home')
@@ -247,10 +280,147 @@ def assets_page():
 	return render_template('assets.html', title=page_title, assets=assets_available, edit_asset_form=edit_asset_form)
 
 
-@app.route('/card_p_returns')
+@app.route('/card_returns',methods=['GET', 'POST'])
 def card_returns():
-		page_title='Card P.Returns'
-		return render_template('card_p_canc.html', title=page_title)
+	deleteform = DeleteForm()
+
+	if request.method=="POST":
+		if request.form['submit_button'] == "Delete":
+			#print(request.form.get('delete_emp'))
+			#print(type(request.form.get('delete_emp')))
+		
+			delete_employee = CardPaymentReturns.query.filter_by(id=int(request.form.get('delete_card'))).delete()
+			
+			db.session.commit()
+			flash('Card Return Deleted Succesfully', category='primary' )
+
+
+	#cards_table = CardPaymentReturns().query.all() 
+	cards_table = db.session.query(CardPaymentReturns.id,							CardPaymentReturns.ticket_cancelled, 							CardPaymentReturns.excursion_name,								CardPaymentReturns.amount_returned,								CardPaymentReturns.clients_name,								CardPaymentReturns.batch_number,							CardPaymentReturns.docs,CardPaymentReturns.remarks,	
+					CardPaymentReturns.previous_week, (column_property(func.to_char(CardPaymentReturns.cancelled_date, 'DD/MM/YYYY').label('cancelled_date'))),
+					(column_property(func.to_char(CardPaymentReturns.booked_date, 'DD/MM/YYYY').label('booked_date'))),
+					Users.name.label('fname'),
+					Users.surname.label('surname')).outerjoin(Users, Users.id == CardPaymentReturns.owner).order_by(CardPaymentReturns.id.desc())
+	
+	
+
+	return render_template('CardPaymentReturns/card_returns.html', title='Card P.Returns', cards_table =cards_table, deleteform=deleteform)
+
+@app.route('/add_card_return',methods=['GET', 'POST'])
+def add_card_return():
+	form  = CardReturnsForm()	
+	form.employee.choices = active_reps_for_forms()
+
+	if request.method=="POST":
+		file_name_details = {'Employee':form.employee.data, 'batch':form.batch_number.data, 'ticket':form.ticket_cancelled.data}
+		
+		file_name = file_returner(request, file_name_details)
+		print(file_name)
+		
+		
+		
+		
+		owner  = db.session.query(Users.id).filter(Users.name == form.employee.data.split()[0], Users.surname== form.employee.data.split()[1]).one()
+		
+		
+		if form.previous_week.data=="Yes":
+			previous_week = True
+		else:
+			previous_week=False
+
+		if form.validate_on_submit():
+			new_card_return = CardPaymentReturns(
+				owner = owner[0],
+				ticket_cancelled = form.ticket_cancelled.data,
+				excursion_name = form.excursion_name.data,
+				booked_date = form.booked_date.data,
+				clients_name = form.clients_name.data,
+				amount_returned = form.amount_returned.data,
+				batch_number = form.batch_number.data,
+				remarks = form.remarks.data,
+				cancelled_date = form.cancelled_date.data,
+				previous_week = previous_week,
+				docs = file_name['docs']		
+
+			)
+			db.session.add(new_card_return)
+			db.session.commit()
+
+			return redirect(url_for("card_returns"))
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+	
+	
+	return render_template('CardPaymentReturns/add_card_return.html', form=form)
+
+@app.route('/edit_card_return/<int:id>',methods=['GET', 'POST'])
+def edit_card_return(id):
+
+	edit_card = db.session.query(CardPaymentReturns).filter(CardPaymentReturns.id==id).first()	
+	owner = db.session.query(Users).filter(edit_card.owner==Users.id).first()
+	owner = f'{owner.name} {owner.surname}'
+	active_reps = active_reps_for_forms()
+	print(active_reps)
+	print(active_reps.index(owner))
+	if owner in active_reps:
+		active_reps.insert(0,f'* {owner}')
+		
+	active_reps.pop(active_reps.index(owner))
+	print(active_reps)
+	
+	form = CardReturnsFormEdit(formdata=request.form, obj=edit_card)
+
+	form.employee.choices = active_reps 
+	
+	if form.validate_on_submit():
+		
+
+		if owner not in form.employee.data:
+			print('No its not in')
+			new_owner = db.session.query(Users).filter(Users.name==form.employee.data.split()[0], Users.surname==form.employee.data.split()[1]).first()
+			#print(new_owner.id)
+			edit_card.owner = new_owner.id
+			owner = f'{form.employee.data.split()[0]} {form.employee.data.split()[1]}'
+		
+
+		
+		for key, value in request.files.items():
+			if not 'application/octet-stream' in value.content_type:
+				usefull_functions.file_deleter(form.docs.data)
+				file_name_details = {'Employee':owner, 'batch':form.batch_number.data, 'ticket':form.ticket_cancelled.data}
+				file_name = file_returner(request, file_name_details)
+				edit_card.docs = file_name['docs']
+
+
+		edit_card.ticket_cancelled = form.ticket_cancelled.data
+		edit_card.excursion_name = form.excursion_name.data
+		edit_card.booked_date = form.booked_date.data
+		edit_card.clients_name = form.clients_name.data
+		edit_card.amount_returned = form.amount_returned.data
+		edit_card.batch_number = form.batch_number.data
+		edit_card.remarks = form.remarks.data
+		edit_card.cancelled_date = form.cancelled_date.data
+		if form.previous_week.data=='Yes':
+			edit_card.previous_week = True
+		else:
+			edit_card.previous_week = False
+
+		
+		db.session.add(edit_card)
+		db.session.commit()
+		return redirect(url_for('card_returns'))
+
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+
+
+	return render_template('CardPaymentReturns/edit_card_return.html', title= "Edir Card Payment R.", form=form)
+
+
+
+
 
 @app.route('/daily_liquidation', methods=['GET','POST'])
 def daily_liquidation():
@@ -746,7 +916,7 @@ def more_info_user(id):
 
 	total_annual_current_year:dict = statistics_current_year(id)
 
-	print(total_annual_current_year)
+	
 	
 	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu), name =user_is, total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, year = year, leaves_existance = len(total_annual_current_year)   )
 
@@ -982,6 +1152,8 @@ def add_leave():
 def leave_edit(id):
 	print('Inside edit leave')
 	leave_to_edit = db.session.query(Leaves).filter(Leaves.id==id).first()
+	owner = db.session.query(Users).filter(Users.id==leave_to_edit.owner).first()
+	print(owner.name, owner.surname)
 	
 	form = LeavesForm(formdata=request.form, obj = leave_to_edit)
 	
@@ -1025,7 +1197,7 @@ def leave_edit(id):
 					
 					else:
 						#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
-						filename = current_user.surname+ '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
+						filename = owner.name + '_' + owner.surname + '_' + usefull_functions.file_rename_date()+ '_' + key + file_ext(file_s.filename)
 						
 						#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
 						file_s.save(os.path.join(app.config['FILE_UPLOADS_FOR_LEAVES'], filename))
@@ -1222,9 +1394,8 @@ def leave_statistics():
 	'''route to present leaves statistics to the user mode only'''
 	total_from_begining_annuals = count_annual_leaves(current_user.id)
 	total_annual_current_year:dict = statistics_current_year(current_user.id)
-	print(current_user.name, current_user.surname)
-	print(total_from_begining_annuals)
-	print(total_annual_current_year)
+
+	
 	return render_template('Leaves/leave_statistics.html', name=f'{current_user.name} {current_user.surname}',total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, leaves_existance = len(total_annual_current_year), title = 'Leave Statistics' )
 
 
@@ -1340,6 +1511,17 @@ float
 path
 uuid
 '''
+
+@app.route('/down-card-file/<string:file_name>', methods=['GET','POST'])
+def down_card_file(file_name):
+	try:
+		return send_from_directory(app.config['FILE_UPLOADS_FOR_CARDS'],path=file_name, as_attachment=True)
+
+	except FileNotFoundError:
+		print('abort')
+		abort(404)
+
+
 @app.route('/down-file/<string:file_name>', methods=['GET','POST'])
 def down_file(file_name):
 	print(file_name)
@@ -1369,3 +1551,11 @@ def down_leave_file(file_name):
 def test():
 	emp = Users.query.all()
 	return render_template('test_table_boot_code.html', emp = emp)
+
+
+'''Make  404 error page custom'''
+
+# def page_not_found(e):
+#   return render_template('404.html'), 404
+
+# app.register_error_handler(404, page_not_found)

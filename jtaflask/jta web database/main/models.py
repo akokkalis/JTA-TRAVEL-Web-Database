@@ -38,6 +38,7 @@ class Users(db.Model, UserMixin):
     dai_liq = db.relationship('DailyLiquidation', backref='owned_user', lazy=True)
     asset = db.relationship('Assets', backref='owned_user', lazy=True)
     leave = db.relationship('Leaves', backref='owned_user', lazy=True)
+    card_returns = db.relationship('CardPaymentReturns', backref='owned_user', lazy=True)
     
 
     @property
@@ -112,3 +113,26 @@ class PublicHolidays(db.Model):
     date_of_holiday = db.Column(db.Date(), nullable=False)
     country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
 
+class CardPaymentReturns(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    
+    ticket_cancelled = db.Column(db.String(length=50), nullable=False, unique=True)
+    
+    excursion_name = db.Column(db.String(length=100), nullable=False, unique=False)
+    
+    booked_date = db.Column(db.Date(), nullable=False)
+
+    clients_name =db.Column(db.String(length=60), nullable=False, unique=False)
+
+    amount_returned = db.Column(db.Float(), nullable=False)
+    
+    batch_number = db.Column(db.String(length=15), nullable=False, unique=True)
+    docs = db.Column(db.String(length=100))
+    
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    
+    cancelled_date = db.Column(db.Date(), nullable=False )
+
+    previous_week = db.Column(db.Boolean, nullable = False, default=False)
+    
+    owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
