@@ -36,9 +36,10 @@ class Users(db.Model, UserMixin):
     area_of_business = db.Column(db.String(length=15), nullable=False)
     registration_date = db.Column(db.Date(), nullable=False, default = usefull_functions.current_date() )
     dai_liq = db.relationship('DailyLiquidation', backref='owned_user', lazy=True)
-    asset = db.relationship('Assets', backref='owned_user', lazy=True)
+    
     leave = db.relationship('Leaves', backref='owned_user', lazy=True)
     card_returns = db.relationship('CardPaymentReturns', backref='owned_user', lazy=True)
+    rented_history = db.relationship('AssetRentedHistory', backref='owned_user', lazy=True)
     
 
     @property
@@ -84,10 +85,7 @@ class LeavesHistory(db.Model):
     owner = db.Column(db.Integer())
 
 
-class Assets(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(50))
-    owner = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
 
 
 class DailyLiquidation(db.Model):    
@@ -136,3 +134,41 @@ class CardPaymentReturns(db.Model):
     previous_week = db.Column(db.Boolean, nullable = False, default=False)
     
     owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+
+# .create_all(checkfirst=True)
+
+class AssetRetirement(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    date = db.Column(db.Date(), nullable=False )
+    reason=db.Column(db.String(length=30), nullable=False, unique=False)
+    asset = db.relationship('Assets', backref='retire_asset', lazy=True)
+
+class Assets(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    serial_number = db.Column(db.String(50), nullable=False, unique=True)
+    category = db.Column(db.String(50), nullable=False)
+    value = db.Column(db.Float())
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    reg_date= db.Column(db.DateTime(), nullable=False, default=datetime.datetime.now)
+    retire = db.Column(db.Integer(), db.ForeignKey(AssetRetirement.id, ondelete='CASCADE'))
+    rented_history = db.relationship('AssetRentedHistory', backref='asset_hist', lazy=True)
+
+class AssetCategory(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    category = db.Column(db.String(length=50), nullable=False, unique=True)
+
+class AssetRentedHistory(db.Model):
+    id =  db.Column(db.Integer(), primary_key=True)
+
+    asset = db.Column(db.Integer(), db.ForeignKey('assets.id',ondelete='CASCADE'))
+
+    owner = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+
+    given_out = db.Column(db.String(20), nullable=False, unique=False )
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+
+    date = db.Column(db.Date(), nullable=False )
+
+
+    

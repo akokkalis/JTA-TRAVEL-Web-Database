@@ -14,6 +14,7 @@ DATATABLES
 https://www.youtube.com/watch?v=yGTGU3IPoWE
 https://datatables.net/extensions/select/
 https://datatables.net/extensions/searchbuilder/
+https://datatables.net/extensions/responsive/priority
 
 
 Correct Display Dates

@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from turtle import title
+from unicodedata import category
 from numpy import concatenate
 from flask import session
 from datetime import timedelta,date
@@ -134,7 +136,12 @@ def active_reps_for_forms()->list:
 	
 	reps_for_form = [f'{rep.name} {rep.surname}' for rep in reps]		
 	return reps_for_form
-	
+def asset_category_all()-> list:
+	'''Function To Return in A list all the asset categories'''
+	categories = AssetCategory.query.all()
+	all_categories = [category.category for category in categories]
+	all_categories.sort()
+	return all_categories
 
 
 @app.route('/home')
@@ -252,33 +259,6 @@ def home():
 def cars_page():
 		page_title= 'Cars'
 		return render_template('cars.html', title=page_title)
-
-@app.route('/assets', methods=['GET', 'POST'])
-def assets_page():
-	edit_asset_form = Assets_Edit_Form()
-	
-	
-	if request.method=="POST":
-		
-		#print(request.form.get('delete_emp'))
-		#print(type(request.form.get('delete_emp')))
-		edit_asset = Assets.query.filter_by(id=int(request.form.get('asset_edit'))).first()		
-		print(edit_asset.owner)
-		print(edit_asset_form.owner.data.split())
-
-		ownername = Users.query.filter_by(name = edit_asset_form.owner.data.split()[0]).filter_by(surname = edit_asset_form.owner.data.split()[1]).first()
-
-		print(ownername)
-		edit_asset.owner = ownername.id
-		db.session.commit()
-		flash('OwnerShip Granted Succesfully', category='primary' )	
-
-
-	
-	page_title='Assets'
-	assets_available = Assets.query.all()
-	return render_template('assets.html', title=page_title, assets=assets_available, edit_asset_form=edit_asset_form)
-
 
 @app.route('/card_returns',methods=['GET', 'POST'])
 def card_returns():
@@ -1473,26 +1453,63 @@ def logout_page():
 	return redirect(url_for('login_page'))
 
 
+
+@app.route('/assets', methods=['GET', 'POST'])
+def assets_page():
+	edit_asset_form = Assets_Edit_Form()
+	retire_asset_form= AssetRetireForm()
+	
+	
+	if request.method=="POST":
+		if request.form['submit_button'] =="Retire":
+			print('retire' )
+			print(request.form.get('retire_asset'))
+			print(request.form.get('reg_date'))
+			print(request.form.get('reason'))
+			print(request.form.get('remarks'))
+			
+			
+			asset_retire = AssetRetirement(
+				id =request.form.get('retire_asset'),
+				date = request.form.get('reg_date'),
+				reason =request.form.get('reason'),
+				remarks =request.form.get('remarks')  )
+			db.session.add(asset_retire)
+
+			asset_to_edit = db.session.query(Assets).filter(Assets.serial_number== request.form.get('retire_asset')).first()
+			
+			asset_to_edit.retire = request.form.get('retire_asset')
+
+			db.session.add(asset_to_edit)
+			db.session.commit()
+	
+
+
+	
+	page_title='Assets'
+	assets_available = Assets.query.all()
+	print(assets_available)
+	return render_template('Assets/assets.html', title=page_title, assets=assets_available, edit_asset_form=edit_asset_form, retire_asset_form=retire_asset_form)
+
 @app.route('/add_asset', methods=['GET','POST'])
 #@login_required
 def add_asset():
 	form = AssetsForm()
+	asset_category= asset_category_all()
+	form.category.choices = asset_category
 	
 	if form.validate_on_submit():
-		asset_create= Assets(name = form.name.data
-						#   surname= form.surname.data,						  
-						#   #username = form.username.data,
-						#   email= form.email.data,
-						#   password= form.password.data,
-						#   active = form.active.data,
-						#   role = form.role.data
+		asset_create= Assets(serial_number = form.serial_number.data,
+		category=form.category.data,
+		value = form.value.data,
+		remarks = form.remarks.data,
+		reg_date = form.reg_date.data)
 
-							)
 		db.session.add(asset_create)
 		db.session.commit()
 
 		#print(user_create)
-		flash(f'Asset {form.name.data} Created Succesfully', category='primary' )
+		flash(f'{form.category.data} - {form.serial_number.data} Created Succesfully', category='primary' )
 		return redirect(url_for('assets_page'))
 	
 	if form.errors != {}:
@@ -1501,7 +1518,42 @@ def add_asset():
 		print('form errors')
 		return redirect(url_for('add_asset'))
 	
-	return render_template('add_asset.html', title = 'Add Asset', form = form)
+	return render_template('Assets/add_asset.html', title = 'Add Asset', form = form)
+
+@app.route('/assetcategory', methods=['GET','POST'])
+def assetcategory():
+	form = DeleteForm()
+	if request.method=="POST":
+		if request.form['submit_button'] =="Delete":			
+			delete_category = AssetCategory.query.filter_by(id=int(request.form.get('delete_category'))).delete()			
+			db.session.commit()
+			flash(f'Category  Deleted Succesfully', category='danger' )
+
+
+	categories = AssetCategory.query.all()
+	
+	return render_template('AssetCategory/category.html', title="Asset Cayegpries", categories = categories, form=form)
+
+@app.route('/add_assetcategory', methods=['GET','POST'])
+def add_assetcategory():
+	form = AssetCategoryForm()
+	categories = asset_category_all()
+	
+
+	if form.validate_on_submit():
+		category_create = AssetCategory(category=form.category.data.capitalize())
+		db.session.add(category_create)
+		db.session.commit()
+		flash(f'Category  - {form.category.data} -  Created Succesfully', category='primary' )
+		return redirect(url_for('add_assetcategory'))
+	
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+		print('form errors')
+		return redirect(url_for('add_assetcategory'))
+
+	return render_template('AssetCategory/addcategory.html', form=form, title="Add Asset Cayegpry", categories=categories)
 
 
 '''

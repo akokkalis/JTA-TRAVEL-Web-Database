@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block myjavascript %}
+
+{%endblock%}
+
+
+{% block content %}
+<br>
+
+	
+		<div class="container" >
+			<div class="row">
+				<div class="col-10">
+			
+					<div class="card p-3 bg-info">
+						<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-list-task"></i> Insert An Asset Category</h1>
+						<form method = "POST" enctype="multipart/form-data" > 
+							
+							<!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server--> 
+							{{form.hidden_tag()}} 
+							
+								
+								<div   class="text-center">
+									<hr>
+									<label for="category" class="form-label text-center">{{ form.category.label()}}</label>
+									
+									{{form.category(class="form-control text-center",  placeholder="Asset Category")}}
+								</div>
+
+
+								<div >
+									<hr>                 
+										<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+									<hr> 
+								</div> 
+								<div >   
+									<a class="btn btn-lg btn-block btn-primary" href="{{url_for('assetcategory')}}" role="button">Back</a> 
+								</div> 
+						</form>			
+					</div>
+				</div>
+				
+				{%if categories %}
+				<div class="col-2">
+					<em>Asset Categories</em>
+					<table id="categorytable" class="table table-info text-center table-bordered table-hover table-striped table-sm ">
+						<thead>						
+							<tr>							
+								<th scope="col">Name</th>	
+							</tr>
+						</thead>
+						<tbody>
+							{%for item in categories%}
+							<tr>
+								<td>{{item}}</td>
+							</tr>
+							{%endfor%}
+						</tbody>
+					</table>
+				</div>
+				{%endif%}
+			</div>	
+
+	
+		</div>
+	
+
+
+
+{% endblock %}

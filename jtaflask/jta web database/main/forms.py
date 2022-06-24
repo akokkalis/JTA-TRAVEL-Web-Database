@@ -133,15 +133,22 @@ class EnableForm(FlaskForm):
 
 class AssetsForm(FlaskForm):
     # validation function has to start with validate_ and then put exact column name
-    def validate_name(self, name):
-        assets_find = Assets.query.filter_by(name = name.data).first()
+    def validate_name(self, serial_number):
+        assets_find = Assets.query.filter_by(serial_number = serial_number.data).first()
         if assets_find:
             raise ValidationError('This asset  Already Exists in Database!')
     
+    serial_number = StringField(label='Serial Number:', validators=[Length(min=5, max=50),DataRequired()]) 
 
-    name = StringField(label='Asset Name:', validators=[Length(min=2, max=50),DataRequired()])
+    category = SelectField(label='Category:', coerce=str,validators=[DataRequired()])
+    value = FloatField(label='Value Of Asset')
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+
     submit = SubmitField(label = 'Save')
 
+    reg_date = DateField(label='Registration Date:', default=datetime.today())
+    
 
 class Assets_Edit_Form(FlaskForm):
     emp = Users.query.all()
@@ -401,3 +408,19 @@ class CardReturnsFormEdit(FlaskForm):
     cancelled_date = DateField(label='* Return Date:', default=datetime.today())
 
     previous_week = SelectField(label='* Previous Week:', choices=['Yes', 'No'], default='No')
+
+class AssetCategoryForm(FlaskForm):    
+
+    def validate_category(self, category):
+        category_existance = db.session.query(AssetCategory).filter(AssetCategory.category==category.data.capitalize()).first()
+        if category_existance:
+            raise ValidationError(f"{category.data.capitalize()} Category Already Exists")
+
+    category = StringField(label='Category:', validators=[Length(min=2, max=100),DataRequired()])
+
+class AssetRetireForm(FlaskForm):
+    reason = SelectField(label='Reason Of Retirement:', choices=['Sold', 'Brake' ], default='Annual Leave')
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())   
+
+    reg_date = DateField(label='Retire Date:', default=datetime.today())
+    submit = SubmitField(label = 'Retire', name='submit_button')

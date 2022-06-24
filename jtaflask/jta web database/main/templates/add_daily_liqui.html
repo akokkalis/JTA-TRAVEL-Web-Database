@@ -22,41 +22,49 @@
 
 
 				<div class="col-md-6">
+					
 					<label for="bankdeposit" class="form-label">{{ form.bank_deposit.label()}}</label>
 					{{form.bank_deposit(class="form-control", placeholder="Bank Deposit Amount")}}
 				</div>
 
 				<div class="col-md-6">
+					<hr>
 					<label for="visaamount" class="form-label">{{ form.visa_amount.label()}}</label>
 					{{form.visa_amount(class="form-control", placeholder="Card Total Transactions Amount")}}
 				</div>
 
 				<div class="col-md-6">
+					<hr>
 					<label for="precancels" class="form-label">{{ form.precancels.label()}}</label>
 					{{form.precancels(class="form-control", placeholder="Pre Cancellation Amount")}}
 				</div>
 
 				<div class="col-md-6">
+					<hr>
 					<label for="canceledtickets" class="form-label">{{ form.canceled_tickets.label()}}</label>
 					{{form.canceled_tickets(class="form-control", placeholder="Write Here The Cancelled Ticket Number")}}
 				</div>
 
 				<div class="col-md-6">
+					<hr>
 					<label for="bank_dep_image" class="form-label">{{ form.bank_dep_image.label()}}</label>
 					{{form.bank_dep_image(class="form-control", placeholder="Upload Bank Deposit Receipt")}}
 				</div>
 			
 				<div class="col-md-6">
+					<hr>
 					<label for="jcc_daily_image" class="form-label">{{ form.jcc_daily_image.label()}}</label>
 					{{form.jcc_daily_image(oninput = "filesize(this);", class="form-control", placeholder="Upload Jcc Batch Report")}}
 				</div>
 
 				<div class="col-md-6">
+					<hr>
 					<label for="cancelled_tickets_image" class="form-label">{{ form.cancelled_tickets_image.label()}}</label>
 					{{form.cancelled_tickets_image(class="form-control", placeholder="Upload Jcc Batch Report")}}
 				</div>
 
 				<div class="col-md-12">
+					<hr>
 					<label for="remarks" class="form-label">{{ form.remarks.label()}}</label>
 					{{form.remarks(class="form-control", placeholder="Write Here Your Remarks")}}
 				</div>

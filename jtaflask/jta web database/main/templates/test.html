@@ -3,33 +3,25 @@
 <head>
  
     <title>Home Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.0/dist/bootstrap-table.min.css">
+
+    <link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/js/query.dataTables.min.js">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.css"/>
 </head>
 
 
 <body>
-    
-    <input type="date" id="day1">
-    <input type="date" id="day2">
-    <div id="output"></div>
-    <script>
-            function calculateDays() {
-            var day1 = document.getElementById("day1").value;
-            var day2 = document.getElementById("day2").value;    
-            const dateOne = new Date(day1);
-            const dateTwo = new Date(day2);
-            const time = Math.abs(dateTwo - dateOne) + ;
-            const days = Math.ceil(time / (1000 * 60 * 60 * 24));
-            
-            if (isNaN(days)) {
-                    return false;      
-            } else {
-                document.getElementById("output").innerHTML = days;      
-            }
-            }
-
-            day1.addEventListener('input', calculateDays);
-            day2.addEventListener('input', calculateDays);
-    </script>
+    <div class="grid">
+        <div class="g-col-6 g-col-md-4"><table></table></div>
+        <div class="g-col-6 g-col-md-4"><table></table></div>
+        <div class="g-col-6 g-col-md-4"><table></table></div>
+      </div>
 
 </body>
 

@@ -42,22 +42,22 @@
 			<thead >
 				<!--Table Columns Here-->
 			<tr>
-				<th scope="col">No</th>				
-				<th scope="col">Name</th>
-				<th scope="col">Surname</th>
-				<th scope="col">Email</th>
-				<th scope="col">Phone</th>
-				<th scope="col">Position</th>
-				<th scope="col">Working Area</th>
-				<th scope="col">Active</th>
-				<th scope="col">Access Role</th>
-				<th scope="col">Birth Date</th>
-				<th scope="col">Annual Leave</th>
-				<th scope="col">More Details</th>
-				<th scope="col">Edit</th>
-				<th scope="col">Disable</th>
-				<th scope="col">Enable</th>
-				<th scope="col">Delete</th>
+				<th scope="col" data-priority="1">No</th>				
+				<th scope="col" data-priority="1">Name</th>
+				<th scope="col" data-priority="1">Surname</th>
+				<th scope="col" data-priority="1">Email</th>
+				<th scope="col" data-priority="1">Phone</th>
+				<th scope="col" data-priority="1">Position</th>
+				<th scope="col" data-priority="1">Working Area</th>
+				<th scope="col" data-priority="1">Active</th>
+				<th scope="col" data-priority="1">Access Role</th>
+				<th scope="col" data-priority="2">Birth Date</th>
+				<th scope="col" data-priority="1" >Annual Leave</th>
+				<th scope="col" data-priority="1">More Details</th>
+				<th scope="col" data-priority="1">Edit</th>
+				<th scope="col" data-priority="2">Disable</th>
+				<th scope="col" data-priority="2">Enable</th>
+				<th scope="col" data-priority="2">Delete</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -145,8 +145,12 @@ $(document).ready(function(){
 		'dom':'BQlfrtip',				
 		'buttons' : ['print','excel','csv','pdf','colvis'],
 		'colReorder': true,
-		'responsive': false,
+		'responsive': true,
 		'select':false,
+		columnDefs: [
+        { responsivePriority: 1, targets: 0 },
+        { responsivePriority: 2, targets: -1 }]
+
 		
 	}
 	

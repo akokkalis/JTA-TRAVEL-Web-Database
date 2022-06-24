@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<br>
+
+    <div class="container" >
+        <div class="card p-3 bg-info">
+            <h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-person"></i> Add an Asset</h1>
+            <form method = "POST" class="row g-3"> 
+                   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server-->   
+                   {{form.hidden_tag()}}        
+                   
+                    <div class="col-md-6 text-center">
+                        <label for="serial_number" class="form-label text-center">{{ form.serial_number.label()}}</label>
+                        
+                        {{form.serial_number(class="form-control text-center", placeholder="Serial Number")}}
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                        
+                        <label for="category" class="form-label text-center">{{ form.category.label()}}</label>
+                        
+                        {{form.category(class="form-control text-center", placeholder="Category")}}
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                        <hr>
+                        <label for="value" class="form-label text-center">{{ form.value.label()}}</label>
+                        
+                        {{form.value(class="form-control text-center", placeholder="Asset Value")}}
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <hr>
+                        <label for="reg_date" class="form-label text-center">{{ form.reg_date.label()}}</label>
+                        
+                        {{form.reg_date(class="form-control text-center", placeholder="Registration Date")}}
+                    </div>
+
+                    <div class="col-md-12 text-center">
+                        <hr>
+                        <label for="reg_date" class="form-label text-center">{{ form.remarks.label()}}</label>
+                        
+                        {{form.remarks(class="form-control text-center", placeholder="Remarks")}}
+                    </div>
+
+                    <div class="col-md-12" >
+                        <hr>                 
+                            <button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+                        <hr> 
+                    </div> 
+
+
+
+
+                
+            </form>    
+        </div>
+        <a class="btn btn-lg btn-block btn-primary" href="{{url_for('assets_page')}}" role="button">Back</a>
+    </div>     
+
+        
+
+{% endblock %}

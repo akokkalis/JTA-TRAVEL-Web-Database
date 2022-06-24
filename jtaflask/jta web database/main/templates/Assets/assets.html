@@ -17,35 +17,48 @@
 
 
 {% block content %}
-assets page
+
 <br>
 <a class="btn btn-primary" href="{{url_for('add_asset')}}" role="button">Add An Asset</a>
 
 <div class="card p-3 bg-light">
-	<h3 class="text-center text-"><i class="bi bi-file-person-fill"></i>List of Assets</h3>
-	<div class="table-responsive">
-		<caption>List of Assets</caption>
+	<h3 class="text-center "><i class="bi bi-boxes"></i> List of Assets</h3>
+	<div class="table-responsive">		
 		<table id="mytable" class="table table-hover table-info table-bordered text-center " >
 			<thead>
 				<!--Table Columns Here-->
 			<tr>
 				<th scope="col">No</th>
-				<th scope="col">Name</th>
-				<th scope="col">Owner</th>
-				<th scope="col">More Details</th>
+				<th scope="col">Serial Number</th>
+				<th scope="col">Category</th>
+				<th scope="col">Value</th>
+				<th scope="col">Remarks</th>
+				<th scope="col">Reg. Date</th>
+				<th scope="col">Status</th>
+				<th scope="col">Details</th>
 				<th scope="col">Edit</th>
+				<th scope="col">Retire</th>
 				<th scope="col">Delete</th>
 			</tr>
 			</thead>
 			<tbody>
 				{% for item in assets %}
 				{% include 'includes/assets_modals.html' %}
+				{% include 'includes/asset_retire.html' %}
 				
 				
 					<tr>
 						<th scope="row">{{loop.index}}</th>
-						<td>{{item.name}}</td>
-						<td>{{item.owner}}</td>                      
+						<td>{{item.serial_number}}</td>
+						<td>{{item.category}}</td>  
+						<td>&euro; {{item.value}}</td>
+						<td>{{item.remarks}}</td>
+						<td>{{item.reg_date}}</td>
+						{%if not item.retire%}
+							<td>Active</td> 
+						{%else%}
+							<td>Retired</td>  
+						{%endif%}                  
 						<td>
 							<button                                        
 								class="btn btn-sm btn-info btn-block" >    
@@ -58,10 +71,32 @@ assets page
 								Edit</button>
 						</td>
 						<td>
-							<button                                        
-								class="btn btn-sm btn-danger btn-block">    
-								<i class="bi bi-person-x"></i>
-								Delete</button>
+							{%if not item.retire %}
+							<span data-toggle="tooltip" data-placement="top" title="Retire {{item.category}} - {{item.serial_number}}">
+								<button                                      
+									class="btn btn-sm btn-danger btn-block"
+									data-toggle ="modal" data-target="#Modal-Retire-Asset-{{item.id}}">
+									<i class="bi bi-box-arrow-right"></i>
+								</button>
+							</span>
+							{% else %}
+								<span data-toggle="tooltip" data-placement="top" title="Item is Already retired.">
+									<button                                   
+										class="btn btn-sm btn-danger btn-block disabled">
+										<i class="bi bi-box-arrow-right"></i>
+									</button>
+								</span>
+							{%endif%}
+						</td>
+						<td>
+							<!--delete-->
+							<span data-toggle="tooltip" data-placement="top" title="Delete {{item.category}} - {{item.serial_number}}">
+								<button                                     
+									class="btn btn-sm btn-outline-danger
+									btn-block">    
+									<i class="bi bi-trash"></i>
+								</button>
+							</span>
 						</td>
 					</tr>
 				
@@ -91,6 +126,7 @@ $(document).ready(function(){
 	}
 	);
 
+	$('[data-toggle="tooltip"]').tooltip({placement: "top"});
 
 
    
@@ -105,7 +141,7 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block footer %}
-<i class="bi bi-tablet"></i>
+
 
 {% endblock %}
 
