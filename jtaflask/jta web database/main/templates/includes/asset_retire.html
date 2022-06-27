@@ -1,5 +1,5 @@
 <!-- Modal Retire Asset  -->
-<div class="modal fade" id="Modal-Retire-Asset-{{ item.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="Modal-Retire-Asset-{{ item.assets_id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog text-center">
 	  <div class="modal-content ">
 		<div class="modal-header ">
@@ -22,9 +22,11 @@
 							<label for="reg_date" class="form-label">{{ retire_asset_form.reg_date.label()}}</label>
 							{{retire_asset_form.reg_date(class="form-control text-center", placeholder="Registration Date")}}
 							<br>
+
 							<label for="reason" class="form-label">{{ retire_asset_form.reason.label()}}</label>
 							{{retire_asset_form.reason(class="form-control text-center", placeholder="Reason")}}
 							<br>
+
 							<label for="remarks" class="form-label">{{ retire_asset_form.remarks.label()}}</label>
 							{{retire_asset_form.remarks(class="form-control text-center", placeholder="Remarks")}}
 							
@@ -42,3 +44,6 @@
 	  </div>
 	</div>
   </div>  
+
+
+

@@ -424,3 +424,13 @@ class AssetRetireForm(FlaskForm):
 
     reg_date = DateField(label='Retire Date:', default=datetime.today())
     submit = SubmitField(label = 'Retire', name='submit_button')
+
+class AssetRentForm(FlaskForm):       
+    
+    #employee = SelectField(label='Employee Name:', coerce=str)
+    #employee = SelectField(label='Employee Name:')
+    
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+    date = DateField(label='Date:', default=datetime.today())
+    #given_out = SelectField(label='Status:',  coerce=str)
+    submit = SubmitField(label = 'Rent it', name='submit_button')

@@ -142,6 +142,7 @@ class AssetRetirement(db.Model):
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     date = db.Column(db.Date(), nullable=False )
     reason=db.Column(db.String(length=30), nullable=False, unique=False)
+    serial_number = db.Column(db.String(50), nullable=False)
     asset = db.relationship('Assets', backref='retire_asset', lazy=True)
 
 class Assets(db.Model):
@@ -151,6 +152,7 @@ class Assets(db.Model):
     value = db.Column(db.Float())
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     reg_date= db.Column(db.DateTime(), nullable=False, default=datetime.datetime.now)
+    status = db.Column(db.String(50))
     retire = db.Column(db.Integer(), db.ForeignKey(AssetRetirement.id, ondelete='CASCADE'))
     rented_history = db.relationship('AssetRentedHistory', backref='asset_hist', lazy=True)
 

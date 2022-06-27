@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from itertools import groupby
 from turtle import title
 from unicodedata import category
 from numpy import concatenate
 from flask import session
 from datetime import timedelta,date
-from sqlalchemy import values
+from sqlalchemy import desc, null, values
 from sqlalchemy import func, or_
 from sqlalchemy.orm import column_property
 from main import app
@@ -142,6 +143,10 @@ def asset_category_all()-> list:
 	all_categories = [category.category for category in categories]
 	all_categories.sort()
 	return all_categories
+def all_users_forms() ->list:
+	all_users = db.session.query(Users).filter(Users.active == True).order_by(Users.name).all()
+	reps_for_form = [f'{user.name} {user.surname}' for user in all_users]		
+	return reps_for_form
 
 
 @app.route('/home')
@@ -1456,8 +1461,13 @@ def logout_page():
 
 @app.route('/assets', methods=['GET', 'POST'])
 def assets_page():
+	delete_form = DeleteForm()
 	edit_asset_form = Assets_Edit_Form()
 	retire_asset_form= AssetRetireForm()
+	asset_rent_form = AssetRentForm()
+	#form.employee.choices = final_emp
+	
+	#asset_rent_form.employee.choices = all_users_forms()
 	
 	
 	if request.method=="POST":
@@ -1470,26 +1480,83 @@ def assets_page():
 			
 			
 			asset_retire = AssetRetirement(
-				id =request.form.get('retire_asset'),
+				serial_number = request.form.get('retire_asset'),
 				date = request.form.get('reg_date'),
 				reason =request.form.get('reason'),
 				remarks =request.form.get('remarks')  )
 			db.session.add(asset_retire)
 
-			asset_to_edit = db.session.query(Assets).filter(Assets.serial_number== request.form.get('retire_asset')).first()
-			
-			asset_to_edit.retire = request.form.get('retire_asset')
+			asset_retire = AssetRetirement.query.filter_by(serial_number = request.form.get('retire_asset')).first()
+			print(asset_retire.id)
+			asset_to_edit = db.session.query(Assets).filter(Assets.serial_number == asset_retire.serial_number).first()
+
+			asset_to_edit.retire = asset_retire.id
 
 			db.session.add(asset_to_edit)
 			db.session.commit()
-	
+			flash(f'Asset Retired Succesfully', category='primary' )
+			return redirect(url_for('assets_page'))
+		
+		if request.form['submit_button'] =="Delete":
+			delete_asset = db.session.query(Assets.id,Assets.serial_number).filter_by(id=request.form.get('asset_delete'), ).first()
+			print(delete_asset.id)
+			print(delete_asset.serial_number)
+
+			asset_deletion = Assets.query.filter_by(id=delete_asset.id).delete()
+
+			#better do not delete retirement history. Maybe you need to check later
+			#delete_asset_retire = AssetRetirement.query.filter_by(id=delete_asset.serial_number).delete()
+			db.session.commit()
+
+			flash(f'Asset Deleted Succesfully', category='primary' )
+			return redirect(url_for('assets_page'))
+		
+		if request.form['submit_button'] =="Rent it":
+			print('Rent It')
+			print(request.form.get('asset_rental_id'))
+			print(request.form.get('employee'))
+			print(request.form.get('given_out'))
+			print(asset_rent_form.date.data)
+			print(asset_rent_form.remarks.data)
+			#print(asset_rent_form.given_out.data)
+			#print(asset_rent_form.employee.data)
+			owner =db.session.query(Users.id).filter(Users.name == request.form.get('employee').split()[0], Users.surname == request.form.get('employee').split()[1]).first()
+			
+			
+			add_rented_history=AssetRentedHistory(asset=request.form.get('asset_rental_id'),given_out = request.form.get('given_out'),owner=owner[0],date = asset_rent_form.date.data,remarks = asset_rent_form.remarks.data)
+			
+			db.session.add(add_rented_history)
+			
+			db.session.commit()
+			flash(f'Asset Rented Succesfully', category='primary' )
+			
+			return redirect(url_for('assets_page'))
 
 
+
+
+	assets = db.session.query(Assets.id.label('assets_id'), Assets.serial_number, Assets.category, Assets.value, Assets.value,column_property(func.to_char(Assets.reg_date, 'DD/MM/YYYY').label('reg_date')),Assets.retire, AssetRentedHistory.id, AssetRentedHistory.asset, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('date')), AssetRentedHistory.owner, AssetRentedHistory.given_out, Users.name, Users.surname).outerjoin(AssetRentedHistory, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
+
 	
-	page_title='Assets'
-	assets_available = Assets.query.all()
-	print(assets_available)
-	return render_template('Assets/assets.html', title=page_title, assets=assets_available, edit_asset_form=edit_asset_form, retire_asset_form=retire_asset_form)
+	final_asset = []
+	assets_available=[]
+	for asset in assets:
+		if asset.assets_id not in final_asset:
+			final_asset.append(asset.assets_id)	
+			assets_available.append(asset)
+	
+	for asset in assets_available:
+		print(asset.assets_id)
+		print(asset.retire)
+
+
+
+
+
+	#assets_available = db.session.query(Assets.id, Assets.category, Assets.value, Assets.remarks, Assets.retire, Assets.serial_number, Assets.status,column_property(func.to_char(Assets.reg_date, 'DD/MM/YYYY').label('reg_date'))).all()
+	
+
+	return render_template('Assets/assets.html', title='Assets', assets=assets_available, edit_asset_form=edit_asset_form, retire_asset_form=retire_asset_form, delete_form=delete_form, asset_rent_form = asset_rent_form, emp = all_users_forms()  )
 
 @app.route('/add_asset', methods=['GET','POST'])
 #@login_required
@@ -1514,9 +1581,8 @@ def add_asset():
 	
 	if form.errors != {}:
 		for error_msg in form.errors.values():
-			flash(f'Error!!! {error_msg[0]}', category='danger' )
-		print('form errors')
-		return redirect(url_for('add_asset'))
+			flash(f'Error!!! {error_msg[0]}', category='danger' )		
+		
 	
 	return render_template('Assets/add_asset.html', title = 'Add Asset', form = form)
 
@@ -1553,7 +1619,7 @@ def add_assetcategory():
 		print('form errors')
 		return redirect(url_for('add_assetcategory'))
 
-	return render_template('AssetCategory/addcategory.html', form=form, title="Add Asset Cayegpry", categories=categories)
+	return render_template('AssetCategory/addcategory.html', form=form, title="Add Asset Category", categories=categories)
 
 
 '''
