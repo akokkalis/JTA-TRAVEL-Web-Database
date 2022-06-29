@@ -1593,7 +1593,7 @@ def add_asset():
 @app.route('/edit_asset/<int:id>', methods=['GET','POST'])
 #@login_required
 def edit_asset(id):
-	print('Edit Asset')
+	
 	asset_to_edit = db.session.query(Assets).filter(Assets.id==id).first()
 	form = Assets_Edit_Form(formdata=request.form, obj = asset_to_edit)
 	form.category.choices = asset_category_all()
@@ -1620,7 +1620,22 @@ def edit_asset(id):
 
 	return render_template('Assets/edit_asset.html', form=form)
 
+@app.route('/more_info_asset/<int:id>', methods=['GET','POST'])
+#@login_required
+def more_info_asset(id):
+	print(id)
 
+	current_status = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset, AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')),Assets.serial_number,Assets.category, Users.name, Users.surname ).filter(AssetRentedHistory.asset==id).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).first()
+
+	rented_history = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset, AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')), Assets.serial_number,Assets.category, Users.name, Users.surname ).filter(AssetRentedHistory.asset==id).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
+
+
+	
+	
+	
+	
+	
+	return render_template("Assets/more_info_asset.html", title="Asset Info", rented_history = rented_history, current_status=current_status )
 
 @app.route('/assetcategory', methods=['GET','POST'])
 def assetcategory():
@@ -1634,7 +1649,7 @@ def assetcategory():
 
 	categories = AssetCategory.query.all()
 	
-	return render_template('AssetCategory/category.html', title="Asset Cayegpries", categories = categories, form=form)
+	return render_template('AssetCategory/category.html', title="Asset Categories", categories = categories, form=form)
 
 @app.route('/add_assetcategory', methods=['GET','POST'])
 def add_assetcategory():
