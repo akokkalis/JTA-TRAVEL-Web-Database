@@ -70,23 +70,28 @@
 							<td>Retired</td>  
 						{%endif%}                  
 						<td>
-							<button                                        
-								class="btn btn-sm btn-info btn-block"
-								data-toggle ="modal" data-target="#">
+							<span data-toggle="tooltip" data-placement="top" title="More For {{item.serial_number}}">
+								<button                                        
+									class="btn btn-sm btn-info btn-block"
+									data-toggle ="modal" data-target="#">
 
-								<i class="bi bi-file-person-fill"></i> More Details
-							</button>
+									<i class="bi bi-three-dots"></i> 
+								</button>
+							</span>
 						</td>
-						<td>
-							<button                                        
+						<td>							
+							<span data-toggle="tooltip" data-placement="top" title="Edit Item {{item.serial_number}}">
+								<a class="btn btn-sm btn-primary btn-block"  href="{{url_for('edit_asset',id=item.assets_id)}}" role="button"><i class="bi bi-pencil"></i> </a>
+							</span>
+							<!-- <button                                        
 								class="btn btn-sm btn-danger btn-block" data-toggle ="modal" data-target="#Modal-Edit-Asset-{{item.assets_id}}">
 								<i class="bi bi-pencil"></i>
-								Edit</button>
+								Edit</button> -->
 						</td>
 						{%if not item.retire %}
 						<td>
 							<button                                        
-								class="btn btn-sm btn-danger btn-block" data-toggle ="modal" data-target="#Modal-Rent-Asset-{{item.assets_id}}">
+								class="btn btn-sm btn-success btn-block" data-toggle ="modal" data-target="#Modal-Rent-Asset-{{item.assets_id}}">
 								<i class="bi bi-link"></i>
 								
 							</button>
@@ -95,7 +100,7 @@
 						<td>
 							<span data-toggle="tooltip" data-placement="top" title="Item is Already retired.">
 								<button                                        
-									class="btn btn-sm btn-danger btn-block disabled" >
+									class="btn btn-sm btn-sucess btn-block disabled" >
 									<i class="bi bi-link"></i>
 									Rent It
 								</button>
@@ -103,7 +108,7 @@
 						</td>
 						{%endif%}
 						<td>
-							{%if not item.retire and item.given_out=='in' %}
+							{%if not item.retire or item.given_out=='in' %}
 							<span data-toggle="tooltip" data-placement="top" title="Retire {{item.category}} - {{item.serial_number}}">
 								<button                                      
 									class="btn btn-sm btn-danger btn-block"
@@ -130,7 +135,7 @@
 								</button>
 							</span> -->
 							<button                                      
-							class="btn btn-sm btn-danger btn-block"
+							class="btn btn-sm btn-dark btn-block"
 							data-toggle ="modal"
 							data-target="#Modal-Delete-Asset-{{ item.assets_id }}" >
 							<i class="bi bi-trash"></i>

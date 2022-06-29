@@ -7,20 +7,51 @@
 		  <h5 class="modal-title" id="exampleModalLabel">Edit An Asset</h5>
 		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
 		</div>
-		<div class="modal-body">
+		<div class="modal-body text-center ">
 		  <form method="POST">
 			  {{edit_asset_form.hidden_tag()}}
-			  Edit The Asset <em><strong>{{item.name}}</strong></em>?
-			  <input id="asset_edit" name="asset_edit" type="hidden" value="{{item.id}}">	  
+			  Edit The Asset <em><strong>{{item.serial_number}}</strong></em>?
+			  <input id="asset_edit" name="asset_edit" type="hidden" value="{{item.assets_id}}">	  
 			  <br>
 			  <br>
 
-			  <div class="col-md-6">
-				<label for="owner" class="form-label">{{ edit_asset_form.owner.label()}}</label>
-				{{edit_asset_form.owner(class="form-control", placeholder="Owner")}}
+			  <div class="col-md-12 text-center ">
+				<label for="serial_number" class="form-label ">{{ edit_asset_form.serial_number.label()}}</label>
+				{{edit_asset_form.serial_number(class="form-control text-center ", value=item.serial_number, placeholder="Serial Number")}}
 			  </div>
 			  <br>
-			  {{edit_asset_form.submit(class = "btn btn-outline-info btn-block" )}}
+			  <div class="col-md-12">
+				<label for="category" class="form-label">{{ edit_asset_form.category.label()}}</label>				
+				<select class="form-control text-center" name="category">
+					
+					{% for cat in category %}						
+						{% if cat == item.category %}						
+							<option  value="{{cat}}" selected>{{cat}}</option>
+						{% else %}							
+							<option  value="{{cat}}" >{{cat}}</option>
+						{% endif %}
+					{% endfor %}			
+
+				</select>
+			  </div>
+			  <br>
+			  <div class="col-md-12">
+				<label for="reg_date" class="form-label">{{ edit_asset_form.reg_date.label()}}</label>
+				{{edit_asset_form.reg_date(class="form-control text-center ", value=item.edit_date, placeholder="Registration Date")}}
+			  </div>
+			  <br>
+			  <div class="col-md-12">
+				<label for="value" class="form-label">{{ edit_asset_form.value.label()}}</label>
+				{{edit_asset_form.value(class="form-control text-center ", value=item.value, placeholder="Value")}}
+			  </div>
+			  <br>
+			  <div class="col-md-12">
+				<label for="remarks" class="form-label">{{ edit_asset_form.remarks.label()}}</label>
+				{{edit_asset_form.remarks(class="form-control text-center ", vaule= item.remakes, placeholder="Remarks")}}
+
+			  </div>
+			  <br>
+			  {{edit_asset_form.submit(class = "btn btn-outline-info btn-block")}}
 
 
 		  </form>		

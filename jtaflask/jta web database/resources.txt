@@ -20,3 +20,6 @@ https://datatables.net/extensions/responsive/priority
 Correct Display Dates
 Display dd/mm/yyyy in query
 https://stackoverflow.com/questions/62729604/use-to-char-in-flask-sqlalchemy-query
+
+file Upload to googledrive
+https://youtu.be/JwGzHitUVcU

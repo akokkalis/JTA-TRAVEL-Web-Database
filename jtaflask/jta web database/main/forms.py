@@ -131,31 +131,6 @@ class DisableForm(FlaskForm):
 class EnableForm(FlaskForm):
     submit = SubmitField(label = 'Enable', name='submit_button')
 
-class AssetsForm(FlaskForm):
-    # validation function has to start with validate_ and then put exact column name
-    def validate_name(self, serial_number):
-        assets_find = Assets.query.filter_by(serial_number = serial_number.data).first()
-        if assets_find:
-            raise ValidationError('This asset  Already Exists in Database!')
-    
-    serial_number = StringField(label='Serial Number:', validators=[Length(min=5, max=50),DataRequired()]) 
-
-    category = SelectField(label='Category:', coerce=str,validators=[DataRequired()])
-    value = FloatField(label='Value Of Asset')
-
-    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
-
-    submit = SubmitField(label = 'Save')
-
-    reg_date = DateField(label='Registration Date:', default=datetime.today())
-    
-
-class Assets_Edit_Form(FlaskForm):
-    emp = Users.query.all()
-   
-    name = StringField(label='Asset Name:', default='sdfsdfdsfdsssfdfsd')
-    owner = SelectField(label = 'Owner', choices=[f'{item.name} {item.surname}' for item in emp])
-    submit = SubmitField(label = 'Save')
 
 
 class Liquidation_Form(FlaskForm):
@@ -425,7 +400,8 @@ class AssetRetireForm(FlaskForm):
     reg_date = DateField(label='Retire Date:', default=datetime.today())
     submit = SubmitField(label = 'Retire', name='submit_button')
 
-class AssetRentForm(FlaskForm):       
+class AssetRentForm(FlaskForm):
+    
     
     #employee = SelectField(label='Employee Name:', coerce=str)
     #employee = SelectField(label='Employee Name:')
@@ -434,3 +410,49 @@ class AssetRentForm(FlaskForm):
     date = DateField(label='Date:', default=datetime.today())
     #given_out = SelectField(label='Status:',  coerce=str)
     submit = SubmitField(label = 'Rent it', name='submit_button')
+
+
+class AssetsForm(FlaskForm):
+    # validation function has to start with validate_ and then put exact column name
+    def validate_serial_number(self, serial_number):
+        assets_find = Assets.query.filter_by(serial_number = serial_number.data).first()
+        if assets_find:
+            raise ValidationError('This asset  Already Exists in Database!')
+    
+    serial_number = StringField(label='Serial Number:', validators=[Length(min=5, max=50),DataRequired()]) 
+
+    category = SelectField(label='Category:', coerce=str,validators=[DataRequired()])
+    value = FloatField(label='Value Of Asset')
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+
+    submit = SubmitField(label = 'Save', name='submit_button')
+
+    reg_date = DateField(label='Registration Date:', default=datetime.today())
+    
+
+class Assets_Edit_Form(FlaskForm):
+    def validate_serial_number(self, serial_number):
+        '''
+        Validate mobile phone only for active users. We can have same number but for inactive users.        '''
+        print(self.serial_number.data)       
+        asset1 = Assets.query.filter_by(serial_number = serial_number.data).first()
+        if asset1:            
+            if (asset1.id != self.id.data):                
+                raise ValidationError('item already exists')   
+    
+
+
+
+
+    id = IntegerField()
+    serial_number = StringField(label='Serial Number:', validators=[Length(min=5, max=50),DataRequired()]) 
+
+    category = SelectField(label='Category:', coerce=str,validators=[DataRequired()])
+    value = FloatField(label='Value Of Asset')
+
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())
+
+    submit = SubmitField(label = 'Save', name='submit_button')
+
+    reg_date = DateField(label='Registration Date:', default=datetime.today())
