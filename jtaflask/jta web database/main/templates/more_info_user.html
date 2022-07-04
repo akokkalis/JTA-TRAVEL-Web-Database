@@ -258,9 +258,95 @@
 
 
 
+
+
+		
+	</div> 
+
+{%endif%}
+
+<!--Daily Liquidation Table Ends-->
+
+
+
+
+<hr class="border-primary border-3 opacity-100">
+<!--Assets Owned Table if it exist-->
+{%if final_asset_owned %}
+
+	<div class="card p-3 bg-light">
+		<h3 class="text-center text-"><i class="bi bi-wallet-fill"></i> Owned Asset</h3>
+
+		<div class="table-responsive">
+			
+			<table id="asset_table" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
+
+				<thead>
+					<!--Table Columns Here-->
+				<tr>
+					<th scope="col">No</th>
+					<th scope="col">Serial Number</th>
+					<th scope="col">Category</th>
+					<th scope="col">Value</th>
+					<th scope="col">Rented Date</th>
+					<th scope="col">Owner</th>
+					<th scope="col">Rent</th>
+				</tr>
+				</thead>
+				<tbody>
+					{% for item in final_asset_owned %}	
+					{% include 'rent_include/asset_rent_modal.html' %}					
+					
+							
+						<tr>
+							<th scope="row">{{loop.index}}</th>
+							<td>{{item['asset'][0]}}</td>
+							<td>{{item['asset'][1]}}</td>
+							<td>{{item['asset'][2]}}</td>
+							<td>{{item['asset'][3]}}</td>
+							<td>{{item['owner']}}</td>												
+							<td>								
+								<button                                        
+								class="btn btn-sm btn-success btn-block" data-toggle ="modal" data-target="#Modal-Rent-UserAsset-{{ item['asset'][-1] }}">
+								<i class="bi bi-link"></i>
+								
+							</button>							
+
+							</td>
+					{%endfor%}
+
+						
+				</tbody>
+
+			</table>
+
+		</div>
+		
+		<script> src = "js/jQuery-3.1..1.min.js"</script>
+		<script> src = "js/bootstrap.min.js"</script>
+		<script> src = "js/bootstrap-table.min.js"</script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.js"></script>
+
+
+
 		<script>
 		$(document).ready(function(){
 			$('#mytable').DataTable({					
+				'hover':true,
+				"ordering": true,
+				'paging':true,
+				'dom':'BQlfrtip',				
+				'buttons' : ['print','excel','csv','pdf','colvis'],
+				'colReorder': true,
+				'responsive': false,
+				'select':false,				
+			}
+			);
+
+			$('#asset_table').DataTable({					
 				'hover':true,
 				"ordering": true,
 				'paging':true,
@@ -298,13 +384,7 @@
 
 {%endif%}
 
-<!--Daily Liquidation Table Ends-->
-
-
-
-
-
-
+<!--Assets Owned Table Ends-->
 
 
 

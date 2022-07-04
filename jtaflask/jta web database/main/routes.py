@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from itertools import groupby
 from turtle import title
+from typing import final
 from unicodedata import category
 from numpy import concatenate
 from flask import session
@@ -147,6 +148,56 @@ def all_users_forms() ->list:
 	all_users = db.session.query(Users).filter(Users.active == True).order_by(Users.name).all()
 	reps_for_form = [f'{user.name} {user.surname}' for user in all_users]		
 	return reps_for_form
+def rent_asset(asset_rent_form,request):
+		owner =db.session.query(Users.id).filter(Users.name == request.get('employee').split()[0], Users.surname == request.get('employee').split()[1]).first()
+		
+		
+		add_rented_history=AssetRentedHistory(asset=request.get('asset_rental_id'),given_out = request.get('given_out'),owner=owner[0],date = asset_rent_form.date.data,remarks = asset_rent_form.remarks.data)
+
+		asset_update = db.session.query(Assets).filter(Assets.id == request.get('asset_rental_id')).first()
+		
+		asset_update.status=request.get('given_out')
+		db.session.add(asset_update)
+		
+		db.session.add(add_rented_history)
+		
+		db.session.commit()
+		return flash(f'Asset Rented Succesfully', category='primary' )
+def all_assets_rented(id=None):
+	print(id)
+
+	# if id == None:
+	# 	emp= Users.query.filter(Users.id==id).first()
+	# 	print(emp.name)
+	# 	print(emp.surname)
+	asset_owned = Assets.query.filter(Assets.status=='out').all()
+
+	final_all_report=[]
+	for asset in asset_owned:
+
+		rented_h = db.session.query(column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('date')),AssetRentedHistory.asset,AssetRentedHistory.remarks,AssetRentedHistory.given_out,Users.name,Users.surname).filter(asset.id==AssetRentedHistory.asset).outerjoin(Users,AssetRentedHistory.owner==Users.id).order_by(AssetRentedHistory.id.desc()).first()
+
+		
+		
+		print( asset.serial_number,asset.category, asset.value, rented_h.date, rented_h.name, rented_h.surname )
+		final_all_report.append({'owner':rented_h.name+" " + rented_h.surname, 'asset':[asset.serial_number,asset.category,asset.value,rented_h.date, rented_h.remarks, rented_h.given_out, rented_h.asset] })
+	
+	
+	if id != None:
+		emp= Users.query.filter(Users.id==id).first()
+		print(emp.name)
+		print(emp.surname)
+		final_per_person_asset=[]
+		for item in final_all_report:
+			if item['owner'] == f'{emp.name} {emp.surname}':
+				final_per_person_asset.append(item)
+		return(final_per_person_asset)
+	
+	else:
+		return final_all_report
+
+
+#print(all_assets_rented())
 
 
 @app.route('/home')
@@ -402,9 +453,6 @@ def edit_card_return(id):
 
 
 	return render_template('CardPaymentReturns/edit_card_return.html', title= "Edir Card Payment R.", form=form)
-
-
-
 
 
 @app.route('/daily_liquidation', methods=['GET','POST'])
@@ -880,7 +928,28 @@ def edit_user(id):
 @app.route('/more_info_user/<int:id>', methods=['GET','POST'])
 #@login_required
 def more_info_user(id):
-	
+	asset_rent_form= AssetRentForm()
+
+	if request.method=="POST":
+		if request.form['submit_button'] =="Rent it":
+			print('rent')
+			rent_asset(asset_rent_form,request.form)
+			# owner =db.session.query(Users.id).filter(Users.name == request.form.get('employee').split()[0], Users.surname == request.form.get('employee').split()[1]).first()
+			
+			
+			# add_rented_history=AssetRentedHistory(asset=request.form.get('asset_rental_id'),given_out = request.form.get('given_out'),owner=owner[0],date = asset_rent_form.date.data,remarks = asset_rent_form.remarks.data)
+
+			# asset_update = db.session.query(Assets).filter(Assets.id == request.form.get('asset_rental_id')).first()
+			
+			# asset_update.status=request.form.get('given_out')
+			# db.session.add(asset_update)
+			
+			# db.session.add(add_rented_history)
+			
+			# db.session.commit()
+			flash(f'Asset Returned Succesfully', category='primary' )
+		
+			
 
 	ownwed_daily_liqu = db.session.query(DailyLiquidation.id, DailyLiquidation.						total_sales, DailyLiquidation.bank_deposit, 								DailyLiquidation.visa_transaction, 
 						DailyLiquidation.pre_cancels,DailyLiquidation.cancelled_tickets, DailyLiquidation.total_calculated_amount, 
@@ -902,8 +971,21 @@ def more_info_user(id):
 	total_annual_current_year:dict = statistics_current_year(id)
 
 	
-	
-	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu), name =user_is, total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, year = year, leaves_existance = len(total_annual_current_year)   )
+	final_asset_owned= all_assets_rented(id)
+	print(final_asset_owned)
+	#asset_owned = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset.label('assets_id'), AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')),Assets.serial_number,Assets.category,Assets.value, Users.name, Users.surname ).filter(AssetRentedHistory.owner==id, AssetRentedHistory.given_out=='out', Assets.status=='out' ).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
+
+	# print(asset_owned)
+
+	# final_asset_owned=[]
+	# entries=[]
+	# for entrie in asset_owned:
+	# 	if entrie.serial_number not in entries:
+	# 		entries.append(entrie.serial_number)
+	# 		final_asset_owned.append(entrie)
+	# print(final_asset_owned)
+
+	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu), name =user_is, total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, year = year, leaves_existance = len(total_annual_current_year), final_asset_owned = final_asset_owned, asset_rent_form=asset_rent_form )
 
 
 @app.route('/leaves', methods=['GET','POST'])
@@ -1520,6 +1602,11 @@ def assets_page():
 			
 			
 			add_rented_history=AssetRentedHistory(asset=request.form.get('asset_rental_id'),given_out = request.form.get('given_out'),owner=owner[0],date = asset_rent_form.date.data,remarks = asset_rent_form.remarks.data)
+
+			asset_update = db.session.query(Assets).filter(Assets.id == request.form.get('asset_rental_id')).first()
+			
+			asset_update.status=request.form.get('given_out')
+			db.session.add(asset_update)
 			
 			db.session.add(add_rented_history)
 			
@@ -1623,17 +1710,13 @@ def edit_asset(id):
 @app.route('/more_info_asset/<int:id>', methods=['GET','POST'])
 #@login_required
 def more_info_asset(id):
-	print(id)
+	
 
 	current_status = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset, AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')),Assets.serial_number,Assets.category, Users.name, Users.surname ).filter(AssetRentedHistory.asset==id).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).first()
 
 	rented_history = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset, AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')), Assets.serial_number,Assets.category, Users.name, Users.surname ).filter(AssetRentedHistory.asset==id).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
 
 
-	
-	
-	
-	
 	
 	return render_template("Assets/more_info_asset.html", title="Asset Info", rented_history = rented_history, current_status=current_status )
 

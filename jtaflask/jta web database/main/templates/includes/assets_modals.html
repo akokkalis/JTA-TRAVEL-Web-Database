@@ -105,7 +105,7 @@
 	<div class="modal-dialog">
 	  <div class="modal-content">
 		<div class="modal-header">
-		  <h5 class="modal-title" id="exampleModalLabel">Rent An Asset</h5>
+		  <h5 class="modal-title" id="exampleModalLabel">Rent An Asset </h5>
 		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
 		</div>
 		<div class="modal-body text-center ">
@@ -169,4 +169,74 @@
 	</div>
   </div>  
 
+
+    <!-- Modal REnt Asset from users view  -->
+	<div class="modal fade" id="#Modal-Rent-Asset-{{item.assets_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="exampleModalLabel">Rent An Asset </h5>
+			  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body text-center ">
+			  <form method="POST">
+				  {{asset_rent_form.hidden_tag()}}
+				  Rent Asset <em><strong>{{item.serial_number}} - {{item.category}}</strong></em>?
+				  <input id="asset_rental_id" name="asset_rental_id" type="hidden" value="{{item.assets_id}}">	  
+				  <br>
+				  <br>
+	
+				  <div class="col-md-12">
+					<label for="employee" class="form-label">Employee:</label>
+	
+					{%if not item.owner or item.given_out=='in'%}
+					<select class="form-control text-center" name="employee">
+						{%for e in emp %}
+						<option  value="{{e}}">{{e}}</option>
+						{%endfor%}			
+	
+					</select>
+					{%else%}
+					<select class="form-control text-center" name="employee">	
+						<option  value="{{item.name}} {{item.surname}}">{{item.name}} {{item.surname}}</option>
+					</select>
+					{%endif%} 
+				
+					<br>
+					<label for="given_out" class="form-label" >Action:</label>
+	
+					<br>
+					{% if item.given_out=='out' %}
+					<select class="form-control text-center" name="given_out">		<option  value="in">In</option>
+					</select>
+					{% else %}
+					<select class="form-control text-center" name="given_out">		<option  value="out">Out</option>
+					</select>
+					{%endif%} 
+	
+					
+					
+					<br>
+					<label for="date" class="form-label">{{ asset_rent_form.date.label()}}</label>
+					{{asset_rent_form.date(class="form-control", placeholder="Date")}}
+					<br>
+					<label for="remarks" class="form-label">{{ asset_rent_form.remarks.label()}}</label>
+					{{asset_rent_form.remarks(class="form-control text-center", placeholder="Remarks")}}
+		
+				  </div>
+				  <br>
+				  {{asset_rent_form.submit(class = "btn btn-outline-info btn-block" )}}
+	
+	
+			  </form>		
+	
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+			</div>
+		  </div>
+		</div>
+	  </div>  
+	
 

@@ -98,7 +98,7 @@
 						</td>
 						{%else%}
 						<td>
-							<span data-toggle="tooltip" data-placement="top" title="Item is Already retired.">
+							<span data-toggle="tooltip" data-placement="top" title="Item is Already retired or is Out From Company">
 								<button                                        
 									class="btn btn-sm btn-sucess btn-block disabled" >
 									<i class="bi bi-link"></i>
@@ -108,7 +108,7 @@
 						</td>
 						{%endif%}
 						<td>
-							{%if not item.retire or item.given_out=='in' %}
+							{%if not item.retire and item.given_out=='in' %}
 							<span data-toggle="tooltip" data-placement="top" title="Retire {{item.category}} - {{item.serial_number}}">
 								<button                                      
 									class="btn btn-sm btn-danger btn-block"
