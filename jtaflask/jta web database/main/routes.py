@@ -4,6 +4,7 @@ from turtle import title
 from typing import final
 from unicodedata import category
 from numpy import concatenate
+import numpy as np
 from flask import session
 from datetime import timedelta,date
 from sqlalchemy import desc, null, values
@@ -164,29 +165,23 @@ def rent_asset(asset_rent_form,request):
 		db.session.commit()
 		return flash(f'Asset Rented Succesfully', category='primary' )
 def all_assets_rented(id=None):
-	print(id)
+	
 
-	# if id == None:
-	# 	emp= Users.query.filter(Users.id==id).first()
-	# 	print(emp.name)
-	# 	print(emp.surname)
 	asset_owned = Assets.query.filter(Assets.status=='out').all()
 
 	final_all_report=[]
 	for asset in asset_owned:
 
 		rented_h = db.session.query(column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('date')),AssetRentedHistory.asset,AssetRentedHistory.remarks,AssetRentedHistory.given_out,Users.name,Users.surname).filter(asset.id==AssetRentedHistory.asset).outerjoin(Users,AssetRentedHistory.owner==Users.id).order_by(AssetRentedHistory.id.desc()).first()
+		
+		
 
-		
-		
-		print( asset.serial_number,asset.category, asset.value, rented_h.date, rented_h.name, rented_h.surname )
 		final_all_report.append({'owner':rented_h.name+" " + rented_h.surname, 'asset':[asset.serial_number,asset.category,asset.value,rented_h.date, rented_h.remarks, rented_h.given_out, rented_h.asset] })
 	
 	
 	if id != None:
 		emp= Users.query.filter(Users.id==id).first()
-		print(emp.name)
-		print(emp.surname)
+
 		final_per_person_asset=[]
 		for item in final_all_report:
 			if item['owner'] == f'{emp.name} {emp.surname}':
@@ -934,19 +929,6 @@ def more_info_user(id):
 		if request.form['submit_button'] =="Rent it":
 			print('rent')
 			rent_asset(asset_rent_form,request.form)
-			# owner =db.session.query(Users.id).filter(Users.name == request.form.get('employee').split()[0], Users.surname == request.form.get('employee').split()[1]).first()
-			
-			
-			# add_rented_history=AssetRentedHistory(asset=request.form.get('asset_rental_id'),given_out = request.form.get('given_out'),owner=owner[0],date = asset_rent_form.date.data,remarks = asset_rent_form.remarks.data)
-
-			# asset_update = db.session.query(Assets).filter(Assets.id == request.form.get('asset_rental_id')).first()
-			
-			# asset_update.status=request.form.get('given_out')
-			# db.session.add(asset_update)
-			
-			# db.session.add(add_rented_history)
-			
-			# db.session.commit()
 			flash(f'Asset Returned Succesfully', category='primary' )
 		
 			
@@ -971,21 +953,13 @@ def more_info_user(id):
 	total_annual_current_year:dict = statistics_current_year(id)
 
 	
-	final_asset_owned= all_assets_rented(id)
-	print(final_asset_owned)
-	#asset_owned = db.session.query(AssetRentedHistory.id,AssetRentedHistory.owner, AssetRentedHistory.asset.label('assets_id'), AssetRentedHistory.given_out, AssetRentedHistory.remarks, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('rented_date')),Assets.serial_number,Assets.category,Assets.value, Users.name, Users.surname ).filter(AssetRentedHistory.owner==id, AssetRentedHistory.given_out=='out', Assets.status=='out' ).outerjoin(Assets, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
-
-	# print(asset_owned)
-
-	# final_asset_owned=[]
-	# entries=[]
-	# for entrie in asset_owned:
-	# 	if entrie.serial_number not in entries:
-	# 		entries.append(entrie.serial_number)
-	# 		final_asset_owned.append(entrie)
-	# print(final_asset_owned)
+	final_asset_owned = all_assets_rented(id)
+	final_asset_owned.reverse()
+	
 
 	return render_template('more_info_user.html', title = 'User More Info', ownwed_daily_liqu = ownwed_daily_liqu, owned_daily_liq_exisatnce = len(ownwed_daily_liqu), name =user_is, total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, year = year, leaves_existance = len(total_annual_current_year), final_asset_owned = final_asset_owned, asset_rent_form=asset_rent_form )
+
+
 
 
 @app.route('/leaves', methods=['GET','POST'])
@@ -1755,7 +1729,24 @@ def add_assetcategory():
 
 	return render_template('AssetCategory/addcategory.html', form=form, title="Add Asset Category", categories=categories)
 
+@app.route('/assets_report', methods=['GET'])
+#@login_required
+def assets_report():
+	all_assets = all_assets_rented()
+	emp_has = np.unique([item['owner'] for item in all_assets])
+	
+	final=[]
+	a=[]
+	for emp in emp_has:
+		a.append(emp)
+		for asset in all_assets :
+			if emp==asset['owner']:
+				a.append(asset['asset'])
+		final.append(a)	
+		a=[]
+	
 
+	return render_template('Assets/assets_report.html', all_assets_table=final)
 '''
 string
 int
