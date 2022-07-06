@@ -314,6 +314,15 @@ class LeavesForm(FlaskForm):
     submit = SubmitField(label = 'Save')
 
 
+class SearchLeavePeriod(FlaskForm):
+    from_ = DateField(label='From:',validators=[DataRequired()])
+    to_ = DateField(label='To:',validators=[DataRequired()])
+    submit = SubmitField(label = 'Search', name='submit_button')
+
+
+
+
+
 class PublicHolidayForm(FlaskForm):
 
     def validate_date_of_holiday(self,date_of_holiday):

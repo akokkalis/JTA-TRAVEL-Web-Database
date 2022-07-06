@@ -1439,10 +1439,57 @@ def leave_statistics():
 	
 	return render_template('Leaves/leave_statistics.html', name=f'{current_user.name} {current_user.surname}',total_from_begining_annuals = total_from_begining_annuals, year_stats = total_annual_current_year, leaves_existance = len(total_annual_current_year), title = 'Leave Statistics' )
 
+#period_leave_search.html
+@app.route('/leaves/period_leave_search/', methods=['GET','POST'])
+def period_leave_search():
+	form = SearchLeavePeriod()
+	if request.method =='POST':		
+		print(form.from_.data)
+		print(form.to_.data)
+		search_period = usefull_functions.period_leave_days(form.from_.data, form.to_.data)
+		
+		leaves = db.session.query(Users.name, Users.surname, Leaves.from_, Leaves.to_).outerjoin(Leaves, Users.id==Leaves.owner).filter(or_(Leaves.confirm=='true', Leaves.confirm=='Pending Confirmation')).all()
+		print(leaves)
+		print('')
+		table = []
+		for item in leaves:			
+			item_period = usefull_functions.period_leave_days(item.from_, item.to_)
+			
+			print('Comparison' )
+			#print(set(search_period).intersection(item_period))
+			merged_days = [x for x in search_period if x in item_period]
+			
+			if merged_days:
+				merged_days.sort()
+				new_merged=[]
+				for i in merged_days:
+					d = usefull_functions.corect_date_format(i)
+
+					new_merged.append(d)
+				if not any(d['owner'] == f'{item.name} {item.surname}' for d in table):
+					table.append({
+						'owner':f'{item.name} {item.surname}',
+						'leaves':new_merged
+					})
+				else:
+					for t in table:
+						if t['owner'] == f'{item.name} {item.surname}':
+							t['leaves'] = t['leaves'] + new_merged 
+
+			print('Table')
+			print(table)
+		return render_template('Leaves/period_leave_search.html', form=form, table=table)
+
+
+
+	return render_template('Leaves/period_leave_search.html', form=form)
+
+
 
 @app.route('/public_holidays', methods=['GET','POST'])
 #@login_required
 def public_holidays():
+
 	deleteform = DeleteForm()
 	if request.method=="POST":
 		if request.form['submit_button'] =="Delete":			

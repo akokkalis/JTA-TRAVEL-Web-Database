@@ -3,6 +3,7 @@ from main import app
 from main.models import *
 from main import db
 from datetime import date
+from datetime import datetime, timedelta
 
 
 import os
@@ -84,3 +85,12 @@ def years_uniques(mylist : list) -> list:
 	import numpy as np
 	x = np.array(mylist)
 	return np.unique(x)
+
+def period_leave_days(start:date, end:date)->list:
+	delta = end - start
+	days = [start + timedelta(days=i) for i in range(delta.days + 1)]
+	return list(map(lambda n: n.strftime("%Y-%m-%d"), days))
+
+def corect_date_format(d: str):
+	#datetime.datetime.strptime("2013-1-25", '%Y-%m-%d').strftime('%m/%d/%y')
+	return datetime.strptime(d, "%Y-%m-%d").strftime("%d-%m-%Y")
