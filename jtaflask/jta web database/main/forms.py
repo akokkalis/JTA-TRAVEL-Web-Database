@@ -465,3 +465,23 @@ class Assets_Edit_Form(FlaskForm):
     submit = SubmitField(label = 'Save', name='submit_button')
 
     reg_date = DateField(label='Registration Date:', default=datetime.today())
+
+class CarPartnerForm(FlaskForm):
+    def validate_email(self, email_to_check):
+        partner = Carpartner.query.filter_by(email = email_to_check.data).first()
+        if partner:
+            raise ValidationError('Email Already Exists in Database. Please Enter a Different Email')
+    def validate_phone(self, phone_to_check):
+        #user1 = Users.query.filter_by(mobile_phone = mobile_phone_to_check.data).filter_by(active=True).first()
+        partner = Carpartner.query.filter_by(phone = phone_to_check.data).first()        
+        if partner:
+            raise ValidationError('Companys Phone Already Exists in Database. Please Enter a Different Companys Phone Number')
+    def validate_name(self, name_to_check):
+        #user1 = Users.query.filter_by(mobile_phone = mobile_phone_to_check.data).filter_by(active=True).first()
+        partner = Carpartner.query.filter_by(company_name = name_to_check.data.capitalize()).first()        
+        if partner:
+            raise ValidationError('Companys Name Already Exist in Database!')
+
+    name = StringField(label='Companys Name:', validators=[Length(min=2, max=50),DataRequired()]) 
+    email = EmailField(label='Email:', validators=[Email(),DataRequired()])
+    phone = StringField(label = 'Phone Number', validators=[Regexp('^\d{8}$',message = 'Telephone must contains only digits, No letters and has to be minimum 8 length'),Length(min=8), DataRequired()])

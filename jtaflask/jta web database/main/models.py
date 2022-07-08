@@ -172,5 +172,19 @@ class AssetRentedHistory(db.Model):
 
     date = db.Column(db.Date(), nullable=False )
 
+class Carpartner(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    company_name = db.Column(db.String(100), nullable=False, unique=True)
+    email = db.Column(db.String(length=50), nullable=False, unique=True)
+    phone = db.Column(db.String(length=15), nullable=False, unique=True)
+    cars = db.relationship('Cars', backref='cars', lazy=True)
+
+class Cars(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    reg_number = db.Column(db.String(50), nullable=False, unique=True)
+    category = db.Column(db.String(50), nullable=False)
+    remarks = db.Column(db.String(length=300), nullable=True, unique=False)
+    carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
+
 
     

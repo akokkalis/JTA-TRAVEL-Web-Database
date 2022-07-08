@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block myjavascript %}
+
+{%endblock%}
+
+
+{% block content %}
+<br>
+
+	
+		<div class="container" >
+			<div class="row">
+				<div class="col-10">
+			
+					<div class="card p-3 bg-info">
+						<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-list-task"></i> Insert Car Partner</h1>
+						<form method = "POST" enctype="multipart/form-data" > 
+							
+							<!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server--> 
+							{{form.hidden_tag()}} 
+							
+								
+								<div class="text-center">
+									<hr>
+									<label for="category" class="form-label text-center">{{ form.name.label()}}</label>
+									
+									{{form.name(class="form-control text-center",  placeholder="Companys Name")}}
+								</div>
+
+								<div class="text-center">
+									<hr>
+									<label for="category" class="form-label text-center">{{ form.email.label()}}</label>
+									
+									{{form.email(class="form-control text-center",  placeholder="Partners Email")}}
+								</div>
+								<div class="text-center">
+									<hr>
+									<label for="category" class="form-label text-center">{{ form.phone.label()}}</label>									
+									{{form.phone(class="form-control text-center",  placeholder="Partners Phone")}}
+								</div>
+
+
+								<div >
+									<hr>                 
+										<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+									<hr> 
+								</div> 
+								<div >   
+									<a class="btn btn-lg btn-block btn-primary" href="{{url_for('cars_page')}}" role="button">Back</a> 
+								</div> 
+						</form>			
+					</div>
+				</div>
+				
+				{%if partners %}
+				<div class="col-2">
+					<em>Partners Available</em>
+					<table id="categorytable" class="table table-info text-center table-bordered table-hover table-striped table-sm ">
+						<thead>						
+							<tr>							
+								<th scope="col">Name</th>	
+							</tr>
+						</thead>
+						<tbody>
+							{%for item in partners%}
+							<tr>
+								<td>{{item.company_name}}</td>
+							</tr>
+							{%endfor%}
+						</tbody>
+					</table>
+				</div>
+				{%endif%}
+			</div>	
+
+	
+		</div>
+	
+
+
+
+{% endblock %}

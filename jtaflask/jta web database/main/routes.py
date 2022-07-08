@@ -1443,20 +1443,17 @@ def leave_statistics():
 @app.route('/leaves/period_leave_search/', methods=['GET','POST'])
 def period_leave_search():
 	form = SearchLeavePeriod()
-	if request.method =='POST':		
-		print(form.from_.data)
-		print(form.to_.data)
+	if request.method =='POST':
+
 		search_period = usefull_functions.period_leave_days(form.from_.data, form.to_.data)
 		
-		leaves = db.session.query(Users.name, Users.surname, Leaves.from_, Leaves.to_).outerjoin(Leaves, Users.id==Leaves.owner).filter(or_(Leaves.confirm=='true', Leaves.confirm=='Pending Confirmation')).all()
-		print(leaves)
-		print('')
+		leaves = db.session.query(Users.name, Users.surname, Leaves.from_, Leaves.to_).outerjoin(Leaves, Users.id==Leaves.owner).filter(or_(Leaves.confirm=='true', Leaves.confirm=='Pending Confirmation')).all()		
 		table = []
 		for item in leaves:			
 			item_period = usefull_functions.period_leave_days(item.from_, item.to_)
 			
-			print('Comparison' )
-			#print(set(search_period).intersection(item_period))
+		
+			
 			merged_days = [x for x in search_period if x in item_period]
 			
 			if merged_days:
@@ -1476,8 +1473,7 @@ def period_leave_search():
 						if t['owner'] == f'{item.name} {item.surname}':
 							t['leaves'] = t['leaves'] + new_merged 
 
-			print('Table')
-			print(table)
+
 		return render_template('Leaves/period_leave_search.html', form=form, table=table)
 
 
@@ -1794,6 +1790,52 @@ def assets_report():
 	
 
 	return render_template('Assets/assets_report.html', all_assets_table=final)
+
+
+@app.route('/car_partners', methods=['GET','POST'])
+#@login_required
+def car_partners():
+	form = DeleteForm()
+	if request.method=="POST":
+		if request.form['submit_button'] =="Delete":			
+			delete_partner = Carpartner.query.filter_by(id=int(request.form.get('delete_partner'))).delete()			
+			db.session.commit()
+			flash(f'Car Rental Partner Deleted Succesfully', category='danger' )
+			return redirect(url_for('car_partners'))
+
+
+
+	partners = Carpartner.query.all()
+	return render_template('CarPartners/car_partners.html', partners=partners, form=form)
+
+@app.route('/car_partners_registration', methods=['GET','POST'])
+#@login_required
+def car_partner_add():
+	form = CarPartnerForm()
+	if request.method=="POST":
+		if form.validate_on_submit():
+			new_partner = Carpartner(company_name = form.name.data.capitalize(), phone = form.phone.data,email = form.email.data )
+			print(form.name.data)
+			print(form.email.data)
+			print(form.phone.data)
+			db.session.add(new_partner)
+			db.session.commit()
+			flash(f'Partner  - {form.name.data} -  Created Succesfully', category='primary' )
+			return redirect(url_for('car_partner_add'))
+				
+
+				
+		if form.errors != {}:
+			for error_msg in form.errors.values():
+				flash(f'Error!!! {error_msg[0]}', category='danger' )
+	partners = Carpartner.query.all()
+	
+	return render_template('CarPartners/add_car_partner.html', form=form, partners=partners)
+
+
+
+
+
 '''
 string
 int
