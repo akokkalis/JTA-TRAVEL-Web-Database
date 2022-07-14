@@ -1883,10 +1883,18 @@ def car_partner_add():
 #@login_required
 def car_partner_contracts(id):
 	print(id)
-	
 	delete_form = DeleteForm()
+	if request.method=="POST":
+		if request.form['submit_button'] =="Delete":			
+			delete_contract = CarPartnerContract.query.filter_by(id=int(request.form.get('contract_delete'))).delete()			
+			db.session.commit()
+			flash(f'Car Rental Contract Deleted Succesfully', category='danger' )
+			return redirect(url_for('car_partners'))
+
+
 	
-	contracts = db.session.query(column_property(func.to_char(CarPartnerContract.sign_date, 'DD/MM/YYYY').label('sign_date')),
+
+	contracts = db.session.query(CarPartnerContract.id,column_property(func.to_char(CarPartnerContract.sign_date, 'DD/MM/YYYY').label('sign_date')),
 	column_property(func.to_char(CarPartnerContract.from_date, 'DD/MM/YYYY').label('from_date')),
 	column_property(func.to_char(CarPartnerContract.to_date, 'DD/MM/YYYY').label('to_date')), CarPartnerContract.doc, Carpartner.company_name).filter(CarPartnerContract.carpartner==id).join(Carpartner, Carpartner.id==CarPartnerContract.carpartner).order_by(CarPartnerContract.id.desc()).all()
 
