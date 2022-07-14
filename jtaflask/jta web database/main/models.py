@@ -178,6 +178,18 @@ class Carpartner(db.Model):
     email = db.Column(db.String(length=50), nullable=False, unique=True)
     phone = db.Column(db.String(length=15), nullable=False, unique=True)
     cars = db.relationship('Cars', backref='cars', lazy=True)
+    contracts = db.relationship('CarPartnerContract', backref='owned_contracts', lazy=True)
+
+class CarPartnerContract(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    sign_date = db.Column(db.Date(), nullable=False )
+    from_date = db.Column(db.Date(), nullable=False )
+    to_date = db.Column(db.Date(), nullable=False )
+    doc = db.Column(db.String(length=100), nullable=True)
+    carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
+
+
+
 
 class Cars(db.Model):
     id = db.Column(db.Integer(), primary_key=True)

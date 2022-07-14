@@ -485,3 +485,11 @@ class CarPartnerForm(FlaskForm):
     name = StringField(label='Companys Name:', validators=[Length(min=2, max=50),DataRequired()]) 
     email = EmailField(label='Email:', validators=[Email(),DataRequired()])
     phone = StringField(label = 'Phone Number', validators=[Regexp('^\d{8}$',message = 'Telephone must contains only digits, No letters and has to be minimum 8 length'),Length(min=8), DataRequired()])
+
+class CarPartnerContractsForm(FlaskForm):
+
+    sign_date = DateField(label='Sign Date:', validators=[DataRequired()])
+    from_date = DateField(label='From Date:', validators=[DataRequired()])
+    to_date = DateField(label='To Date: ', validators=[DataRequired()]) 
+    doc = FileField(label = 'Contract Documnet:')
+    submit = SubmitField(label = 'Save', name='submit_button')

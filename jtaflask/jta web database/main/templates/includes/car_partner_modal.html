@@ -31,3 +31,63 @@
 	  </div>
 	</div>
   </div>
+
+
+
+
+<!-- Modal Car Partner Add Contract  -->
+<div class="modal fade" id="Modal-CarContract-{{ partner.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<h5 class="modal-title" id="exampleModalLabel">{{partner.company_name}} Add A Contract</h5>
+		<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+	</div>
+	<div class="modal-body text-center ">
+		<form method="POST" enctype="multipart/form-data">
+			{{contractform.hidden_tag()}}
+			 <em><strong>Add New Contract for {{partner.company_name}}</strong></em>?
+			<input id="{{partner.id}}" name="contract_partner" type="hidden" value="{{partner.id}}">	
+			<input id="{{partner.name}}" name="contract_partner_name" type="hidden" value="{{partner.company_name}}">  
+			<br>
+			<br>
+
+			<div class="col-md-12 text-center ">
+			<label for="sign_date" class="form-label ">{{ contractform.sign_date.label()}}</label>
+			{{contractform.sign_date(class="form-control text-center ", value='#', placeholder="Serial Number")}}
+			</div>
+
+
+			<br>
+			<div class="col-md-12">
+			<label for="reg_date" class="form-label">{{ contractform.from_date.label()}}</label>
+			{{contractform.from_date(class="form-control text-center ", value='#', placeholder="From Date")}}
+			</div>
+
+			<br>
+			<div class="col-md-12">
+			<label for="to_date" class="form-label">{{ contractform.to_date.label()}}</label>
+			{{contractform.to_date(class="form-control text-center ", value='#', placeholder="Value")}}
+			</div>
+
+			<br>
+			<div class="col-md-12">
+			<label for="doc" class="form-label">{{ contractform.doc.label()}}</label>
+			{{contractform.doc(class="form-control text-center ", vaule= '#', placeholder="Remarks")}}
+
+			</div>
+			<br>
+			{{contractform.submit(class = "btn btn-outline-info btn-block")}}
+
+
+		</form>		
+
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+	</div>
+	</div>
+</div>
+</div>  
+

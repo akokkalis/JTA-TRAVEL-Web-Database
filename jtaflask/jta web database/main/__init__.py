@@ -17,6 +17,8 @@ app.config['FILE_UPLOADS_FOR_LEAVES'] = 'F:\\Python Repo\\web database\\jtaflask
 
 app.config['FILE_UPLOADS_FOR_CARDS'] = 'F:\\Python Repo\\web database\\jtaflask\\jta web database\\main\\Files_Uploads\\Cards'
 
+app.config['FILE_UPLOADS_CAR_CONTRACTS'] = 'F:\\Python Repo\\web database\\jtaflask\\jta web database\\main\\Files_Uploads\\CarContracts'
+
 app.config['ALLOWED_FILE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG' , 'GIF', 'PDF','DOC', 'DOCX']
 
 

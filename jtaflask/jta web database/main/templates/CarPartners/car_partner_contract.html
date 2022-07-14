@@ -21,12 +21,12 @@
 {% block content %}
 
 <br>
-<a class="btn btn-primary" href="{{url_for('car_partner_add')}}" role="button">Add Car Partner</a>
+
 
 <div class="container">
 
 		<div class="card p-3 bg-light">
-			<h3 class="text-center text-"><i class="bi bi-list-task"></i> Car Partners</h3>
+			<h3 class="text-center text-"><i class="bi bi-list-task"></i> {{contracts[-1][-1]}}Contracts</h3>
 			<div class="table-responsive">
 				
 				<table id="categorytable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
@@ -34,44 +34,37 @@
 					<thead>
 						<!--Table Columns Here-->
 					<tr>
-						<th scope="col" data-priority="1">No</th>
-						<th scope="col" data-priority="1">Name</th>			
-						<th scope="col" data-priority="1">Email</th>
-						<th scope="col" data-priority="1">Phone</th>
-						<th scope="col" data-priority="2">View Contracts</th>
-						<th scope="col" data-priority="2">Add Contract</th>
-						<th scope="col" data-priority="2">Delete</th>
+						<th scope="col">No</th>
+						<th scope="col">Company</th>
+						<th scope="col">Sign Date</th>						
+						<th scope="col">Starts</th>
+						<th scope="col">Ends</th>
+						<th scope="col">Doc</th>
+						<th scope="col">Delete</th>
 			
 					</thead>
 					<tbody>
-						{% for partner in partners %}	
-						{% include 'includes/car_partner_modal.html' %}
+						{% for contract in contracts %}	
+						{% include 'includes/car_contracts_modal.html' %}
+						
 							<tr>
-								<th scope="row">{{loop.index}}</th>
-								
-								<td>{{partner.company_name}}</td>
-								<td>{{partner.email}}</td>
-								<td>{{partner.phone}}</td>
-								<td>								
-									<a title='View Partner Contracts' class="btn btn-sm btn-primary btn-block" href="{{url_for('car_partner_contracts', id = partner.id)}}" role="button"> Contracts
-									</a> 
+								<th scope="row">{{loop.index}}</th>								
+								<td>{{contract.company_name}}</td>
+								<td>{{contract.sign_date}}</td>
+								<td>{{contract.from_date}}</td>
+								<td>{{contract.to_date}}</td>
 								<td>
-									<button title='Add Contract {{partner.name}}'      				  
-									class="btn btn-sm btn-outline-danger
-										btn-block" data-toggle ="modal" data-target="#Modal-CarContract-{{ partner.id }}">
-										<i class="bi bi-plus"></i>
-									</button>
+									<a title='Download Contract' class="btn btn-sm btn-primary btn-block" href="{{url_for('down_car_contract_file', file_name = contract.doc)}}" role="button"><i class="bi bi-file-earmark-arrow-down"></i></a>
 								</td>
-								
-								
-								<td>
-									<button title='Delete {{partner.name}}'      				  
-									class="btn btn-sm btn-outline-danger
-										btn-block" data-toggle ="modal" data-target="#Modal-Delete-CarPartner-{{ partner.id }}">    
+								<td>									
+									<button                                      
+									class="btn btn-sm btn-dark btn-block"
+									data-toggle ="modal"
+									data-target="#Modal-Delete-Contract-{{ contract.id }}" >
 									<i class="bi bi-trash"></i>
-									</button>
+								</button>
 								</td>
-			
+							</tr>
 						{%endfor%}
 
 							
@@ -100,7 +93,7 @@
 				'dom':'BQlfrtip',				
 				'buttons' : ['print','excel','csv','pdf','colvis'],
 				'colReorder': true,
-				'responsive': true,
+				'responsive': false,
 				'select':false,
 				
 			}

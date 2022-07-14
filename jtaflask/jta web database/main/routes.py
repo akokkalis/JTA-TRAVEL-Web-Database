@@ -132,6 +132,41 @@ def file_returner(request, file_name_details):
 				file_names_dict[key] = f'{filename}'
 
 			return file_names_dict
+
+def contract_save(request, file_name_details):
+	file_names_dict={}
+	print(request.files.items())
+	
+	for key, value in request.files.items():
+		
+		if not 'application/octet-stream' in value.content_type:
+			#file_s = request.files['jcc_daily_image']
+			file_s = request.files[key]			
+			print(file_s)
+			
+			if not file_s.filename:
+				flash(f'You cant Upload a file with out a name', category='danger' )
+				return redirect(request.url)
+			
+			if not usefull_functions.allowed_files_ext(file_s.filename):
+				flash(f'You cant Upload a file with that extension', category='danger' )
+				return redirect(request.url)
+			
+			else:
+				#filename = current_user.surname + '12_4_2022_' +  secure_filename(file_s.filename)
+				filename = file_name_details + file_ext(file_s.filename)
+				
+				#file_s.save(os.path.join(app.config['FILE_UPLOADS_LIQUIDATION'], file_s.filename))
+				file_s.save(os.path.join(app.config['FILE_UPLOADS_CAR_CONTRACTS'], filename))
+				file_names_dict[key] = f'{filename}'
+
+			return file_names_dict
+
+
+
+
+
+
 def active_reps_for_forms()->list:
 	'''Return the active reps as list of strings containig Name and Surname of each rep '''
 	reps = db.session.query(Users).filter(Users.
@@ -1796,30 +1831,42 @@ def assets_report():
 #@login_required
 def car_partners():
 	form = DeleteForm()
+	contractform = CarPartnerContractsForm()
 	if request.method=="POST":
 		if request.form['submit_button'] =="Delete":			
 			delete_partner = Carpartner.query.filter_by(id=int(request.form.get('delete_partner'))).delete()			
 			db.session.commit()
 			flash(f'Car Rental Partner Deleted Succesfully', category='danger' )
 			return redirect(url_for('car_partners'))
+		if request.form['submit_button'] =="Save":
+			file_name_details = request.form.get('contract_partner_name')+'_'+str(contractform.from_date.data)+'_'+ str(contractform.to_date.data) 
+			print(file_name_details)
+			
+			file_name = contract_save(request, file_name_details)
 
-
-
+			
+			new_contract = CarPartnerContract(sign_date = contractform.sign_date.data, from_date = contractform.from_date.data, to_date = contractform.to_date.data, doc = file_name['doc'] , carpartner = request.form.get('contract_partner')  )
+			
+			db.session.add(new_contract)
+			db.session.commit()
+			
+			flash(f'Contract Saved Succesfully', category='primary' )
+			return redirect(url_for('car_partners'))
 	partners = Carpartner.query.all()
-	return render_template('CarPartners/car_partners.html', partners=partners, form=form)
+	return render_template('CarPartners/car_partners.html', partners=partners, form=form, contractform =contractform)
 
 @app.route('/car_partners_registration', methods=['GET','POST'])
 #@login_required
 def car_partner_add():
 	form = CarPartnerForm()
-	if request.method=="POST":
+	if request.method == "POST":
 		if form.validate_on_submit():
+
 			new_partner = Carpartner(company_name = form.name.data.capitalize(), phone = form.phone.data,email = form.email.data )
-			print(form.name.data)
-			print(form.email.data)
-			print(form.phone.data)
+
 			db.session.add(new_partner)
 			db.session.commit()
+
 			flash(f'Partner  - {form.name.data} -  Created Succesfully', category='primary' )
 			return redirect(url_for('car_partner_add'))
 				
@@ -1832,7 +1879,29 @@ def car_partner_add():
 	
 	return render_template('CarPartners/add_car_partner.html', form=form, partners=partners)
 
+@app.route('/car_partner_contracts/<int:id>', methods=['GET','POST'])
+#@login_required
+def car_partner_contracts(id):
+	print(id)
+	
+	delete_form = DeleteForm()
+	
+	contracts = db.session.query(column_property(func.to_char(CarPartnerContract.sign_date, 'DD/MM/YYYY').label('sign_date')),
+	column_property(func.to_char(CarPartnerContract.from_date, 'DD/MM/YYYY').label('from_date')),
+	column_property(func.to_char(CarPartnerContract.to_date, 'DD/MM/YYYY').label('to_date')), CarPartnerContract.doc, Carpartner.company_name).filter(CarPartnerContract.carpartner==id).join(Carpartner, Carpartner.id==CarPartnerContract.carpartner).order_by(CarPartnerContract.id.desc()).all()
 
+	print(contracts)
+	print(contracts[-1][-1])
+
+
+	return render_template('CarPartners/car_partner_contract.html', title = "Partner Contract", delete_form = delete_form, contracts = contracts)
+
+
+# @app.route('/car_partner_contract_add', methods=['GET','POST'])
+# #@login_required
+# def car_partner_contract_add():
+# 	form = CarPartnerContractsForm()
+# 	return render_template('car_partner_contract_add.html', form = form)
 
 
 
@@ -1878,6 +1947,17 @@ def down_leave_file(file_name):
 		abort(404)
 
 
+@app.route('/down-carcontract-file/<string:file_name>', methods=['GET','POST'])
+def down_car_contract_file(file_name):
+	print(file_name)
+	print(app.config['FILE_UPLOADS_CAR_CONTRACTS'])
+	try:
+		return send_from_directory(app.config['FILE_UPLOADS_CAR_CONTRACTS'],path=file_name, as_attachment=True)
+
+	except FileNotFoundError:
+		print('abort')
+		abort(404)
+	 
 
 @app.route('/testing', methods=['GET','POST'])
 def test():
