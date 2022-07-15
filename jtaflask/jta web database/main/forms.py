@@ -493,3 +493,25 @@ class CarPartnerContractsForm(FlaskForm):
     to_date = DateField(label='To Date: ', validators=[DataRequired()]) 
     doc = FileField(label = 'Contract Documnet:')
     submit = SubmitField(label = 'Save', name='submit_button')
+
+class CarForm(FlaskForm):
+    car_rental_partners = db.session.query(Carpartner.company_name).all()
+    car_rentals = [company[0] for company in car_rental_partners]
+    
+    reg_number = StringField(label='Reg. Number:', validators=[Length(min=5, max=10),DataRequired()])
+    
+    category = SelectField(label='Transmision:', validators=[DataRequired()], choices=['Automatic', 'Manual'], default='Automatic')
+    
+    model = StringField(label='Model:')
+    
+    engine_code = StringField(label='Engine Code:')
+    
+    vin = StringField(label='Vin Number:')
+    
+    cc = StringField(label='CC:')
+    
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())    
+    
+    car_partner = SelectField(label='Car Company Owner:', validators=[DataRequired()], choices = car_rentals)
+    
+    submit = SubmitField(label = 'Save', name='submit_button')

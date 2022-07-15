@@ -23,3 +23,7 @@ https://stackoverflow.com/questions/62729604/use-to-char-in-flask-sqlalchemy-que
 
 file Upload to googledrive
 https://youtu.be/JwGzHitUVcU
+
+
+print a div only
+https://jsfiddle.net/6cz5br7m/

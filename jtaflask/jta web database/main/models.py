@@ -40,6 +40,7 @@ class Users(db.Model, UserMixin):
     leave = db.relationship('Leaves', backref='owned_user', lazy=True)
     card_returns = db.relationship('CardPaymentReturns', backref='owned_user', lazy=True)
     rented_history = db.relationship('AssetRentedHistory', backref='owned_user', lazy=True)
+    rented_history =  db.relationship('CarRentedHistory', backref='user_owned_rental', lazy=True)
     
 
     @property
@@ -180,6 +181,7 @@ class Carpartner(db.Model):
     cars = db.relationship('Cars', backref='cars', lazy=True)
     contracts = db.relationship('CarPartnerContract', backref='owned_contracts', lazy=True)
 
+
 class CarPartnerContract(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     sign_date = db.Column(db.Date(), nullable=False )
@@ -195,8 +197,19 @@ class Cars(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     reg_number = db.Column(db.String(50), nullable=False, unique=True)
     category = db.Column(db.String(50), nullable=False)
+    model = db.Column(db.String(50), nullable=True)
+    engine_code = db.Column(db.String(80), nullable=True)
+    vin = db.Column(db.String(80), nullable=True, unique=True)
+    cc = db.Column(db.String(80), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
+    rented_history =  db.relationship('CarRentedHistory', backref='car_owned_rental', lazy=True)
 
+class CarRentedHistory(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    type = db.Column(db.String(10), nullable=False, unique=True)
+    given_place = db.Column(db.String(10), nullable=False, unique=True)
+    driver = db.Column(db.Integer(), db.ForeignKey(Users.id,ondelete='CASCADE'))
+    car = db.Column(db.Integer(), db.ForeignKey(Cars.id,ondelete='CASCADE')) 
 
     

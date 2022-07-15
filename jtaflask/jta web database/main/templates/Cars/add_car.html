@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<br>
+
+<div class="container" >
+	<div class="card p-3 bg-info">
+		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-truck"></i> Add Car</h1>
+		<form method = "POST" class="row g-3"> 
+			   <!-- Protect us from CSRF Cross Site Request Forgery sending data between client and server-->   
+			   {{form.hidden_tag()}}        
+			   
+				<div class="col-md-6 text-center">
+					<label for="reg_number" class="form-label text-center">{{ form.reg_number.label()}}</label>
+					
+					{{form.reg_number(class="form-control text-center", placeholder="Registration Number")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					
+					<label for="category" class="form-label text-center">{{ form.category.label()}}</label>
+					
+					{{form.category(class="form-control text-center", placeholder="Category")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="model" class="form-label text-center">{{ form.model.label()}}</label>
+					
+					{{form.model(class="form-control text-center", placeholder="Car Model")}}
+				</div>
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="engine_code" class="form-label text-center">{{ form.engine_code.label()}}</label>
+					
+					{{form.engine_code(class="form-control text-center", placeholder="Engine Code")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="vin" class="form-label text-center">{{ form.vin.label()}}</label>
+					
+					{{form.vin(class="form-control text-center", placeholder="Vin Number")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="cc" class="form-label text-center">{{ form.cc.label()}}</label>
+					
+					{{form.cc(class="form-control text-center", placeholder="CC")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="car_partner" class="form-label text-center">{{ form.car_partner.label()}}</label>
+					
+					{{form.car_partner(class="form-control text-center", placeholder="Car Partner")}}
+				</div>
+
+				<div class="col-md-6 text-center">
+					<hr>
+					<label for="remarks" class="form-label text-center">{{ form.remarks.label()}}</label>
+					
+					{{form.remarks(class="form-control text-center", placeholder="Remarks")}}
+				</div>
+
+				<div class="col-md-12" >
+					<hr>                 
+						<button type="submit" class="btn btn-lg btn-block btn-primary"> Submit <i class="bi bi-plus-circle-fill"></i></button>
+					<hr> 
+				</div> 
+
+
+
+
+			
+		</form>    
+	</div>
+	<a class="btn btn-lg btn-block btn-primary" href="{{url_for('assets_page')}}" role="button">Back</a>
+</div>     
+
+
+{% endblock %}

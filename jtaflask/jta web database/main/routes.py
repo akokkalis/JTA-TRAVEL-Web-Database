@@ -341,10 +341,7 @@ def home():
 	]
 	return render_template('home.html', title=page_title, room_list=room_list)
 
-@app.route('/cars')
-def cars_page():
-		page_title= 'Cars'
-		return render_template('cars.html', title=page_title)
+
 
 @app.route('/card_returns',methods=['GET', 'POST'])
 def card_returns():
@@ -1903,6 +1900,27 @@ def car_partner_contracts(id):
 
 
 	return render_template('CarPartners/car_partner_contract.html', title = "Partner Contract", delete_form = delete_form, contracts = contracts)
+
+@app.route('/cars', methods=['GET','POST'])
+#@login_required
+def cars_page():
+		page_title= 'Cars'
+		return render_template('Cars/cars.html', title=page_title)
+
+
+@app.route('/add_car', methods=['GET','POST'])
+#@login_required
+def add_car():
+	form = CarForm()
+	if request.method == "POST":
+		
+		if form.validate_on_submit():
+			car_partner = db.session.query(Carpartner.id).filter_by(company_name = form.car_partner.data).first()
+
+			newCar = Cars(reg_number=form.reg_number.data, category = form.category.data, model = form.model.data, engine_code = form.engine_code.data, vin = form.vin.data, cc = form.cc.data, remarks = form.remarks.data, carpartner= car_partner.id)
+			db.session.add(newCar)
+			db.session.commit()
+	return render_template('Cars/add_car.html', title='Add Car', form=form)
 
 
 # @app.route('/car_partner_contract_add', methods=['GET','POST'])
