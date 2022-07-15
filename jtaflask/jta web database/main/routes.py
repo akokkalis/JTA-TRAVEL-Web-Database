@@ -1917,9 +1917,11 @@ def add_car():
 		if form.validate_on_submit():
 			car_partner = db.session.query(Carpartner.id).filter_by(company_name = form.car_partner.data).first()
 
-			newCar = Cars(reg_number=form.reg_number.data, category = form.category.data, model = form.model.data, engine_code = form.engine_code.data, vin = form.vin.data, cc = form.cc.data, remarks = form.remarks.data, carpartner= car_partner.id)
+			newCar = Cars(reg_number=form.reg_number.data.upper(), category = form.category.data, model = form.model.data.capitalize(), engine_code = form.engine_code.data, vin = form.vin.data, cc = form.cc.data, remarks = form.remarks.data, carpartner= car_partner.id)
+			
 			db.session.add(newCar)
 			db.session.commit()
+			return redirect(url_for('cars_page'))
 	return render_template('Cars/add_car.html', title='Add Car', form=form)
 
 

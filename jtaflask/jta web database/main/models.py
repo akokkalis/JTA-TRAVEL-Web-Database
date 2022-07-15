@@ -199,7 +199,7 @@ class Cars(db.Model):
     category = db.Column(db.String(50), nullable=False)
     model = db.Column(db.String(50), nullable=True)
     engine_code = db.Column(db.String(80), nullable=True)
-    vin = db.Column(db.String(80), nullable=True, unique=True)
+    vin = db.Column(db.String(80), nullable=True)
     cc = db.Column(db.String(80), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
