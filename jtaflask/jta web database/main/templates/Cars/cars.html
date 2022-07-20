@@ -5,11 +5,100 @@
 
 {% block title %}
 {{title}}
-{% endblock %}
+{% endblock %}{%block head_links%}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+
+<link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<link rel="stlesheet" href="https://cdn.datatables.net/1.11.5/js/query.dataTables.min.js">
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.css"/>
+
+{%endblock%}
+
+
 
 {% block content %}
 
 <br>
 <a class="btn btn-primary" href="{{url_for('add_car')}}" role="button">Add A Car</a>
-cars page
+<div class="container" name="cars" id="cars">
+
+	<div class="card p-3 bg-light">
+		<h3 class="text-center text-"><i class="bi bi-list-task"></i> Cars</h3>
+		<div class="table-responsive">
+			
+			<table id="mytable" class="table table-info text-center table-bordered table-hover table-striped table-sm "  >
+
+				<thead>
+					<!--Table Columns Here-->
+					<tr>
+						<th scope="col" data-priority="1">No</th>
+						<th scope="col" data-priority="1">Reg. Number</th>			
+						<th scope="col" data-priority="1">Transmision</th>
+						<th scope="col" data-priority="1">Model</th>
+						<th scope="col" data-priority="2">Engine Code</th>
+						<th scope="col" data-priority="2">VIN</th>
+						<th scope="col" data-priority="2">CC</th>
+						<th scope="col" data-priority="2">Remarks</th>
+						<th scope="col" data-priority="2">Partner Owner</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for car in cars %}	
+						<tr>
+							<th scope="row">{{loop.index}}</th>							
+							<td>{{car.reg_number}}</td>
+							<td>{{car.category}}</td>
+							<td>{{car.model}}</td>
+							<td>{{car.engine_code}}</td>
+							<td>{{car.vin}}</td>
+							<td>{{car.cc}}</td>		
+							<td>{{car.remarks}}</td>
+							<td>{{car.company_name}}</td>
+						</tr>	
+					{%endfor%}
+
+						
+				</tbody>
+
+			</table>
+
+		</div>
+
+
+	</div>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.11.5/af-2.3.7/b-2.2.2/b-colvis-2.2.2/b-html5-2.2.2/b-print-2.2.2/cr-1.5.5/date-1.1.2/fc-4.0.2/fh-3.2.2/kt-2.6.4/r-2.2.9/rg-1.1.4/rr-1.2.8/sc-2.0.5/sb-1.3.2/sp-2.0.0/sl-1.3.4/sr-1.1.0/datatables.min.js"></script>
+
+
+<script>
+$(document).ready(function(){
+	$('#mytable').DataTable({					
+		"ordering": true,
+		'paging':true,
+		'dom':'BQlfrtip',				
+		'buttons' : ['print','excel','csv','pdf','colvis'],
+		'colReorder': true,
+		'responsive': true,
+		'select':false,
+	}
+	);
+
+	$('[data-toggle="tooltip"]').tooltip({placement: "top"});
+
+
+   
+});
+
+
+</script>
+
+</div>
+
+
+
+
 {% endblock %}

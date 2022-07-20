@@ -1476,37 +1476,38 @@ def leave_statistics():
 def period_leave_search():
 	form = SearchLeavePeriod()
 	if request.method =='POST':
+		if form.validate_on_submit():
 
-		search_period = usefull_functions.period_leave_days(form.from_.data, form.to_.data)
-		
-		leaves = db.session.query(Users.name, Users.surname, Leaves.from_, Leaves.to_).outerjoin(Leaves, Users.id==Leaves.owner).filter(or_(Leaves.confirm=='true', Leaves.confirm=='Pending Confirmation')).all()		
-		table = []
-		for item in leaves:			
-			item_period = usefull_functions.period_leave_days(item.from_, item.to_)
+			search_period = usefull_functions.period_leave_days(form.from_.data, form.to_.data)
 			
-		
+			leaves = db.session.query(Users.name, Users.surname, Leaves.from_, Leaves.to_).outerjoin(Leaves, Users.id==Leaves.owner).filter(or_(Leaves.confirm=='true', Leaves.confirm=='Pending Confirmation')).all()		
+			table = []
+			for item in leaves:			
+				item_period = usefull_functions.period_leave_days(item.from_, item.to_)
+				
 			
-			merged_days = [x for x in search_period if x in item_period]
-			
-			if merged_days:
-				merged_days.sort()
-				new_merged=[]
-				for i in merged_days:
-					d = usefull_functions.corect_date_format(i)
+				
+				merged_days = [x for x in search_period if x in item_period]
+				
+				if merged_days:
+					merged_days.sort()
+					new_merged=[]
+					for i in merged_days:
+						d = usefull_functions.corect_date_format(i)
 
-					new_merged.append(d)
-				if not any(d['owner'] == f'{item.name} {item.surname}' for d in table):
-					table.append({
-						'owner':f'{item.name} {item.surname}',
-						'leaves':new_merged
-					})
-				else:
-					for t in table:
-						if t['owner'] == f'{item.name} {item.surname}':
-							t['leaves'] = t['leaves'] + new_merged 
+						new_merged.append(d)
+					if not any(d['owner'] == f'{item.name} {item.surname}' for d in table):
+						table.append({
+							'owner':f'{item.name} {item.surname}',
+							'leaves':new_merged
+						})
+					else:
+						for t in table:
+							if t['owner'] == f'{item.name} {item.surname}':
+								t['leaves'] = t['leaves'] + new_merged 
 
-
-		return render_template('Leaves/period_leave_search.html', form=form, table=table)
+			print(len(table))
+			return render_template('Leaves/period_leave_search.html', form=form, table=table)
 
 
 
@@ -1905,7 +1906,10 @@ def car_partner_contracts(id):
 #@login_required
 def cars_page():
 		page_title= 'Cars'
-		return render_template('Cars/cars.html', title=page_title)
+		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc, Carpartner.company_name).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
+		print(cars[0].company_name)
+
+		return render_template('Cars/cars.html', title=page_title, cars=cars)
 
 
 @app.route('/add_car', methods=['GET','POST'])

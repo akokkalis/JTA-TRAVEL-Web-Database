@@ -58,7 +58,7 @@
 <br>
 <div class="container ">
 <div class="card p-3 bg-light">
-	<h3 class="text-center text-"><i class="bi bi-calendar-week"></i> Period Results </h3>
+	<h3 class="text-center"><i class="bi bi-calendar-week"></i> Period Results </h3>
 	<div class="table-responsive">		
 		<table id="mytable" class="table table-info text-center table-bordered table-hover table-striped table-sm " >
 
@@ -128,7 +128,10 @@ $(document).ready(function(){
 
 </div>
 </div>
+
+{%elif not table%}
+<div class="container text-center">
+	<h6 class="text-center">No Results Found!</h6>
+</div>
 {%endif%}
-
-
 {%endblock%}
