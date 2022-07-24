@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+
+<div class="container" >
+	<br>
+	<div class="card p-3 bg-info text-center">
+		
+		<h1 class="h3 mb-3 font-weight-normal text-center"><i class="bi bi-pencil-square"></i> Edit Cars</h1>
+		
+		<form method = "POST" enctype="multipart/form-data"  class="row g-3"> 
+			
+				{{form.hidden_tag()}}			
+				
+				<br>
+  
+				<div class="col-md-6 text-center ">
+				  <label for="serial_number" class="form-label ">{{ form.reg_number.label()}}</label>
+				  {{form.reg_number(class="form-control text-center ", placeholder="Registration Number")}}
+				</div>
+				<br>
+				<div class="col-md-6">
+				  <label for="category" class="form-label">{{ form.category.label()}}</label>
+				  {{form.category(class="form-control text-center ", placeholder="Category")}}				
+
+				</div>
+				<br>
+				<div class="col-md-6">
+				  <label for="reg_date" class="form-label">{{ form.model.label()}}</label>
+				  {{form.model(class="form-control text-center ", placeholder="Car Model")}}
+				</div>
+				<br>
+				<div class="col-md-6">
+				  <label for="value" class="form-label">{{ form.engine_code.label()}}</label>
+				  {{form.engine_code(class="form-control text-center ", placeholder="Car Engine Code")}}
+				</div>
+				<br>
+				<div class="col-md-6">
+				  <label for="remarks" class="form-label">{{ form.vin.label()}}</label>
+				  {{form.vin(class="form-control text-center ", placeholder="Vin Number")}}
+				  <br>
+				</div>
+				<br>
+				<div class="col-md-6">
+					<label for="cc" class="form-label">{{ form.cc.label()}}</label>
+					{{form.cc(class="form-control text-center ", placeholder="CC")}}
+					<br>
+				</div>
+
+				<br>
+				<div class="col-md-6">
+					<label for="remarks" class="form-label">{{ form.car_partner.label()}}</label>
+					{{form.car_partner(class="form-control text-center ", placeholder="Partner")}}
+					<br>
+				</div>
+				<br>
+				<div class="col-md-6">
+				  <label for="remarks" class="form-label">{{ form.remarks.label()}}</label>
+				  {{form.remarks(class="form-control text-center ", placeholder="Remarks")}}
+				  <br>
+				</div>
+
+				  <br>
+				{{form.submit(class = "btn btn-lg btn-block btn-primary")}}
+  
+  
+			</form>		    
+	</div>
+	<a class="btn btn-lg btn-block btn-primary" href="{{url_for('cars_page')}}" role="button">Back</a>
+		</form>
+	
+	</div>
+	
+</div>
+{% endblock %}

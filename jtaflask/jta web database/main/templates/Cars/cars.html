@@ -24,7 +24,7 @@
 <div class="container" name="cars" id="cars">
 
 	<div class="card p-3 bg-light">
-		<h3 class="text-center text-"><i class="bi bi-list-task"></i> Cars</h3>
+		<h3 class="text-center text-"><i class="bi bi-truck"></i> Cars</h3>
 		<div class="table-responsive">
 			
 			<table id="mytable" class="table table-info text-center table-bordered table-hover table-striped table-sm "  >
@@ -41,6 +41,7 @@
 						<th scope="col" data-priority="2">CC</th>
 						<th scope="col" data-priority="2">Remarks</th>
 						<th scope="col" data-priority="2">Partner Owner</th>
+						<th scope="col" data-priority="2">Edit</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -55,6 +56,10 @@
 							<td>{{car.cc}}</td>		
 							<td>{{car.remarks}}</td>
 							<td>{{car.company_name}}</td>
+							<td>								
+								<a class="btn btn-sm btn-info btn-block"  href="{{url_for('edit_car',id=car.id)}}" role="button"><i class="bi bi-pencil"></i>
+								</a>
+							</td>
 						</tr>	
 					{%endfor%}
 

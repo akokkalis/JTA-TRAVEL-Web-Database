@@ -1906,18 +1906,14 @@ def car_partner_contracts(id):
 #@login_required
 def cars_page():
 		page_title= 'Cars'
-		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc, Carpartner.company_name).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
-		print(cars[0].company_name)
-
+		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Carpartner.company_name).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
 		return render_template('Cars/cars.html', title=page_title, cars=cars)
-
 
 @app.route('/add_car', methods=['GET','POST'])
 #@login_required
 def add_car():
 	form = CarForm()
-	if request.method == "POST":
-		
+	if request.method == "POST":		
 		if form.validate_on_submit():
 			car_partner = db.session.query(Carpartner.id).filter_by(company_name = form.car_partner.data).first()
 
@@ -1925,8 +1921,59 @@ def add_car():
 			
 			db.session.add(newCar)
 			db.session.commit()
+			flash(f'Car Added Succesfully', category='primary' )
 			return redirect(url_for('cars_page'))
+
+		if form.errors != {}:
+			for error_msg in form.errors.values():
+				flash(f'Error!!! {error_msg[0]}', category='danger' )
 	return render_template('Cars/add_car.html', title='Add Car', form=form)
+
+@app.route('/edit_car/<int:id>', methods=['GET','POST'])
+#@login_required
+def edit_car(id):
+	
+	car_to_edit = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc, Cars.remarks, Carpartner.company_name.label('car_partner')).join(Carpartner, Carpartner.id==Cars.carpartner).filter(Cars.id==id).first()
+
+	print(car_to_edit.reg_number)
+
+
+	form = CarEditForm(formdata=request.form, obj = car_to_edit)
+	
+	if request.method == "POST":		
+		if form.validate_on_submit():
+			car_to_f_edit  = db.session.query(Cars).filter(Cars.id==id).first()
+			print(form.reg_number.data)
+			car_to_f_edit.reg_number = form.reg_number.data
+			car_to_f_edit.category = form.category.data
+			car_to_f_edit.model = form.model.data
+			car_to_f_edit.engine_code = form.engine_code.data
+			car_to_f_edit.vin = form.vin.data
+			car_to_f_edit.cc = form.cc.data
+			car_to_f_edit.remarks = form.remarks.data
+			
+			partner = Carpartner.query.filter_by(company_name = form.car_partner.data).first()
+			print(partner.id)
+
+			car_to_f_edit.carpartner = partner.id
+
+			db.session.add(car_to_f_edit)
+			db.session.commit()
+			flash(f'Car Edited Succesfully', category='primary' )
+			return redirect(url_for('cars_page'))
+
+	if form.errors != {}:
+		for error_msg in form.errors.values():
+			flash(f'Error!!! {error_msg[0]}', category='danger' )
+			return redirect(url_for('edit_car',id=id))
+			
+
+	return render_template('Cars/edit_car.html', form = form)
+
+
+
+
+
 
 
 # @app.route('/car_partner_contract_add', methods=['GET','POST'])

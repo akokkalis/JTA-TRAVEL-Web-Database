@@ -1,24 +1,21 @@
-<!-- Modal Delete Card Return -->
-
+<!-- Modal Delete Car Partner -->
 <div class="modal fade" id="Modal-Delete-CarPartner-{{ partner.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	  <div class="modal-content">
+	<div class="modal-dialog ">
+	  <div class="modal-content bg-danger text-white">
 		<div class="modal-header">
-		  <h5 class="modal-title" id="exampleModalLabel">Delete Cars Partner</h5>
+		  <h5 class="modal-title " id="exampleModalLabel">Delete Cars Partner</h5>
 		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
 		</div>
 		<div class="modal-body">
 		  <form method="POST">
 			  {{form.hidden_tag()}}
 			  Are You Sure You want to delete Car Rental Partner  <em><strong>{{partner.company_name}} </strong></em>?
-			  <br>
-
-			  <br>
-			  <p class="bg-warning"><strong>Notice that if you delete A Partner All Cars owned by him is gona deleted</strong> </p>
+			  <br> <br>		
+			  <p><u><em> Notice that if you delete A Partner All Cars owned by him is gona deleted</em></u></p>
 
 			  <input id="{{partner.id}}" name="delete_partner" type="hidden" value="{{partner.id}}">
 			  <br>
-			  {{form.submit(class = "btn btn-outline-danger btn-block")}}
+			  {{form.submit(class = "btn btn-warning  btn-block")}}
 
 
 		  </form>		

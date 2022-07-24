@@ -495,6 +495,15 @@ class CarPartnerContractsForm(FlaskForm):
     submit = SubmitField(label = 'Save', name='submit_button')
 
 class CarForm(FlaskForm):
+    def validate_reg_number(self, reg_number):
+        '''
+        Validate mobile phone only for active users. We can have same number but for inactive users.        '''
+        print(self.reg_number.data)       
+        car1 = Cars.query.filter_by(reg_number = reg_number.data.upper()).first()
+        if car1:                           
+            raise ValidationError(f'Car {reg_number.data} already exists')  
+
+
     car_rental_partners = db.session.query(Carpartner.company_name).all()
     car_rentals = [company[0] for company in car_rental_partners]
     
@@ -513,5 +522,42 @@ class CarForm(FlaskForm):
     remarks = TextAreaField(label=f'Remarks', widget=TextArea())    
     
     car_partner = SelectField(label='Car Company Owner:', validators=[DataRequired()], choices = car_rentals)
+    
+    submit = SubmitField(label = 'Save', name='submit_button')
+
+class CarEditForm(FlaskForm):
+
+
+    def validate_reg_number(self, reg_number):
+        '''
+        Validate reg numbers only for cars.
+        '''
+             
+        car1 = Cars.query.filter_by(reg_number = reg_number.data.upper()).first()
+        if car1: 
+            if (car1.id != self.id.data):                          
+                raise ValidationError(f'Car {reg_number.data} already exists')  
+
+
+    id = IntegerField()
+
+    car_rental_partners = db.session.query(Carpartner.company_name).all()
+    car_rentals = [company[0] for company in car_rental_partners]
+    
+    reg_number = StringField(label='Reg. Number:', validators=[Length(min=5, max=10),DataRequired()])
+    
+    category = SelectField(label='Transmision:', validators=[DataRequired()], choices=['Automatic', 'Manual'], default='Automatic')
+    
+    model = StringField(label='Model:')
+    
+    engine_code = StringField(label='Engine Code:')
+    
+    vin = StringField(label='Vin Number:')
+    
+    cc = StringField(label='CC:')
+    
+    remarks = TextAreaField(label=f'Remarks', widget=TextArea())    
+    
+    car_partner = SelectField(label='Car Company Owner:', validators=[DataRequired()], choices = car_rentals, coerce=str)
     
     submit = SubmitField(label = 'Save', name='submit_button')
