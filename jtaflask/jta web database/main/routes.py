@@ -1906,8 +1906,18 @@ def car_partner_contracts(id):
 #@login_required
 def cars_page():
 		page_title= 'Cars'
+		delete_form = DeleteForm()
+		if request.method=="POST":
+			if request.form['submit_button'] =="Delete":
+				reg_num = request.form.get('car_delete_reg_number')
+				delete_car = Cars.query.filter_by(id=int(request.form.get('car_delete'))).delete()			
+				db.session.commit()
+				print(delete_car)
+				flash(f'Car {reg_num} Deleted Succesfully', category='danger' )
+				return redirect(url_for('cars_page'))
+
 		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Carpartner.company_name).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
-		return render_template('Cars/cars.html', title=page_title, cars=cars)
+		return render_template('Cars/cars.html', title=page_title, cars=cars, delete_form=delete_form)
 
 @app.route('/add_car', methods=['GET','POST'])
 #@login_required

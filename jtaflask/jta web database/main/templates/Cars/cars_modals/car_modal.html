@@ -1,0 +1,34 @@
+<!-- Modal Delete Car  -->
+<div class="modal fade" id="Modal-Delete-Car-{{ car.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content bg-danger text-white">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Delete Car</h5>
+		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+		</div>
+		<div class="modal-body">
+		  <form method="POST">
+			  {{delete_form.hidden_tag()}}
+			  Delete Car <strong>{{car.reg_number}}</strong>?
+			  <input id="car_delete" name="car_delete" type="hidden" value="{{car.id}}">	
+			  <input id="car_delete_reg_number" name="car_delete_reg_number" type="hidden" value="{{car.reg_number}}">  
+			  <br>
+			  <br>
+
+			  <div class="col-md-12 bg-light text-dark">
+				<p>Notice that if you delete car all rented histrories should be deleted</p>
+			  </div>
+			  <br>
+			  {{delete_form.submit(class = "btn btn-warning btn-block" )}}
+
+
+		  </form>		
+
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+	  </div>
+	</div>
+</div>  

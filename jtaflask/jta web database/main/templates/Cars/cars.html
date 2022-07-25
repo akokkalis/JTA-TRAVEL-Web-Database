@@ -42,10 +42,12 @@
 						<th scope="col" data-priority="2">Remarks</th>
 						<th scope="col" data-priority="2">Partner Owner</th>
 						<th scope="col" data-priority="2">Edit</th>
+						<th scope="col" data-priority="2">Delete</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for car in cars %}	
+					{% for car in cars %}
+					{% include 'Cars/cars_modals/car_modal.html' %}	
 						<tr>
 							<th scope="row">{{loop.index}}</th>							
 							<td>{{car.reg_number}}</td>
@@ -59,6 +61,12 @@
 							<td>								
 								<a class="btn btn-sm btn-info btn-block"  href="{{url_for('edit_car',id=car.id)}}" role="button"><i class="bi bi-pencil"></i>
 								</a>
+							</td>
+							<td>								
+								<button title='Delete Car'     				  
+								class="btn btn-sm btn-outline-danger btn-block" data-toggle ="modal" data-target="#Modal-Delete-Car-{{car.id}}">    
+								<i class="bi bi-trash"></i>
+								</button>
 							</td>
 						</tr>	
 					{%endfor%}
