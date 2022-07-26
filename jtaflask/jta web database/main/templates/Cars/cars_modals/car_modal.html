@@ -32,3 +32,58 @@
 	  </div>
 	</div>
 </div>  
+
+
+<!-- Modal Rent Car  -->
+<div class="modal fade" id="Modal-Rent-Car-{{ car.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content ">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Delete Car</h5>
+		  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
+		</div>
+		<div class="modal-body">
+		  <form method="POST">
+			  {{rent_form.hidden_tag()}}
+			  Rent Car <strong>{{car.reg_number}}</strong>?
+			  <input id="car_rent" name="car_rent" type="hidden" value="{{car.id}}">	
+			  
+			  <div class="col-md-12 text-center">
+				<hr>
+				<label for="date" class="form-label text-center">{{ rent_form.date.label()}}</label>
+				
+				{{rent_form.date(class="form-control text-center", placeholder="Date")}}
+			</div>
+				<div class="col-md-12 text-center">
+					<hr>
+					<label for="type" class="form-label text-center">{{ rent_form.type.label()}}</label>
+					
+					{{rent_form.type(class="form-control text-center", placeholder="Type")}}
+				</div>
+				<div class="col-md-12 text-center">
+					<hr>
+					<label for="given_place" class="form-label text-center">{{ rent_form.given_place.label()}}</label>
+					
+					{{rent_form.given_place(class="form-control text-center", placeholder="Place Of Delivery")}}
+				</div>
+
+			  <br>
+			  <br>
+
+			  <div class="col-md-12 bg-light text-dark">
+				
+			  </div>
+			  <br>
+			  {{rent_form.submit(class = "btn btn-info btn-block" )}}
+
+
+		  </form>		
+
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+	  </div>
+	</div>
+</div>  

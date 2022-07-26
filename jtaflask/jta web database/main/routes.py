@@ -1860,7 +1860,7 @@ def car_partner_add():
 	if request.method == "POST":
 		if form.validate_on_submit():
 
-			new_partner = Carpartner(company_name = form.name.data.capitalize(), phone = form.phone.data,email = form.email.data )
+			new_partner = Carpartner(company_name = form.name.data.title(), phone = form.phone.data,email = form.email.data )
 
 			db.session.add(new_partner)
 			db.session.commit()
@@ -1907,6 +1907,7 @@ def car_partner_contracts(id):
 def cars_page():
 		page_title= 'Cars'
 		delete_form = DeleteForm()
+		rent_form = CarRentForm()
 		if request.method=="POST":
 			if request.form['submit_button'] =="Delete":
 				reg_num = request.form.get('car_delete_reg_number')
@@ -1915,9 +1916,23 @@ def cars_page():
 				print(delete_car)
 				flash(f'Car {reg_num} Deleted Succesfully', category='danger' )
 				return redirect(url_for('cars_page'))
+		
+			if rent_form.validate_on_submit():
+				print(request.form.get('car_rent'))
+				print(rent_form.date.data)
+				print(rent_form.type.data)
+				print(rent_form.given_place.data)
+				
+				rental_entry = CarRentedHistory(type = rent_form.type.data, date = rent_form.date.data, given_place = rent_form.given_place.data, car = request.form.get('car_rent'))
+				
+				db.session.add(rental_entry)
+				
+				db.session.commit()
+			else:
+				print('Error on Rental Request')
 
-		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Carpartner.company_name).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
-		return render_template('Cars/cars.html', title=page_title, cars=cars, delete_form=delete_form)
+		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Carpartner.company_name, Cars.price_per_month).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
+		return render_template('Cars/cars.html', title=page_title, cars=cars, delete_form=delete_form, rent_form=rent_form)
 
 @app.route('/add_car', methods=['GET','POST'])
 #@login_required
@@ -1927,7 +1942,7 @@ def add_car():
 		if form.validate_on_submit():
 			car_partner = db.session.query(Carpartner.id).filter_by(company_name = form.car_partner.data).first()
 
-			newCar = Cars(reg_number=form.reg_number.data.upper(), category = form.category.data, model = form.model.data.capitalize(), engine_code = form.engine_code.data, vin = form.vin.data, cc = form.cc.data, remarks = form.remarks.data, carpartner= car_partner.id)
+			newCar = Cars(reg_number=form.reg_number.data.upper(), category = form.category.data, model = form.model.data.capitalize(), engine_code = form.engine_code.data, vin = form.vin.data, cc = form.cc.data, price_per_month = form.price_per_month.data, remarks = form.remarks.data, carpartner= car_partner.id)
 			
 			db.session.add(newCar)
 			db.session.commit()
@@ -1980,7 +1995,11 @@ def edit_car(id):
 
 	return render_template('Cars/edit_car.html', form = form)
 
-
+@app.route('/more_car/<int:id>', methods=['GET','POST'])
+#@login_required
+def more_car(id):
+	print(id)
+	return render_template("Cars/car_report.html")
 
 
 

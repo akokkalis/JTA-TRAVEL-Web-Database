@@ -519,6 +519,8 @@ class CarForm(FlaskForm):
     
     cc = StringField(label='CC:')
     
+    price_per_month = FloatField(label=f'Monthly Rental Amount', validators=[DataRequired()])
+
     remarks = TextAreaField(label=f'Remarks', widget=TextArea())    
     
     car_partner = SelectField(label='Car Company Owner:', validators=[DataRequired()], choices = car_rentals)
@@ -560,4 +562,16 @@ class CarEditForm(FlaskForm):
     
     car_partner = SelectField(label='Car Company Owner:', validators=[DataRequired()], choices = car_rentals, coerce=str)
     
+    submit = SubmitField(label = 'Save', name='submit_button')
+
+class CarRentForm(FlaskForm):
+    
+    type = SelectField(label='Status:', validators=[DataRequired()], choices=['Check-In', 'Check-Out'], default='Check-In')
+    
+    given_place = SelectField(label='Place Of Delivery:', validators=[DataRequired()], choices=['Larnaca', 'Limasol', 'Paphos', 'AyiaNapa', 'JTA Office'], default='Larnaca')
+    
+    date = DateField(label='Date:', validators=[DataRequired()])
+    
+
+
     submit = SubmitField(label = 'Save', name='submit_button')

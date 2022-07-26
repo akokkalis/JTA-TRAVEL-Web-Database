@@ -59,8 +59,14 @@
 					
 					{{form.car_partner(class="form-control text-center", placeholder="Car Partner")}}
 				</div>
-
 				<div class="col-md-6 text-center">
+					<hr>
+					<label for="price_per_month" class="form-label text-center">{{ form.price_per_month.label()}}</label>
+					
+					{{form.price_per_month(class="form-control text-center", placeholder="Montly Rental Amount")}}
+				</div>
+
+				<div class="col-md-12 text-center">
 					<hr>
 					<label for="remarks" class="form-label text-center">{{ form.remarks.label()}}</label>
 					

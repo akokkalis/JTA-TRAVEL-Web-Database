@@ -39,8 +39,11 @@
 						<th scope="col" data-priority="2">Engine Code</th>
 						<th scope="col" data-priority="2">VIN</th>
 						<th scope="col" data-priority="2">CC</th>
+						<th scope="col" data-priority="2">Amount Montly</th>
 						<th scope="col" data-priority="2">Remarks</th>
 						<th scope="col" data-priority="2">Partner Owner</th>
+						<th scope="col" data-priority="2">More</th>
+						<th scope="col" data-priority="2">Rent</th>
 						<th scope="col" data-priority="2">Edit</th>
 						<th scope="col" data-priority="2">Delete</th>
 					</tr>
@@ -55,9 +58,23 @@
 							<td>{{car.model}}</td>
 							<td>{{car.engine_code}}</td>
 							<td>{{car.vin}}</td>
-							<td>{{car.cc}}</td>		
+							<td>{{car.cc}}</td>	
+							<td>&euro; {{car.price_per_month}}</td>		
 							<td>{{car.remarks}}</td>
 							<td>{{car.company_name}}</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="top" title="More For {{car.reg_number}}">
+									<a class="btn btn-sm btn-info btn-block"  href="{{url_for('more_car', id = car.id)}}" role="button"><i class="bi bi-bar-chart"></i></a>
+								</span>
+							</td>
+
+							<td>
+								<button title='Rent Car'     				  
+								class="btn btn-sm btn-info btn-block" data-toggle ="modal" data-target="#Modal-Rent-Car-{{car.id}}">    
+								<i class="bi bi-three-dots"></i>
+								</button>
+							</td>
+
 							<td>								
 								<a class="btn btn-sm btn-info btn-block"  href="{{url_for('edit_car',id=car.id)}}" role="button"><i class="bi bi-pencil"></i>
 								</a>

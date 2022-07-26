@@ -62,7 +62,7 @@ class Leaves(db.Model):
     reason =  db.Column(db.String(length=20), nullable=False)
     docs = db.Column(db.String(length=100), nullable=True)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
-    country = db.Column(db.String(length=300), nullable=False, unique=False,    default='CY')
+    country = db.Column(db.String(length=300), nullable=False, unique=False,   default='CY')
     total = db.Column(db.Float(), nullable=False, default=0.0)
     confirm = db.Column(db.String(length=25), nullable = False, default='Pending Confirmation')
     creator = db.Column(db.String(length=20), nullable=False, unique=False)
@@ -201,15 +201,35 @@ class Cars(db.Model):
     engine_code = db.Column(db.String(80), nullable=True)
     vin = db.Column(db.String(80), nullable=True)
     cc = db.Column(db.String(80), nullable=True)
+    price_per_month = db.Column(db.Float(), nullable=False)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
     rented_history =  db.relationship('CarRentedHistory', backref='car_owned_rental', lazy=True)
 
+
 class CarRentedHistory(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     type = db.Column(db.String(10), nullable=False, unique=True)
+    date = db.Column(db.Date(), nullable=False)
     given_place = db.Column(db.String(10), nullable=False, unique=True)
     driver = db.Column(db.Integer(), db.ForeignKey(Users.id,ondelete='CASCADE'))
     car = db.Column(db.Integer(), db.ForeignKey(Cars.id,ondelete='CASCADE')) 
 
-    
+
+
+
+# class CarServiceHistory(db.Model):
+#     id = db.Column(db.Integer(), primary_key=True)
+#     date = db.Column(db.Date(), nullable=False , default=datetime.datetime.now)
+#     doc = db.Column(db.String(length=100), nullable=True)
+#     car = db.Column(db.Integer(), db.ForeignKey(Cars.id,ondelete='CASCADE'))
+
+
+# class CarServicePart(db.Model):
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(length=50), nullable=False)
+
+# class SericePart(db.Model):
+#     id = db.Column(db.Integer(), primary_key=True)
+#     service_history = db.Column(db.Integer(), db.ForeignKey(CarServiceHistory.id))
+#     part = db.Column(db.Integer(), db.ForeignKey(CarServicePart.id))
