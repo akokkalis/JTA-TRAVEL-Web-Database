@@ -1,5 +1,5 @@
 <!-- Modal Delete Car  -->
-<div class="modal fade" id="Modal-Delete-Car-{{ car.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="Modal-Delete-Car-{{ car.carid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 	  <div class="modal-content bg-danger text-white">
 		<div class="modal-header">
@@ -10,7 +10,7 @@
 		  <form method="POST">
 			  {{delete_form.hidden_tag()}}
 			  Delete Car <strong>{{car.reg_number}}</strong>?
-			  <input id="car_delete" name="car_delete" type="hidden" value="{{car.id}}">	
+			  <input id="car_delete" name="car_delete" type="hidden" value="{{car.carid}}">	
 			  <input id="car_delete_reg_number" name="car_delete_reg_number" type="hidden" value="{{car.reg_number}}">  
 			  <br>
 			  <br>
@@ -35,7 +35,7 @@
 
 
 <!-- Modal Rent Car  -->
-<div class="modal fade" id="Modal-Rent-Car-{{ car.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="Modal-Rent-Car-{{ car.carid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 	  <div class="modal-content ">
 		<div class="modal-header">
@@ -46,13 +46,33 @@
 		  <form method="POST">
 			  {{rent_form.hidden_tag()}}
 			  Rent Car <strong>{{car.reg_number}}</strong>?
-			  <input id="car_rent" name="car_rent" type="hidden" value="{{car.id}}">	
+			  <input id="car_rent" name="car_rent" type="hidden" value="{{car.carid}}">	
+
+			  <div class="col-md-12 text-center">
+				<hr>
+				<label for="driver" class="form-label text-center">{{ rent_form.driver.label()}}</label>
+				{% if not car.type=='Check-In' %} 
+					{{rent_form.driver(class="form-control text-center", placeholder="Driver")}}
+				
+				{%else%}
+					<select class="form-control text-center" name="driver">	
+						<option  value="{{car.driver}}">{{car.driverName}} {{car.driverSurname}}</option>
+					</select>
+
+				{%endif%}
+			</div>
 			  
 			  <div class="col-md-12 text-center">
 				<hr>
-				<label for="date" class="form-label text-center">{{ rent_form.date.label()}}</label>
-				
-				{{rent_form.date(class="form-control text-center", placeholder="Date")}}
+				<label for="date" class="form-label text-center" >{{ rent_form.date.label()}}</label>
+					{%if car.rental_date %}
+						
+						{{car.rental_date}}
+						{{rent_form.date(class="form-control text-center", placeholder="Date", min= car.rental_date )}}
+						
+					{%else%}
+						{{rent_form.date(class="form-control text-center", placeholder="Date")}}
+					{%endif%}
 			</div>
 				<div class="col-md-12 text-center">
 					<hr>

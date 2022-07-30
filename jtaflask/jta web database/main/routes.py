@@ -1684,6 +1684,7 @@ def assets_page():
 
 	assets = db.session.query(Assets.id.label('assets_id'), Assets.serial_number,Assets.remarks, Assets.category, Assets.value, Assets.value,column_property(func.to_char(Assets.reg_date, 'YYYY-MM-DD').label('edit_date')), column_property(func.to_char(Assets.reg_date, 'DD/MM/YYYY').label('reg_date')),Assets.retire, AssetRentedHistory.id, AssetRentedHistory.asset, column_property(func.to_char(AssetRentedHistory.date, 'DD/MM/YYYY').label('date')), AssetRentedHistory.owner, AssetRentedHistory.given_out, Users.name, Users.surname).outerjoin(AssetRentedHistory, Assets.id ==AssetRentedHistory.asset).outerjoin(Users, AssetRentedHistory.owner == Users.id).order_by(AssetRentedHistory.id.desc()).all()
 
+
 	
 	final_asset = []
 	assets_available=[]
@@ -1908,6 +1909,7 @@ def cars_page():
 		page_title= 'Cars'
 		delete_form = DeleteForm()
 		rent_form = CarRentForm()
+		
 		if request.method=="POST":
 			if request.form['submit_button'] =="Delete":
 				reg_num = request.form.get('car_delete_reg_number')
@@ -1922,17 +1924,53 @@ def cars_page():
 				print(rent_form.date.data)
 				print(rent_form.type.data)
 				print(rent_form.given_place.data)
+				print(rent_form.driver.data)
 				
-				rental_entry = CarRentedHistory(type = rent_form.type.data, date = rent_form.date.data, given_place = rent_form.given_place.data, car = request.form.get('car_rent'))
-				
-				db.session.add(rental_entry)
-				
-				db.session.commit()
-			else:
-				print('Error on Rental Request')
+				print(rent_form.driver.data.split())
 
-		cars = db.session.query(Cars.id, Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Carpartner.company_name, Cars.price_per_month).join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).all()
-		return render_template('Cars/cars.html', title=page_title, cars=cars, delete_form=delete_form, rent_form=rent_form)
+				driver_id = db.session.query(Users.id).filter(Users.name ==rent_form.driver.data.split()[0], Users.surname==rent_form.driver.data.split()[1]).first()
+
+				car_rentalling = CarRentedHistory.query.filter_by(date = rent_form.date.data, type = rent_form.type.data, car = request.form.get('car_rent') ).order_by(CarRentedHistory.id.desc()).first()
+				
+				print(car_rentalling)
+
+				if car_rentalling:
+					flash(f'Car You are Trying to insert is already  ', category='danger' )
+				
+
+
+				
+				print(driver_id.id)
+
+				# rental_entry = CarRentedHistory(type = rent_form.type.data, date = rent_form.date.data, given_place = rent_form.given_place.data, car = request.form.get('car_rent'), driver = driver_id.id)
+				
+				# db.session.add(rental_entry)
+				
+				# db.session.commit()
+			elif rent_form.errors != {}:
+				for error_msg in rent_form.errors.values():
+					flash(f'Error!!! {error_msg[0]}', category='danger' )
+
+				
+
+		cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Cars.price_per_month, Cars.active_rent, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'YYYY-MM-DD').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
+		
+		# join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).order_by(CarRentedHistory.id.desc()).first()
+		
+		final_cars=[]
+		cars_ids=[]
+		for car in cars:
+			if car.carid not in cars_ids:
+				cars_ids.append(car.carid)
+				final_cars.append(car)
+
+		for car in final_cars:
+			print(car.rental_date)
+			print(type(car.rental_date))
+
+		
+		
+		return render_template('Cars/cars.html', title=page_title, cars=final_cars, delete_form=delete_form, rent_form=rent_form)
 
 @app.route('/add_car', methods=['GET','POST'])
 #@login_required

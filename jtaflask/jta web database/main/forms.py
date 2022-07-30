@@ -565,7 +565,15 @@ class CarEditForm(FlaskForm):
     submit = SubmitField(label = 'Save', name='submit_button')
 
 class CarRentForm(FlaskForm):
+
     
+    emps = db.session.query(Users.name, Users.surname).filter(Users.active == True).order_by(Users.name).all()
+    
+    emp_list = [f'{emp.name} {emp.surname}' for emp in emps ]
+
+
+    driver = SelectField(label='Driver:', validators=[DataRequired()], choices =emp_list, coerce=str)
+
     type = SelectField(label='Status:', validators=[DataRequired()], choices=['Check-In', 'Check-Out'], default='Check-In')
     
     given_place = SelectField(label='Place Of Delivery:', validators=[DataRequired()], choices=['Larnaca', 'Limasol', 'Paphos', 'AyiaNapa', 'JTA Office'], default='Larnaca')

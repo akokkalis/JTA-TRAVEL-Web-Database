@@ -202,6 +202,7 @@ class Cars(db.Model):
     vin = db.Column(db.String(80), nullable=True)
     cc = db.Column(db.String(80), nullable=True)
     price_per_month = db.Column(db.Float(), nullable=False)
+    active_rent = db.Column(db.Boolean, nullable = False, default=False)
     remarks = db.Column(db.String(length=300), nullable=True, unique=False)
     carpartner = db.Column(db.Integer(), db.ForeignKey(Carpartner.id,ondelete='CASCADE'))
     rented_history =  db.relationship('CarRentedHistory', backref='car_owned_rental', lazy=True)
@@ -209,9 +210,9 @@ class Cars(db.Model):
 
 class CarRentedHistory(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    type = db.Column(db.String(10), nullable=False, unique=True)
+    type = db.Column(db.String(10), nullable=False)
     date = db.Column(db.Date(), nullable=False)
-    given_place = db.Column(db.String(10), nullable=False, unique=True)
+    given_place = db.Column(db.String(10), nullable=False)
     driver = db.Column(db.Integer(), db.ForeignKey(Users.id,ondelete='CASCADE'))
     car = db.Column(db.Integer(), db.ForeignKey(Cars.id,ondelete='CASCADE')) 
 
