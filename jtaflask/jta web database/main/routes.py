@@ -1965,7 +1965,7 @@ def cars_page():
 				final_cars.append(car)
 
 		for car in final_cars:
-			print(car.rental_date)
+			print(car.rental_date, car.type)
 			print(type(car.rental_date))
 
 		

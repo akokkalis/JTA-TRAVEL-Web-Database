@@ -65,9 +65,8 @@
 			  <div class="col-md-12 text-center">
 				<hr>
 				<label for="date" class="form-label text-center" >{{ rent_form.date.label()}}</label>
-					{%if car.rental_date %}
+					{%if car.rental_date %}						
 						
-						{{car.rental_date}}
 						{{rent_form.date(class="form-control text-center", placeholder="Date", min= car.rental_date )}}
 						
 					{%else%}
@@ -77,8 +76,16 @@
 				<div class="col-md-12 text-center">
 					<hr>
 					<label for="type" class="form-label text-center">{{ rent_form.type.label()}}</label>
-					
-					{{rent_form.type(class="form-control text-center", placeholder="Type")}}
+					{% if car.type=="Check-Out" or car.type==None %}
+						<select class="form-control text-center" name="type">	
+						<option  value="Check-In">Check-In</option>
+					</select>
+
+					{%else%}
+						<select class="form-control text-center" name="type">	
+							<option  value="Check-Out">Check-Out</option>
+						</select>
+					{%endif%}
 				</div>
 				<div class="col-md-12 text-center">
 					<hr>
