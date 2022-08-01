@@ -565,20 +565,31 @@ class CarEditForm(FlaskForm):
     submit = SubmitField(label = 'Save', name='submit_button')
 
 class CarRentForm(FlaskForm):
-
+    # def validate_driver(self, driver):
+    #     '''
+    #     Validate Driver So we dont assign the same driver at the same time
+    #     '''
+    #     print('inside driver validation ' + driver)     
+        # driver = CarRentedHistory.query.filter_by(driver = reg_number.data.upper()).first()
+        # if car1: 
+        #     if (car1.id != self.id.data):                          
+        #         raise ValidationError(f'Car {reg_number.data} already exists')   
     
-    emps = db.session.query(Users.name, Users.surname).filter(Users.active == True).order_by(Users.name).all()
+    # emps = db.session.query(Users.name, Users.surname).filter(Users.active == True).order_by(Users.name).all()
     
-    emp_list = [f'{emp.name} {emp.surname}' for emp in emps ]
+    # emp_list = [f'{emp.name} {emp.surname}' for emp in emps ]
 
-
-    driver = SelectField(label='Driver:', validators=[DataRequired()], choices =emp_list, coerce=str)
-
-    type = SelectField(label='Status:', validators=[DataRequired()], choices=['Check-In', 'Check-Out'], default='Check-In')
+    #validators=[DataRequired(message="Driver Error")],
+    #choices =emp_list,
+    #,  coerce=str
+    # driver = SelectField(label='Driver:', validators=[DataRequired(message="Driver Error")],  coerce=str)
     
-    given_place = SelectField(label='Place Of Delivery:', validators=[DataRequired()], choices=['Larnaca', 'Limasol', 'Paphos', 'AyiaNapa', 'JTA Office'], default='Larnaca')
+    #validators=[DataRequired()]
+    type = SelectField(label='Status:', validators=[DataRequired(message="REntal Type Error")], choices=['Check-In', 'Check-Out'], default='Check-In')
     
-    date = DateField(label='Date:', validators=[DataRequired()])
+    given_place = SelectField(label='Place Of Delivery:', validators=[DataRequired(message = "Place error")], choices=['Larnaca', 'Limasol', 'Paphos', 'AyiaNapa', 'JTA Office'], default='Larnaca')
+    
+    date = DateField(label='Date:', validators=[DataRequired(message="Date  Error")])
     
 
 

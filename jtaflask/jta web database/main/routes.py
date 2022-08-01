@@ -1909,7 +1909,8 @@ def cars_page():
 		page_title= 'Cars'
 		delete_form = DeleteForm()
 		rent_form = CarRentForm()
-		
+		emp = all_users_forms()
+
 		if request.method=="POST":
 			if request.form['submit_button'] =="Delete":
 				reg_num = request.form.get('car_delete_reg_number')
@@ -1920,15 +1921,10 @@ def cars_page():
 				return redirect(url_for('cars_page'))
 		
 			if rent_form.validate_on_submit():
+				print(request.form.get('driver'))
 				print(request.form.get('car_rent'))
-				print(rent_form.date.data)
-				print(rent_form.type.data)
-				print(rent_form.given_place.data)
-				print(rent_form.driver.data)
-				
-				print(rent_form.driver.data.split())
 
-				driver_id = db.session.query(Users.id).filter(Users.name ==rent_form.driver.data.split()[0], Users.surname==rent_form.driver.data.split()[1]).first()
+				driver_id = db.session.query(Users.id).filter(Users.name ==request.form.get('driver').split()[0], Users.surname==request.form.get('driver').split()[1]).first()
 
 				car_rentalling = CarRentedHistory.query.filter_by(date = rent_form.date.data, type = rent_form.type.data, car = request.form.get('car_rent') ).order_by(CarRentedHistory.id.desc()).first()
 				
@@ -1942,18 +1938,31 @@ def cars_page():
 				
 				print(driver_id.id)
 
-				# rental_entry = CarRentedHistory(type = rent_form.type.data, date = rent_form.date.data, given_place = rent_form.given_place.data, car = request.form.get('car_rent'), driver = driver_id.id)
+				rental_entry = CarRentedHistory(type = rent_form.type.data, date = rent_form.date.data, given_place = rent_form.given_place.data, car = request.form.get('car_rent'), driver = driver_id.id)
 				
-				# db.session.add(rental_entry)
+				db.session.add(rental_entry)
 				
-				# db.session.commit()
+				db.session.commit()
+
+				
+				car_to_update  = db.session.query(Cars).filter(Cars.id==request.form.get('car_rent')).first()
+				if rent_form.type.data=="Check-In":
+					car_to_update.active_rent = True
+				else:
+					car_to_update.active_rent = False
+
+				db.session.add(car_to_update)
+				db.session.commit()
+				
+				return redirect(url_for('cars_page'))
 			elif rent_form.errors != {}:
+				print('error in form')
 				for error_msg in rent_form.errors.values():
 					flash(f'Error!!! {error_msg[0]}', category='danger' )
 
 				
 
-		cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Cars.price_per_month, Cars.active_rent, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'YYYY-MM-DD').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
+		cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category, Cars.model, Cars.engine_code, Cars.vin, Cars.cc,Cars.remarks, Cars.price_per_month, Cars.active_rent, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'YYYY-MM-DD').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).order_by(Cars.reg_number.asc()).all()
 		
 		# join(Carpartner, Carpartner.id == Cars.carpartner).order_by(Carpartner.company_name.desc()).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).order_by(CarRentedHistory.id.desc()).first()
 		
@@ -1965,12 +1974,11 @@ def cars_page():
 				final_cars.append(car)
 
 		for car in final_cars:
-			print(car.rental_date, car.type)
-			print(type(car.rental_date))
+			print(car)
 
 		
 		
-		return render_template('Cars/cars.html', title=page_title, cars=final_cars, delete_form=delete_form, rent_form=rent_form)
+		return render_template('Cars/cars.html', title=page_title, cars=final_cars, delete_form=delete_form, rent_form=rent_form, emp=emp)
 
 @app.route('/add_car', methods=['GET','POST'])
 #@login_required
@@ -2037,7 +2045,10 @@ def edit_car(id):
 #@login_required
 def more_car(id):
 	print(id)
-	return render_template("Cars/car_report.html")
+	cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category,CarRentedHistory.given_place, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'DD-MM-YYYY').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).filter(Cars.id == id).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
+	print(cars)
+
+	return render_template("Cars/car_report.html", cars=cars)
 
 
 

@@ -50,13 +50,19 @@
 
 			  <div class="col-md-12 text-center">
 				<hr>
-				<label for="driver" class="form-label text-center">{{ rent_form.driver.label()}}</label>
+				<label for="driver" class="form-label text-center">Driver</label>
 				{% if not car.type=='Check-In' %} 
-					{{rent_form.driver(class="form-control text-center", placeholder="Driver")}}
+					<select class="form-control text-center" name ="driver" >		
+						{%for e in emp%}					
+							<option id = "driver" name="driver" value="{{e}}">	
+								{{e}}
+							</option>
+						{%endfor%}
+					</select>
 				
 				{%else%}
 					<select class="form-control text-center" name="driver">	
-						<option  value="{{car.driver}}">{{car.driverName}} {{car.driverSurname}}</option>
+						<option name="driver" id="driver" value="{{car.driverName}} {{car.driverSurname}}">{{car.driverName}} {{car.driverSurname}}</option>
 					</select>
 
 				{%endif%}
