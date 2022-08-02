@@ -36,12 +36,13 @@
 						<th scope="col" data-priority="1">Reg. Number</th>			
 						<th scope="col" data-priority="1">Transmision</th>
 						<th scope="col" data-priority="1">Model</th>
-						<th scope="col" data-priority="2">Engine Code</th>
-						<th scope="col" data-priority="2">VIN</th>
-						<th scope="col" data-priority="2">CC</th>
+						<th scope="col" data-priority="3">Engine Code</th>
+						<th scope="col" data-priority="3">VIN</th>
+						<th scope="col" data-priority="3">CC</th>
 						<th scope="col" data-priority="2">Is Rented</th>
+						<th scope="col" data-priority="2">Driver</th>
 						<th scope="col" data-priority="2">Amount Montly</th>
-						<th scope="col" data-priority="2">Remarks</th>
+						<th scope="col" data-priority="3">Remarks</th>
 						<th scope="col" data-priority="2">Partner Owner</th>
 						<th scope="col" data-priority="2">More</th>
 						<th scope="col" data-priority="2">Rent</th>
@@ -60,7 +61,12 @@
 							<td>{{car.engine_code}}</td>
 							<td>{{car.vin}}</td>
 							<td>{{car.cc}}</td>	
-							<td>{{car.active_rent}}</td>	
+							<td>{{car.active_rent}}</td>
+							{%if car.driverName %}
+								<td>{{car.driverName}} {{car.driverSurname}}</td>
+							{%else%}	
+								<td>-</td>
+							{%endif%}
 							<td>&euro; {{car.price_per_month}}</td>		
 							<td>{{car.remarks}}</td>
 							<td>{{car.company_name}}</td>

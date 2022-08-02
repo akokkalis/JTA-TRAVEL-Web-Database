@@ -2046,6 +2046,19 @@ def edit_car(id):
 def more_car(id):
 	delete_form = DeleteForm()
 	if delete_form.validate_on_submit():
+
+		car_status_update_on_d = CarRentedHistory.query.filter_by(id=int(request.form.get('rental_history_id'))).first()
+
+		car_to_update  = db.session.query(Cars).filter(Cars.id==car_status_update_on_d.car).first()
+		if car_status_update_on_d.type=="Check-In":
+			car_to_update.active_rent = False
+		else:
+			car_to_update.active_rent = True
+
+		db.session.add(car_to_update)
+		db.session.commit()
+		
+		
 		print(request.form.get('rental_history_id'))
 		delete_rental_history = CarRentedHistory.query.filter_by(id=int(request.form.get('rental_history_id'))).delete()			
 		db.session.commit()
@@ -2056,7 +2069,7 @@ def more_car(id):
 
 
 
-	cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category,CarRentedHistory.given_place, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'DD-MM-YYYY').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).filter(Cars.id == id).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
+	cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category,CarRentedHistory.given_place, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'DD-MM-YYYY').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).filter(Cars.id == id).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).filter(CarRentedHistory.id != None).order_by(CarRentedHistory.id.desc()).all()
 	
 	
 
