@@ -38,12 +38,13 @@
 						<th scope="col" data-priority="2">Driver</th>
 						<th scope="col" data-priority="2">Place</th>
 						<th scope="col" data-priority="2">Partner</th>
-						<th scope="col" data-priority="2">Edit</th>
+						
 						<th scope="col" data-priority="2">Delete</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for car in cars %}
+					{% include 'Cars/cars_modals/rented_history_modals.html' %}
 						
 						<tr>
 							<th scope="row">{{loop.index}}</th>							
@@ -53,13 +54,10 @@
 							<td>{{car.driverName}} {{car.driverSurname}}</td>
 							<td>{{car.given_place}}</td>
 							<td>{{car.company_name}}</td>
-							<td>								
-								<a class="btn btn-sm btn-info btn-block"  href="{{url_for('edit_car',id=car.carid)}}" role="button"><i class="bi bi-pencil"></i>
-								</a>
-							</td>
+
 							<td>								
 								<button title='Delete Rental Entrie'     				  
-								class="btn btn-sm btn-outline-danger btn-block" data-toggle ="modal" data-target="#">    
+								class="btn btn-sm btn-outline-danger btn-block" data-toggle ="modal" data-target="#Modal-Delete-RentalEntrie-{{ car.id }}">    
 								<i class="bi bi-trash"></i>
 								</button>
 							</td>

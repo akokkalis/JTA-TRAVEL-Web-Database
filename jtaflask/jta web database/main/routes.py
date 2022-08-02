@@ -2044,11 +2044,23 @@ def edit_car(id):
 @app.route('/more_car/<int:id>', methods=['GET','POST'])
 #@login_required
 def more_car(id):
-	print(id)
-	cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category,CarRentedHistory.given_place, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'DD-MM-YYYY').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).filter(Cars.id == id).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
-	print(cars)
+	delete_form = DeleteForm()
+	if delete_form.validate_on_submit():
+		print(request.form.get('rental_history_id'))
+		delete_rental_history = CarRentedHistory.query.filter_by(id=int(request.form.get('rental_history_id'))).delete()			
+		db.session.commit()
+		print(delete_rental_history)
+		flash(f'Rental Record Deleted Succesfully', category='info' )
+		return redirect(url_for('more_car', id=id))
 
-	return render_template("Cars/car_report.html", cars=cars)
+
+
+
+	cars = db.session.query(Cars.id.label('carid'), Cars.reg_number, Cars.category,CarRentedHistory.given_place, CarRentedHistory.type, CarRentedHistory.id, column_property(func.to_char(CarRentedHistory.date, 'DD-MM-YYYY').label('rental_date')) , Carpartner.company_name, Users.name.label('driverName'), Users.surname.label('driverSurname')).filter(Cars.id == id).outerjoin(CarRentedHistory, Cars.id == CarRentedHistory.car).join(Carpartner, Carpartner.id==Cars.carpartner).outerjoin(Users, Users.id == CarRentedHistory.driver).order_by(CarRentedHistory.id.desc()).all()
+	
+	
+
+	return render_template("Cars/car_report.html", cars=cars, delete_form=delete_form)
 
 
 
